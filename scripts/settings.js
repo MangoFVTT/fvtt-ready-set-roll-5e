@@ -8,7 +8,7 @@ export const SETTING_NAMES = {
 
 export class SettingsUtility {
     static registerSettings() {
-        LogUtility.log("Registering settings...");
+        LogUtility.log("Registering Settings");
         
         game.settings.register(MODULE_NAME, SETTING_NAMES.ROLL_BUTTONS_ENABLED,
         {
