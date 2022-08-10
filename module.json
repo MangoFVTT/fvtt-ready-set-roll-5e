@@ -30,8 +30,8 @@
 	],
 	"socket": true,
 	"url": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e",
-	"manifest": "",
+	"manifest": "https://raw.githubusercontent.com/MangoFVTT/fvtt-ready-set-roll-5e/master/module.json",
 	"download": "",
 	"bugs": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues",
-	"readme": ""
+	"readme": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/blob/master/README.md"
 }
