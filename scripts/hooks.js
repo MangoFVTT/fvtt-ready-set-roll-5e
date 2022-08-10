@@ -11,7 +11,8 @@ export class HooksUtility {
         });
 
         Hooks.on("ready", () => {
-            Hooks.call("loadedReadySetRoll");
+            LogUtility.log(`Finished loading ${MODULE_TITLE}`)
+            Hooks.call("loadedReadySetRoll5e");
         });
     }
 }
