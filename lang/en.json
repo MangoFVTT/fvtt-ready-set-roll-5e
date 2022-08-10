@@ -1,0 +1,8 @@
+{
+    "rsr5e": {
+        "settings": {
+            "rollButtonsEnabled.label": "Add Extra Roll Buttons to Sheet",
+            "rollButtonsEnabled.hint": "Adds buttons to items, spells, and features in the sheet, which display when the item is expanded. Requires reopening the sheet."
+        }
+    }
+}
