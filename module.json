@@ -1,0 +1,37 @@
+{
+	"id": "ready-set-roll-5e",
+	"title": "Ready Set Roll 5e",
+	"description": "This module overhauls rolls for the D&D 5e system in the style of BetterRolls5e.",
+	"version": "0.1",
+	"compatibility": {
+		"minimum": "10.277",
+		"verified": "10.277",
+		"maximum": "10.277"
+	},
+	"authors": [
+		{
+			"name": "Mangó",
+			"discord": "Mangó#8639"
+		}
+	],
+	"system": [ "dnd5e" ],
+	"esmodules": [
+		"./scripts/index.js"
+	],
+	"styles": [
+		"./css/ready-set-roll.css"
+	],
+	"languages": [
+		{
+		  "lang": "en",
+		  "name": "English",
+		  "path": "lang/en.json"
+		}
+	],
+	"socket": true,
+	"url": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e",
+	"manifest": "",
+	"download": "",
+	"bugs": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues",
+	"readme": ""
+}
