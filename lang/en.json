@@ -1,8 +1,19 @@
 {
     "rsr5e": {
         "settings": {
-            "rollButtonsEnabled.label": "Add Extra Roll Buttons to Sheet",
-            "rollButtonsEnabled.hint": "Adds buttons to items, spells, and features in the sheet, which display when the item is expanded. Requires reopening the sheet."
+            "enableAbilityQuickRoll.name": "Enable Quick Roll for Abilities",
+            "enableAbilityQuickRoll.hint": "When clicking on an ability check or saving throw, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
+            "enableSkillQuickRoll.name": "Enable Quick Roll for Skills",
+            "enableSkillQuickRoll.hint": "When clicking on a skill check, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
+            "enableItemQuickRoll.name": "Enable Quick Roll for Items",
+            "enableItemQuickRoll.hint": "When clicking on an item, spell, or feature, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
+            "enableAltQuickRoll.name": "Enable Alternate Quick Roll for Items",
+            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different automatic roll which can be configured separately per item. Overwrites ability to bypass quick roll with default chat output."
+        },
+        "messsages": {
+            "error": {
+                "libWrapperMinVersion": "Ready Set Roll requires libWrapper version {version} or newer."
+            }
         }
     }
 }
