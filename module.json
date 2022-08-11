@@ -15,7 +15,8 @@
 	],
 	"system": [ "dnd5e" ],
 	"esmodules": [
-		"./scripts/ready-set-roll.js"
+		"./scripts/ready-set-roll.js",
+		"./lib/libwrapper/shim.js"
 	],
 	"styles": [
 		"./css/ready-set-roll.css"
@@ -23,7 +24,18 @@
 	"languages": [
 		{ "lang": "en", "name": "English", "path": "lang/en.json" }
 	],
-	"socket": true,
+	"relationships": {
+		"requires": [
+			{
+				"id": "lib-wrapper",
+				"type": "module",
+				"compatibility": {
+					"minimum": "1.0.0.0",
+					"verified": "1.12.7.1"
+				}
+			}
+		]
+	},
 	"url": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e",
 	"manifest": "https://raw.githubusercontent.com/MangoFVTT/fvtt-ready-set-roll-5e/master/module.json",
 	"download": "",
