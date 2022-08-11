@@ -1,3 +1,3 @@
-import { HooksUtility } from "./hooks.js";
+import { HooksUtility } from "./utils/hooks.js";
 
 HooksUtility.registerHooks();
