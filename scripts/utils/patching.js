@@ -1,5 +1,4 @@
-import { MODULE_NAME } from "../data/const.js";
-import { CoreUtility } from "./core.js";
+import { MODULE_NAME } from "../module/const.js";
 import { LogUtility } from "./log.js";
 import { RollUtility } from "./roll.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";

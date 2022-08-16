@@ -1,4 +1,4 @@
-import { MODULE_NAME, MODULE_SHORT } from "../data/const.js";
+import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 
