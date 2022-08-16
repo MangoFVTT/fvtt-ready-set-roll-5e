@@ -17,8 +17,7 @@ export class LogUtility {
      * @param {string} logString The string to log as an error. 
      */
     static logError(logString) {
-        ui.notifications.error(logString);
-        console.error(processLog(logString));
+        ui.notifications.error(processLog(logString));
     }
 
     /**
@@ -26,8 +25,7 @@ export class LogUtility {
      * @param {string} logString The string to log as a warning. 
      */
     static logWarning(logString) {
-        ui.notifications.warn(logString);
-        console.warn(processLog(logString));
+        ui.notifications.warn(processLog(logString));
     }
 }
 
