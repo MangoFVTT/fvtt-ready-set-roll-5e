@@ -1,4 +1,5 @@
 import { MODULE_NAME } from "../module/const.js";
+import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { RollUtility } from "./roll.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
@@ -33,6 +34,17 @@ async function actorRollSkill(original, skillId, options) {
 		return original.call(this, skillId, options);
 	}
 
+    const { advantage, disadvantage } = CoreUtility.eventToAdvantage(options.event);
+
+    const roll = await original.call(this, skillId, {
+		...options,
+		fastForward: true,
+		chatMessage: false,
+        advantage: advantage,
+        disadvantage: disadvantage
+	});
+
+   return RollUtility.rollSkill(this, skillId, roll)
 }
 
 function actorRollAbilityTest(original, ability, options) {
