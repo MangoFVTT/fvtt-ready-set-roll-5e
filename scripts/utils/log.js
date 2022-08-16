@@ -1,4 +1,4 @@
-import { MODULE_DEBUG_TAG } from "../data/const.js";
+import { MODULE_DEBUG_TAG } from "../module/const.js";
 
 /**
  * Utility class to handle logging to console with an attached debug tag to identify module logs.
