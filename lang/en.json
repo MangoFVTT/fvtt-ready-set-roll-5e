@@ -8,11 +8,19 @@
             "enableItemQuickRoll.name": "Enable Quick Roll for Items",
             "enableItemQuickRoll.hint": "When clicking on an item, spell, or feature, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Quick Roll for Items",
-            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different automatic roll which can be configured separately per item. Overwrites ability to bypass quick roll with default chat output."
+            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different automatic roll which can be configured separately per item. Overwrites ability to bypass quick roll with default chat output.",
+            "rollModifierMode.name": "Roll Modifier Keys",
+	        "rollModifierMode.hint": "Determines which keys to use to modify quick rolls to have advantage or disadvantage. This has no effect if quick rolls are disabled."
         },
         "messsages": {
             "error": {
                 "libWrapperMinVersion": "Ready Set Roll requires libWrapper version {version} or newer."
+            }
+        },
+        "choices": {
+            "rollModifierMode": {
+                "shiftAdv": "Shift ➔ Advantage, Ctrl ➔ Disadvantage",                
+                "ctrlAdv": "Ctrl ➔ Advantage, Shift ➔ Disadvantage"
             }
         }
     }
