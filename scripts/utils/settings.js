@@ -7,7 +7,8 @@ export const SETTING_NAMES = {
     QUICK_SKILL_ENABLED: "enableSkillQuickRoll",
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
-    ALT_ROLL_ENABLED: "enableAltQuickRoll"
+    ALT_ROLL_ENABLED: "enableAltQuickRoll",
+    DEFAULT_ROLL_ART: "defaultRollArt"
 }
 
 export class SettingsUtility {
@@ -62,6 +63,19 @@ export class SettingsUtility {
             type: Boolean,
             default: false,
         });
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.DEFAULT_ROLL_ART, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DEFAULT_ROLL_ART}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DEFAULT_ROLL_ART}.hint`),
+			scope: "world",
+			config: true,
+			default: "actor",
+			type: String,
+			choices: {
+				"actor": CoreUtility.localize("Actor"),
+				"token": CoreUtility.localize("Token")
+			}
+		});
     }
     
     static getSettingValue(settingKey) {
