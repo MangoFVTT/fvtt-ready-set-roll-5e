@@ -17,3 +17,8 @@ export const MODULE_SHORT = "rsr5e";
  * String attached to debug logs to identify logs made by this module.
  */
 export const MODULE_DEBUG_TAG = "Ready Set Roll";
+
+/**
+ * Path to the default image to use when an actor/item image isn't available.
+ */
+export const DEFAULT_IMG = "icons/svg/mystery-man.svg"
