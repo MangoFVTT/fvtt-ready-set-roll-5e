@@ -10,7 +10,9 @@
             "enableAltQuickRoll.name": "Enable Alternate Quick Roll for Items",
             "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different automatic roll which can be configured separately per item. Overwrites ability to bypass quick roll with default chat output.",
             "rollModifierMode.name": "Roll Modifier Keys",
-	        "rollModifierMode.hint": "Determines which keys to use to modify quick rolls to have advantage or disadvantage. This has no effect if quick rolls are disabled."
+	        "rollModifierMode.hint": "Determines which keys to use to modify quick rolls to have advantage or disadvantage. This has no effect if quick rolls are disabled.",
+            "defaultRollArt.name": "Quick Roll Image Used",
+            "defaultRollArt.hint": "Determines which art is used by default for ability checks and saving throws for an actor. If this is not available (or is the default mystery man icon), it will use the other icon instead."
         },
         "messsages": {
             "error": {
