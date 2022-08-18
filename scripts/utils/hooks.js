@@ -7,6 +7,7 @@ import { SettingsUtility } from "./settings.js";
 export const HOOK_LOADED = `${MODULE_SHORT}Loaded`;
 export const HOOK_CHAT_MESSAGE = `${MODULE_SHORT}ChatMessage`;
 export const HOOK_RENDER = `${MODULE_SHORT}Render`;
+export const HOOK_PROCESSED_ROLL = `${MODULE_SHORT}RollProcessed`;
 
 export class HooksUtility {
     static registerHooks() {

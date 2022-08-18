@@ -1,3 +1,7 @@
+import { MODULE_NAME } from "../module/const.js";
+import { LogUtility } from "./log.js";
+import { SettingsUtility, SETTING_NAMES } from "./settings.js";
+
 /**
  * Utility class with core functions for general use.
  */
@@ -7,13 +11,14 @@ export class CoreUtility {
      * @returns The module version string.
      */
     static getVersion() {
-		return game.modules.get(MODULE_NAME).data.version;
-	}
+        return game.modules.get(MODULE_NAME).version;
+    }
 
     /**
      * Shorthand for both game.i18n.format() and game.i18n.localize() depending on whether data is supplied or not.
      * @param {string} key The key string to localize for.
      * @param {object?} data Optional data that if given will do a i18n.format() instead.
+     * @returns A localized string (with formatting if needed).
      */
     static localize(key, data = null) {
         if (data) {
@@ -22,5 +27,103 @@ export class CoreUtility {
 
         return game.i18n.localize(key);
     }
+
+    /**
+     * Checks an event for advantage/disadvantage modifier keys.
+     * @param {object} event Event data to check.
+     * @returns A tuple representing whether an advantage/disadvantage modifier is active. 
+     */
+    static eventToAdvantage(event = {}) {
+        const mode = SettingsUtility.getSettingValue(SETTING_NAMES.ROLL_MODIFIER_MODE)
+
+        if (event.shiftKey) {
+            switch(mode) {
+                case 1:
+                    return { advantage: true, disadvantage: false };
+                case 2:
+                    return { advantage: false, disadvantage: true };
+            }            
+        }
+        
+        if (event.ctrlKey || event.metaKey) {
+            switch(mode) {
+                case 1:
+                    return { advantage: false, disadvantage: true };
+                case 2:
+                    return { advantage: true, disadvantage: false };
+            }   
+        }
+
+        return { advantage: false, disadvantage: false };
+    }
+
+    /**
+     * Checks a given data object to determine if it is an item or an actor.
+     * @param {*} dataObject 
+     * @returns {Item | Actor} A tuple containing an item and its actor if given an item, or just the actor otherwise.
+     */
+    static resolveActorOrItem(dataObject) {
+		if (!dataObject) {
+            LogUtility.logError("Cannot resolve a null data object as an Actor or an Item.");
+			return {};
+		}
+
+		if (dataObject instanceof Item) {
+			return { item: dataObject, actor: dataObject?.actor };
+		}        
+        
+        if (dataObject instanceof Actor) {
+			return { actor: dataObject };
+		}
+
+        LogUtility.logError("Failed to resolve data object as an Actor or an Item.");
+        return {};
+	}
+
+    /**
+     * Returns data about whispers and roll mode for use in rendering messages.
+     * @param {*} rollMode 
+     * @returns A data package with the current roll mode 
+     */
+    static getWhisperData(rollMode = null) {
+		let whisper = undefined;
+		let blind = null;
+
+		rollMode = rollMode || game.settings.get("core", "rollMode");
+
+        if (["gmroll", "blindroll"].includes(rollMode)) {
+            whisper = ChatMessage.getWhisperRecipients("GM");
+        }
+
+        if (rollMode === "blindroll") {
+            blind = true;
+        } 
+        else if (rollMode === "selfroll") {
+            whisper = [game.user.id];
+        } 
+
+		return { rollMode, whisper, blind }
+	}
+
+    /**
+	 * Returns the image to represent the actor. The result depends on selected settings.
+	 * @param {Actor} actor
+	 */
+	static getActorImage(actor) {
+		if (!actor) {
+            LogUtility.logWarning("Attempted to get image for a null actor.");
+            return null;
+        }
+
+		const actorImage = (actor.img && !actor.img.includes("*")) ? actor.img : null;
+		const tokenImage = actor.prototypeToken?.texture?.src ? actor.prototypeToken.texture.src : null;
+
+		switch(SettingsUtility.getSettingValue(SETTING_NAMES.DEFAULT_ROLL_ART)) {
+			case "actor":
+				return actorImage || tokenImage;
+			case "token":
+				return tokenImage || actorImage;
+		}
+	}
 }
 
