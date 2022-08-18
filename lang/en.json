@@ -21,9 +21,9 @@
         },
         "choices": {
             "rollModifierMode": {
-                "shiftAdv": "Shift ➔ Advantage, Ctrl ➔ Disadvantage",                
-                "ctrlAdv": "Ctrl ➔ Advantage, Shift ➔ Disadvantage"
-            }
+                "shiftAdv": "Shift ➔ Advantage, Ctrl/Cmd ➔ Disadvantage",                
+                "ctrlAdv": "Ctrl/Cmd ➔ Advantage, Shift ➔ Disadvantage"
+            }            
         }
     }
 }
