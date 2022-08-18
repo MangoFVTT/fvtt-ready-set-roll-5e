@@ -1,0 +1,219 @@
+.dnd5e.sheet .item-buttons button {
+	font-size: 10px;
+	line-height: 12px;
+	margin: 0;
+}
+
+.dnd5e.sheet .item-buttons span {
+	padding: 0;
+}
+
+.dnd5e.chat-card .card-header img {
+	flex: 0 0 36px;
+	margin-right: 5px;
+	object-fit: contain;
+}
+
+.dnd5e.chat-card.rsr-full .card-header {
+	position: relative;
+}
+
+.rsr-dual .dice-row {
+	position: relative;
+	clear: both;
+	display: flex;
+	justify-content: space-between;
+}
+
+.rsr-dual .dice-row .dice-row-item {
+	flex: 1;
+}
+
+.rsr-dual .tooltip.dice-row-item {
+	padding: 0px 4px 0px 4px;
+}
+
+.rsr-dual .dice-row .failure {
+	color: #aa0200;
+}
+
+.rsr-dual .dice-row .success {
+	color: #257f11;
+}
+
+.rsr-full .dice-roll .dice-row .dice-row-item.ignored {
+	opacity: .4;
+	border: 1px solid #888888;
+}
+
+.dnd5e.rsr-full.chat-card .dice-tooltip {
+	font-size:14px;
+}
+
+.rsr-dual .mixed {
+	color: #11257f;
+}
+
+.rsr-dual .die-icon {
+	background-image: url(../../../icons/svg/d20-grey.svg);
+	width: 22px;
+	line-height: 22px;
+	background-size: 22px;
+	background-repeat: no-repeat;
+	float: left;
+	font-weight: bold;
+	font-size: 13px;
+	text-align: center;
+	opacity: 0.95;
+
+	position: absolute;
+	top: 50%;
+	right: 5px;
+	transform: translate(0, -50%);
+}
+
+.rsr-dual .success .die-icon {
+	filter: sepia(0.5) hue-rotate(60deg);
+}
+
+.rsr-dual .failure .die-icon {
+	filter: sepia(0.5) hue-rotate(-60deg);
+}
+
+.br5e-roll-label {
+	text-align: center;
+	font-size: 12px;
+}
+
+.br5e-consume-box {
+	background: rgba(0, 0, 0, 0.05);
+	border: 1px solid #999;
+	border-radius: 4px;
+	box-shadow: 0 0 2px #fff inset;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+}
+
+.tidy5e .br5e-consume-box {
+	flex-direction: column;
+}
+
+.tidy5e .br5e-consume-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.br5e-consume-title {
+	padding-left: 6px;
+	font-size: 13px;
+}
+
+.rsr-full .br-flavor {
+	font-style: italic;
+}
+
+.rsr-full .inline {
+	display: inline;
+}
+
+.rsr-full .damage-type {
+	text-align: center;
+	font-size: 12px;
+}
+
+.rsr-full hr {
+	margin: 8px 0;
+	border-top: 1px dashed #b5b3a4;
+	border-bottom: 1px dashed #f0f0e0;
+}
+
+.dnd5e.rsr-full.chat-card footer.card-footer {
+	margin-top:2px;
+}
+
+.dnd5e.item form .item-rsr5e {
+	padding: 8px 8px 0;
+	overflow-y: auto;
+}
+
+.dnd5e.sheet.item .item-rsr5e input[type="text"],
+.dnd5e.sheet.item .item-rsr5e input[type="number"],
+.dnd5e.sheet.item .item-rsr5e select {
+	border: 1px solid #7a7971;
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.dnd5e.sheet.item .item-rsr5e label.checkbox {
+		display: inline-table;
+		padding: 0px 8px;
+}
+
+.card-buttons .adice5e.dmg.rolled {
+	display:inline-flex;
+	width:100%;
+	align-items:baseline;
+}
+
+.die-result-overlay-br {
+	text-align: right!important;
+	flex-grow: 1;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	padding: 0 2px;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	z-index: 1;
+}
+
+.die-result-overlay-br span {
+	display: flex;
+}
+
+.die-result-overlay-br button {
+	width: 20px;
+	height: 20px;
+	font-size: 10px;
+	line-height: 1px;
+	background-color: white;
+	border: 1px solid #999;
+	padding: 0;
+}
+
+.die-result-overlay-br button.icon {
+	background-size: 14px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.header-overlay-br {
+	left: auto;
+	justify-content: right;
+}
+
+.header-overlay-br button {
+	width: 30px;
+	height: 30px;
+	font-size: 14px;
+}
+
+.icon.heart-plus {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/heart-plus.svg");
+}
+
+.die-result-overlay-br button i {
+	margin: 0;
+}
+
+.better-npc-sheet .item.expanded .item-summary .item-buttons {
+	line-height: 22px;
+}
+
+.br5e-hidden {
+	display: none;
+}
