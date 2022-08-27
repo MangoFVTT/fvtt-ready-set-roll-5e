@@ -1,0 +1,25 @@
+<div class="dice-roll rsr-dual" data-id="{{id}}" data-rollState="{{rollState}}" data-type="{{rollType}}">
+    {{#if title}}
+    <div class="rsr5e-roll-label">{{title}}</div>
+    {{/if}}
+    <div class="dice-result">
+		<div class="dice-formula dice-tooltip">{{formula}}</div>
+		<div class="dice-row rsr-rolls">
+			{{#each tooltips}}
+			<div class="tooltip dual-left dice-row-item">{{{this}}}</div>
+			{{/each}}	
+		</div>
+		<div class="dice-row rsr-rolls">
+			{{#if bonusTooltip}}
+			<div class="tooltip dice-row-item">{{{bonusTooltip}}}</div>
+			{{/if}}	
+		</div>
+		<div class="dice-row rsr-totals">
+			{{#each entries}}
+			<h4 class="dice-total dice-row-item rsr-base-die{{#if this.ignored}} ignored{{/if}} {{this.critType}}">
+				{{this.total}}{{#if this.d20Result}}<span class="die-icon {{this.critType}}">{{this.d20Result}}</span>{{/if}}
+			</h4>
+			{{/each}}
+		</div>
+    </div>
+</div>
