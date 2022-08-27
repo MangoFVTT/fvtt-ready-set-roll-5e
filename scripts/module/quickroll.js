@@ -5,7 +5,7 @@ import { RenderUtility } from "../utils/render.js";
 let defaultParams = {
 	label: "",
 	forceCrit: false,
-    forceMultiroll: false,
+    forceMultiRoll: false,
 	preset: null,
 	properties: true,
 	slotLevel: null,
@@ -48,7 +48,7 @@ export class QuickRoll {
         this.properties = [];
 
 		this.isCrit = this.params.forceCrit || false;
-        this.isMultiroll = this.params.forceMultiroll || this.params.hasAdvantage || this.params.hasDisadvantage
+        this.isMultiRoll = this.params.forceMultiRoll || this.params.hasAdvantage || this.params.hasDisadvantage
 
 		this.processed = false;
 
@@ -116,7 +116,7 @@ export class QuickRoll {
                     actor: this.actor,
                     slotLevel: this.params.slotLevel,
                     isCrit: this.isCrit,
-                    isMultiroll: this.isMultiroll
+                    isMultiRoll: this.isMultiRoll
                 };
 
                 const render = await RenderUtility.renderFromField(field, metadata);

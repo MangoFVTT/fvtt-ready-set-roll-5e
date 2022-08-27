@@ -24,31 +24,37 @@ export class PatchingUtility {
         const itemPrototype = "CONFIG.Item.documentClass.prototype";
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
-            
+
         }
     }
 }
 
 async function actorRollSkill(original, skillId, options) {
     if (options?.chatMessage === false || options?.vanilla) {
-		return original.call(this, skillId, options);
-	}
+        return original.call(this, skillId, options);
+    }
 
-    const { advantage, disadvantage } = CoreUtility.eventToAdvantage(options.event);
+    const roll = await RollUtility.roll(original, options, skillId);
 
-    const roll = await original.call(this, skillId, {
-		...options,
-		fastForward: true,
-		chatMessage: false,
-        advantage: advantage,
-        disadvantage: disadvantage
-	});
-
-   return RollUtility.rollSkill(this, skillId, roll)
+    return RollUtility.rollSkill(this, skillId, roll);
 }
 
-function actorRollAbilityTest(original, ability, options) {
+async function actorRollAbilityTest(original, ability, options) {
+    if (options?.chatMessage === false || options?.vanilla) {
+        return original.call(this, ability, options);
+    }
+
+    const roll = await RollUtility.roll(original, options, ability);
+
+    return RollUtility.rollAbilityTest(this, ability, roll);
 }
 
-function actorRollAbilitySave(original, ability, options) {
+async function actorRollAbilitySave(original, ability, options) {
+    if (options?.chatMessage === false || options?.vanilla) {
+        return original.call(this, ability, options);
+    }
+
+    const roll = await RollUtility.roll(original, options, ability);
+
+    return RollUtility.rollAbilitySave(this, ability, roll);
 }
