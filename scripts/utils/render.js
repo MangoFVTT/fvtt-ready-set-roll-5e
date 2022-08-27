@@ -59,13 +59,13 @@ async function renderMultiRoll(renderData = {}) {
 
     const entries = [];
 
-    // Process bonuses beyond the d20s into a single roll.
+    // Process bonuses beyond the base d20s into a single roll.
     const bonusTerms = roll.terms.slice(1);
     const bonusRoll = bonusTerms ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
     for (let i = 0; i < d20Rolls.number; i++) {
-        // All results need to be active before creating a die term, otherwise the base roll total of the generated roll is 0.
+        // Must create a die term with active results, otherwise the base roll total of the generated roll is 0.
         let tmpResult = d20Rolls.results[i];
         tmpResult.active = true;
 
