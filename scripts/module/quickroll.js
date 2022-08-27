@@ -18,7 +18,7 @@ let defaultParams = {
 };
 
 /**
- * Class that builds html message data from provided metadata.
+ * Class that parses a base system roll into a module roll, with functionality for rendering to chat using custom module templates.
  */
 export class QuickRoll {
     /**
@@ -44,8 +44,8 @@ export class QuickRoll {
 		this.params = foundry.utils.mergeObject(foundry.utils.duplicate(defaultParams), params || {});		
 
 		this.fields = fields ?? []; // Where requested roll fields are stored, in the order they should be rendered.
-		this.templates = []; // Data results from fields, which get turned into templates.
-        this.properties = [];
+		this.templates = []; // Data results from fields, rendered into HTML templates.
+        this.properties = []; // Additional properties for the roll
 
 		this.isCrit = this.params.forceCrit || false;
         this.isMultiRoll = this.params.forceMultiRoll || this.params.hasAdvantage || this.params.hasDisadvantage
@@ -74,6 +74,14 @@ export class QuickRoll {
 		return this._actor;
 	}
 
+	/**
+	 * Creates and sends a chat message to all players (based on whisper config).
+	 * If not already rolled and rendered, roll() is called first.
+	 * @param {object} param0 Additional message options.
+	 * @param {string} param0.rollMode The message roll mode (private/public/blind/etc).
+	 * @param {string} param0.createMessage Immediately send the message to chat or only return data.
+	 * @returns {Promise<ChatMessage>} The created chat message data.
+	 */
     async toMessage({ rollMode = null, createMessage = true } = {}) {
 		const item = this.item;
 		const actor = this.actor;
@@ -103,8 +111,8 @@ export class QuickRoll {
 	}
 
     /**
-	 * Creates a chat message from templates generated for the provided fields.
-	 * @returns Rendered html chat data for the given fields.
+	 * Renders HTML templates for the provided fields and combines them into a card.
+	 * @returns Combined HTML chat data for all the roll fields.
 	 * @private
 	 */
 	async _render() {
@@ -138,7 +146,7 @@ export class QuickRoll {
 		});
 	}
 
-    	/**
+	/**
 	 * Allows this roll to be serialized into message flags.
 	 * @returns A set of flags to attach to the chat message.
 	 * @private
