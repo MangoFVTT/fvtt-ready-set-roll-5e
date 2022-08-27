@@ -43,7 +43,8 @@ export class RollUtility {
 
     static async rollAbilityTest(actor, ability, roll) {
         if (!(ability in CONFIG.DND5E.abilities)) {
-			LogUtility.logError(`Ability ${ability} does not exist. Valid values can be found in CONFIG.DND5E.abilities`);
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
+                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
 		}
 
@@ -54,7 +55,8 @@ export class RollUtility {
 
     static async rollAbilitySave(actor, ability, roll) {
         if (!(ability in CONFIG.DND5E.abilities)) {
-			LogUtility.logError(`Ability ${ability} does not exist. Valid values can be found in CONFIG.DND5E.abilities`);
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
+                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
 		}
 

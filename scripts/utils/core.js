@@ -64,7 +64,7 @@ export class CoreUtility {
      */
     static resolveActorOrItem(dataObject) {
 		if (!dataObject) {
-            LogUtility.logError("Cannot resolve a null data object as an Actor or an Item.");
+            LogUtility.logDebugError("Cannot resolve a null data object as an Actor or an Item.");
 			return {};
 		}
 
@@ -76,7 +76,7 @@ export class CoreUtility {
 			return { actor: dataObject };
 		}
 
-        LogUtility.logError("Failed to resolve data object as an Actor or an Item.");
+        LogUtility.logDebugError("Failed to resolve data object as an Actor or an Item.");
         return {};
 	}
 

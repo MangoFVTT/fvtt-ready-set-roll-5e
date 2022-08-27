@@ -21,11 +21,27 @@ export class LogUtility {
     }
 
     /**
+     * Sends an error log only to the console (for debug purposes).
+     * @param {string} logString The string to log as a debug error.
+     */
+    static logDebugError(logString) {
+        console.error(processLog(logString));
+    }
+
+    /**
      * Sends a warning log to the console and displays a warning UI notification.
      * @param {string} logString The string to log as a warning. 
      */
     static logWarning(logString) {
         ui.notifications.warn(processLog(logString));
+    }
+
+    /**
+     * Sends a warning log only to the console (for debug purposes).
+     * @param {string} logString The string to log as a debug warning. 
+     */
+    static logDebugWarning(logString) {        
+        console.warn(processLog(logString));
     }
 }
 
