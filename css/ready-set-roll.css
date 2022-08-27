@@ -80,12 +80,12 @@
 	filter: sepia(0.5) hue-rotate(-60deg);
 }
 
-.br5e-roll-label {
+.rsr5e-roll-label {
 	text-align: center;
 	font-size: 12px;
 }
 
-.br5e-consume-box {
+.rsr5e-consume-box {
 	background: rgba(0, 0, 0, 0.05);
 	border: 1px solid #999;
 	border-radius: 4px;
@@ -95,16 +95,16 @@
 	justify-content: space-between;
 }
 
-.tidy5e .br5e-consume-box {
+.tidy5e .rsr5e-consume-box {
 	flex-direction: column;
 }
 
-.tidy5e .br5e-consume-container {
+.tidy5e .rsr5e-consume-container {
 	display: flex;
 	flex-direction: row;
 }
 
-.br5e-consume-title {
+.rsr5e-consume-title {
 	padding-left: 6px;
 	font-size: 13px;
 }
@@ -214,6 +214,6 @@
 	line-height: 22px;
 }
 
-.br5e-hidden {
+.rsr5e-hidden {
 	display: none;
 }
