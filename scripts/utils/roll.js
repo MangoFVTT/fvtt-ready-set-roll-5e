@@ -4,12 +4,18 @@ import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { QuickRoll } from "../module/quickroll.js";
 
+/**
+ * A list of different roll types that can be made.
+ */
 export const ROLL_TYPE = {
     SKILL: "skill",
     ABILITY_TEST: "check",
     ABILITY_SAVE: "save",
 }
 
+/**
+ * A list of crit result types.
+ */
 export const CRIT_TYPE = {
     MIXED: "mixed",
     SUCCESS: "success",
@@ -17,6 +23,13 @@ export const CRIT_TYPE = {
 }
 
 export class RollUtility {
+    /**
+     * Makes a roll with advantage/disadvantage determined by pressed modifier keys in the triggering event.
+     * @param {Roll} roll The roll object to roll.
+     * @param {*} options Option data from the triggering event.
+     * @param {string} id The identifier of the roll (eg. ability name/skill name/etc).
+     * @returns {Promise<Roll>} The fast forwarded roll result.
+     */
     static async roll(roll, options, id) {
         const { advantage, disadvantage } = CoreUtility.eventToAdvantage(options.event);
 
@@ -29,6 +42,13 @@ export class RollUtility {
         })
     }
 
+    /**
+     * Rolls a skill check from a given actor.
+     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {string} skillId The id of the skill being rolled.
+     * @param {Roll} roll The roll object that was made for the check.
+     * @returns {Promise<QuickRoll>} The created quick roll.
+     */
     static async rollSkill(actor, skillId, roll) {
         if (!(skillId in CONFIG.DND5E.skills)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
@@ -41,6 +61,13 @@ export class RollUtility {
         return await getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
     }    
 
+    /**
+     * Rolls an ability test from a given actor.
+     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {string} ability The id of the ability being rolled.
+     * @param {Roll} roll The roll object that was made for the check.
+     * @returns {Promise<QuickRoll>} The created quick roll.
+     */
     static async rollAbilityTest(actor, ability, roll) {
         if (!(ability in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
@@ -53,12 +80,19 @@ export class RollUtility {
         return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
     }
 
+    /**
+     * Rolls an ability save from a given actor.
+     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {string} ability The id of the ability being rolled.
+     * @param {Roll} roll The roll object that was made for the check.
+     * @returns {Promise<QuickRoll>} The created quick roll.
+     */
     static async rollAbilitySave(actor, ability, roll) {
         if (!(ability in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
                 { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
-		}
+        }
 
         const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 

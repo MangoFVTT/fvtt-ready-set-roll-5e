@@ -1,13 +1,19 @@
-import { CoreUtility } from "./core.js";
 import { TEMPLATE } from "../module/templates.js"
 import { DEFAULT_IMG, MODULE_NAME } from "../module/const.js";
+import { CoreUtility } from "./core.js";
 import { RollUtility } from "./roll.js";
 
+/**
+ * A list of different field types that can be provided.
+ */
 export const FIELD_TYPE = {
     HEADER: 'header',
     CHECK: 'check'
 }
 
+/**
+ * Class that handles all rendering from provided fields into HTML data.
+ */
 export class RenderUtility {
     static async renderFromField(field, metadata) {
         let [fieldType, fieldData] = field;
@@ -54,7 +60,7 @@ function renderHeader(renderData = {}) {
 }
 
 async function renderMultiRoll(renderData = {}) {
-    const { id, roll, isMultiRoll } = renderData;
+    const { id, roll } = renderData;
     console.log(roll);
 
     const entries = [];
@@ -82,7 +88,7 @@ async function renderMultiRoll(renderData = {}) {
 		});
     }
 
-    // Generate tooltips
+    // Generate tooltips (the expandable dice roll information in a chat message)
     const tooltips = await Promise.all(entries.map(e => e.roll.getTooltip()));
     const bonusTooltip = await bonusRoll?.getTooltip();
 
