@@ -25,20 +25,20 @@ export const CRIT_TYPE = {
 export class RollUtility {
     /**
      * Makes a roll with advantage/disadvantage determined by pressed modifier keys in the triggering event.
-     * @param {Roll} roll The roll object to roll.
-     * @param {*} options Option data from the triggering event.
+     * @param {function} wrapper The roll wrapper to call.
+     * @param {any} options Option data for the triggering event.
      * @param {string} id The identifier of the roll (eg. ability name/skill name/etc).
-     * @returns {Promise<Roll>} The fast forwarded roll result.
+     * @param {boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
+     * @returns {Promise<Roll>} The roll result of the wrapper.
      */
-    static async roll(roll, options, id) {
-        const { advantage, disadvantage } = CoreUtility.eventToAdvantage(options.event);
+    static async rollWrapper(wrapper, options, id, bypass = false) {
+        const advMode = CoreUtility.eventToAdvantage(options.event);
 
-        return await roll.call(this, id, {
-            ...options,
-            fastForward: true,
-            chatMessage: false,
-            advantage: advantage,
-            disadvantage: disadvantage
+        return await wrapper.call(this, id, {
+            fastForward: !bypass,
+            chatMessage: bypass,
+            advantage: advMode > 0,
+            disadvantage: advMode < 0
         })
     }
 

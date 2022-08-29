@@ -31,30 +31,19 @@ export class CoreUtility {
     /**
      * Checks an event for advantage/disadvantage modifier keys.
      * @param {object} event Event data to check.
-     * @returns A tuple representing whether an advantage/disadvantage modifier is active. 
+     * @returns An advantage mode: -1 is disadvantage, 0 is normal, 1 is advantage. 
      */
     static eventToAdvantage(event = {}) {
         const mode = SettingsUtility.getSettingValue(SETTING_NAMES.ROLL_MODIFIER_MODE)
 
-        if (event.shiftKey) {
-            switch(mode) {
-                case 1:
-                    return { advantage: true, disadvantage: false };
-                case 2:
-                    return { advantage: false, disadvantage: true };
-            }            
+        switch(mode) {
+            case 1:
+                return event.shiftKey ? 1 : (event.ctrlKey || event.metaKey ? -1 : 0);
+            case 2:
+                return event.shiftKey ? -1 : (event.ctrlKey || event.metaKey ? 1 : 0);
+            default:
+                return 0;
         }
-        
-        if (event.ctrlKey || event.metaKey) {
-            switch(mode) {
-                case 1:
-                    return { advantage: false, disadvantage: true };
-                case 2:
-                    return { advantage: true, disadvantage: false };
-            }   
-        }
-
-        return { advantage: false, disadvantage: false };
     }
 
     /**

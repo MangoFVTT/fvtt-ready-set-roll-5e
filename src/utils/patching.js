@@ -30,34 +30,32 @@ export class PatchingUtility {
     }
 }
 
-async function actorRollSkill(original, skillId, options) {
+async function actorProcessWrapper(original, options, id) {
     if (options?.chatMessage === false || options?.vanilla) {
-        return original.call(this, skillId, options);
+        return { roll: original.call(this, skillId, options), ignore: true };
     }
 
-    const roll = await RollUtility.roll(original, options, skillId);
+    // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
+    const ignore = options.event.altKey ?? false;
+    return { roll: await RollUtility.rollWrapper(original, options, id, ignore), ignore };
+}
 
-    return RollUtility.rollSkill(this, skillId, roll);
+async function actorRollSkill(original, skillId, options) {
+    const { roll, ignore } = await actorProcessWrapper(original, options, skillId);
+
+    return ignore ? roll : RollUtility.rollSkill(this, skillId, roll);
 }
 
 async function actorRollAbilityTest(original, ability, options) {
-    if (options?.chatMessage === false || options?.vanilla) {
-        return original.call(this, ability, options);
-    }
+    const { roll, ignore } = await actorProcessWrapper(original, options, ability);
 
-    const roll = await RollUtility.roll(original, options, ability);
-
-    return RollUtility.rollAbilityTest(this, ability, roll);
+    return ignore ? roll : RollUtility.rollAbilityTest(this, ability, roll);
 }
 
 async function actorRollAbilitySave(original, ability, options) {
-    if (options?.chatMessage === false || options?.vanilla) {
-        return original.call(this, ability, options);
-    }
+    const { roll, ignore } = await actorProcessWrapper(original, options, ability);
 
-    const roll = await RollUtility.roll(original, options, ability);
-
-    return RollUtility.rollAbilitySave(this, ability, roll);
+    return ignore ? roll : RollUtility.rollAbilitySave(this, ability, roll);
 }
 
 async function itemRoll(defaultRoll, options) {
