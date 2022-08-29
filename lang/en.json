@@ -2,17 +2,17 @@
     "rsr5e": {
         "settings": {
             "enableAbilityQuickRoll.name": "Enable Quick Roll for Abilities",
-            "enableAbilityQuickRoll.hint": "When clicking on an ability check or saving throw, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
+            "enableAbilityQuickRoll.hint": "When clicking on an ability check or saving throw, quick roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding Alt when clicking.",
             "enableSkillQuickRoll.name": "Enable Quick Roll for Skills",
-            "enableSkillQuickRoll.hint": "When clicking on a skill check, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
+            "enableSkillQuickRoll.hint": "When clicking on a skill check, automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableItemQuickRoll.name": "Enable Quick Roll for Items",
-            "enableItemQuickRoll.hint": "When clicking on an item, spell, or feature, automatically roll to chat instead of using the normal chat output. Can be bypassed by holding Alt when clicking.",
-            "enableAltQuickRoll.name": "Enable Alternate Quick Roll for Items",
-            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different automatic roll which can be configured separately per item. Overwrites ability to bypass quick roll with default chat output.",
+            "enableItemQuickRoll.hint": "When clicking on an item, spell, or feature, automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
+            "enableAltQuickRoll.name": "Enable Alternate Roll for Items",
+            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately per item. Replaces the ability to bypass quick rolling for items.",
             "rollModifierMode.name": "Roll Modifier Keys",
 	        "rollModifierMode.hint": "Determines which keys to use to modify quick rolls to have advantage or disadvantage. This has no effect if quick rolls are disabled.",
             "defaultRollArt.name": "Quick Roll Image Used",
-            "defaultRollArt.hint": "Determines which art is used by default for ability checks and saving throws for an actor. If this is not available (or is the default mystery man icon), it will use the other icon instead."
+            "defaultRollArt.hint": "Determines which art is used by default for ability checks and saving throws for an actor. If this is not available, the other icon will be used instead."
         },
         "messages": {
             "error": {

@@ -42,6 +42,15 @@ export class SettingsUtility {
             default: true,
         });
 
+        game.settings.register(MODULE_NAME, SETTING_NAMES.ALT_ROLL_ENABLED, {
+            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALT_ROLL_ENABLED}.name`),
+            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALT_ROLL_ENABLED}.hint`),
+            scope: "world",
+            config: true,
+            type: Boolean,
+            default: false,
+        });
+
         game.settings.register(MODULE_NAME, SETTING_NAMES.ROLL_MODIFIER_MODE, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ROLL_MODIFIER_MODE}.name`),
 			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ROLL_MODIFIER_MODE}.hint`),
@@ -54,15 +63,6 @@ export class SettingsUtility {
 				2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.ROLL_MODIFIER_MODE}.ctrlAdv`)
 			}
 		});
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.ALT_ROLL_ENABLED, {
-            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALT_ROLL_ENABLED}.name`),
-            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALT_ROLL_ENABLED}.hint`),
-            scope: "world",
-            config: true,
-            type: Boolean,
-            default: false,
-        });
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.DEFAULT_ROLL_ART, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DEFAULT_ROLL_ART}.name`),
