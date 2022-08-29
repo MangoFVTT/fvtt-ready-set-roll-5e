@@ -23,9 +23,9 @@ export class PatchingUtility {
         const itemPrototype = "CONFIG.Item.documentClass.prototype";
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
-            libWrapper.register(MODULE_NAME, `${itemPrototype}.roll`, itemRoll, "OVERRIDE", {chain: true});
-            libWrapper.register(MODULE_NAME, `${itemPrototype}.rollAttack`, itemRollAttack, "OVERRIDE", {chain: true});
-            libWrapper.register(MODULE_NAME, `${itemPrototype}.rollToolCheck`, itemRollToolCheck, "OVERRIDE", {chain: true});
+            libWrapper.register(MODULE_NAME, `${itemPrototype}.roll`, itemRoll, "OVERRIDE");
+            libWrapper.register(MODULE_NAME, `${itemPrototype}.rollAttack`, itemRollAttack, "OVERRIDE");
+            libWrapper.register(MODULE_NAME, `${itemPrototype}.rollToolCheck`, itemRollToolCheck, "OVERRIDE");
         }
     }
 }
@@ -36,7 +36,7 @@ async function actorProcessWrapper(original, options, id) {
     }
 
     // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
-    const ignore = options.event.altKey ?? false;
+    const ignore = options?.event?.altKey ?? false;
     return { roll: await RollUtility.rollWrapper(original, options, id, ignore), ignore };
 }
 
