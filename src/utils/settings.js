@@ -22,6 +22,7 @@ export class SettingsUtility {
             config: true,
             type: Boolean,
             default: true,
+            requiresReload: true
         });
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.QUICK_SKILL_ENABLED, {
@@ -31,6 +32,7 @@ export class SettingsUtility {
             config: true,
             type: Boolean,
             default: true,
+            requiresReload: true
         });
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.QUICK_ITEM_ENABLED, {
@@ -40,6 +42,7 @@ export class SettingsUtility {
             config: true,
             type: Boolean,
             default: true,
+            requiresReload: true
         });
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.ALT_ROLL_ENABLED, {

@@ -23,7 +23,9 @@ export class PatchingUtility {
         const itemPrototype = "CONFIG.Item.documentClass.prototype";
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
-
+            libWrapper.register(MODULE_NAME, `${itemPrototype}.roll`, itemRoll, "OVERRIDE", {chain: true});
+            libWrapper.register(MODULE_NAME, `${itemPrototype}.rollAttack`, itemRollAttack, "OVERRIDE", {chain: true});
+            libWrapper.register(MODULE_NAME, `${itemPrototype}.rollToolCheck`, itemRollToolCheck, "OVERRIDE", {chain: true});
         }
     }
 }
@@ -56,4 +58,16 @@ async function actorRollAbilitySave(original, ability, options) {
     const roll = await RollUtility.roll(original, options, ability);
 
     return RollUtility.rollAbilitySave(this, ability, roll);
+}
+
+async function itemRoll(defaultRoll, options) {
+    console.log("item roll");
+}
+
+async function itemRollAttack(defaultRoll, options) {
+    console.log("item attack");
+}
+
+async function itemRollToolCheck(defaultRoll, options) {
+    console.log("item tool");
 }

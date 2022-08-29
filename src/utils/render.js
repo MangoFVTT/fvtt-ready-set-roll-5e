@@ -61,8 +61,6 @@ function renderHeader(renderData = {}) {
 
 async function renderMultiRoll(renderData = {}) {
     const { id, roll } = renderData;
-    console.log(roll);
-
     const entries = [];
 
     // Process bonuses beyond the base d20s into a single roll.
