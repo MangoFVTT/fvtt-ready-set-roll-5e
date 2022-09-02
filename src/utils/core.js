@@ -31,19 +31,30 @@ export class CoreUtility {
     /**
      * Checks an event for advantage/disadvantage modifier keys.
      * @param {object} event Event data to check.
-     * @returns An advantage mode: -1 is disadvantage, 0 is normal, 1 is advantage. 
+     * @returns {number} An advantage mode: -1 is disadvantage, 0 is normal, 1 is advantage. 
      */
     static eventToAdvantage(event = {}) {
-        const mode = SettingsUtility.getSettingValue(SETTING_NAMES.ROLL_MODIFIER_MODE)
+        const mode = SettingsUtility.getSettingValue(SETTING_NAMES.ROLL_MODIFIER_MODE);
 
         switch(mode) {
-            case 1:
+            case 0:
                 return event.shiftKey ? 1 : (event.ctrlKey || event.metaKey ? -1 : 0);
-            case 2:
+            case 1:
                 return event.shiftKey ? -1 : (event.ctrlKey || event.metaKey ? 1 : 0);
             default:
                 return 0;
         }
+    }
+
+    /**
+     * Checks an event for alternate roll modifier key (if the relevant setting is enabled).
+     * @param {object} event Event data to check.
+     * @returns {boolean} If the roll should be an alternate one. 
+     */
+    static eventToAltRoll(event = {}) {
+        const altRollEnabled = SettingsUtility.getSettingValue(SETTING_NAMES.ALT_ROLL_ENABLED);
+
+        return event.altKey && altRollEnabled;
     }
 
     /**

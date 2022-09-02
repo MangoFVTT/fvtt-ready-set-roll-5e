@@ -6,32 +6,65 @@
             "enableSkillQuickRoll.name": "Enable Quick Roll for Skills",
             "enableSkillQuickRoll.hint": "When clicking on a skill check, automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableItemQuickRoll.name": "Enable Quick Roll for Items",
-            "enableItemQuickRoll.hint": "When clicking on an item, spell, or feature, automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
+            "enableItemQuickRoll.hint": "When clicking on an item's image (weapons, spells, features, etc.), automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Roll for Items",
             "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately per item. Replaces the ability to bypass quick rolling for items.",
+            "d20IconsEnabled.name": "Show D20 Rolls for Quick Rolls",
+            "d20IconsEnabled.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
             "rollModifierMode.name": "Roll Modifier Keys",
 	        "rollModifierMode.hint": "Determines which keys to use to modify quick rolls with advantage or disadvantage. This has no effect if quick rolls are disabled.",
             "defaultRollArt.name": "Quick Roll Image Used",
-            "defaultRollArt.hint": "Determines which art is used by default for ability checks and saving throws for an actor. If this is not available, the other icon will be used instead."
+            "defaultRollArt.hint": "Determines which art is used by default for ability checks and saving throws for an actor. If this is not available, the other icon will be used instead.",
+            "placementRollTitle.name": "Show Roll Title Labels",
+            "placementRollTitle.hint": "Determines if and where a non-damage roll's title, such as \"Attack\", appears.",
+            "placementDamageTitle.name": "Show Damage Title Labels",
+            "placementDamageTitle.hint": "Determines if and where a damage roll's title, such as \"Damage\", appears.",
+            "placementDamageContext.name": "Show Damage Context Labels",
+            "placementDamageContext.hint": "Determines if and where a damage roll's context label appears.",
+            "placementDamageType.name": "Show Damage Type Labels",
+            "placementDamageType.hint": "Determines where the damage type label is placed, relative to a damage roll.",
+            "contextReplacesTitle.name": "Context Replaces Title Label",
+            "contextReplacesTitle.hint": "If a context label is in the same place as a damage roll's title label, such as \"Damage\" or \"Healing\", it will replace it.",
+            "contextReplacesDamage.name": "Context Replaces Damage Type",
+            "contextReplacesDamage.hint": "If a context label is in the same place as a damage type label, it will replace it.",
+            "hideSaveDC.name": "Hide Save DCs",
+            "hideSaveDC.hint": "Determines if the DC is hidden on save DC buttons for quick rolls.",
+            "hideSaveDC.replacement": "??"
         },
         "messages": {
             "error": {
                 "libWrapperMinVersion": "This module requires libWrapper version {version} or newer.",
-                "labelNotInDictionary": "{type} '{label}' does not exist. Valid values can be found in {dictionary}."
+                "labelNotInDictionary": "{type} '{label}' does not exist. Valid values can be found in {dictionary}.",
+                "objectNotExpectedType": "Data object did not match the expected type. Expected type '{type}'.",
+                "incorrectRollType": "Cannot roll an {function} roll for roll type '{type}'."
             }
         },
         "choices": {
             "rollModifierMode": {
                 "shiftAdv": "Shift ➔ Advantage, Ctrl/Cmd ➔ Disadvantage",                
                 "ctrlAdv": "Ctrl/Cmd ➔ Advantage, Shift ➔ Disadvantage"
-            }            
+            },
+            "placement": {
+                "0": "Don't Show",
+                "1": "Above",
+                "2": "Below & Inside",
+                "3": "Below & Outside"
+            },
+            "hideSaveDC": {
+                "0": "Never",
+                "1": "NPCs Only",
+                "2": "Always"
+            }   
         },
         "chat": {
             "attack": "Attack",
             "check": "Check",
             "save": "Save",
+            "saveDC": "Save vs DC",
             "damage": "Damage",
-            "healing": "Healing"
+            "healing": "Healing",
+            "crit": "Crit",
+            "other": "Other"
         }
     }
 }

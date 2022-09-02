@@ -5,15 +5,12 @@ import { RenderUtility } from "../utils/render.js";
 let defaultParams = {
 	label: "",
 	forceCrit: false,
+	forceFumble: false,
     forceMultiRoll: false,
 	preset: null,
 	properties: true,
-	slotLevel: null,
-	useCharge: {},
-	placeTemplate: false,
 	hasAdvantage: false,
 	hasDisadvantage: false,
-	consume: true,
 	infoOnly: false,
 };
 
@@ -45,14 +42,13 @@ export class QuickRoll {
 
 		this.fields = fields ?? []; // Where requested roll fields are stored, in the order they should be rendered.
 		this.templates = []; // Data results from fields, rendered into HTML templates.
-        this.properties = []; // Additional properties for the roll
+        this.properties = []; // Properties for the roll, shown in the card footer.
 
-		this.isCrit = this.params.forceCrit || false;
+		this.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
+		this.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
         this.isMultiRoll = this.params.forceMultiRoll || this.params.hasAdvantage || this.params.hasDisadvantage
 
 		this.processed = false;
-
-		console.log(this);
 	}
 
 	set item(item) {
@@ -76,7 +72,6 @@ export class QuickRoll {
 
 	/**
 	 * Creates and sends a chat message to all players (based on whisper config).
-	 * If not already rolled and rendered, roll() is called first.
 	 * @param {object} param0 Additional message options.
 	 * @param {string} param0.rollMode The message roll mode (private/public/blind/etc).
 	 * @param {string} param0.createMessage Immediately send the message to chat or only return data.
@@ -122,7 +117,6 @@ export class QuickRoll {
                     id: this._currentId++,
                     item: this.item,
                     actor: this.actor,
-                    slotLevel: this.params.slotLevel,
                     isCrit: this.isCrit,
                     isMultiRoll: this.isMultiRoll
                 };
@@ -141,7 +135,6 @@ export class QuickRoll {
 			actor: this.actor,
 			tokenId: this.tokenId,
 			isCritical: this.isCrit,
-			properties: this.properties,
 			templates: this.templates
 		});
 	}
@@ -168,6 +161,7 @@ export class QuickRoll {
 				itemId: this.itemId,
 				tokenId: this.tokenId,
 				isCrit: this.isCrit,
+				isFumble: this.isFumble,
 				properties: this.properties,
 				params: this.params,
 				fields

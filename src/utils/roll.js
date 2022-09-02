@@ -3,6 +3,7 @@ import { FIELD_TYPE } from "./render.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { QuickRoll } from "../module/quickroll.js";
+import { ItemUtility, ITEM_TYPE } from "./item.js";
 
 /**
  * A list of different roll types that can be made.
@@ -11,6 +12,11 @@ export const ROLL_TYPE = {
     SKILL: "skill",
     ABILITY_TEST: "check",
     ABILITY_SAVE: "save",
+    ITEM: "item",
+    ATTACK: "attack",
+    DAMAGE: "damage",
+    HEALING: "healing",
+    OTHER: "other"
 }
 
 /**
@@ -22,24 +28,50 @@ export const CRIT_TYPE = {
     FAILURE: "failure"
 }
 
+/**
+ * Utility class for functions related to making specific rolls.
+ */
 export class RollUtility {
     /**
-     * Makes a roll with advantage/disadvantage determined by pressed modifier keys in the triggering event.
+     * Calls the wrapped Actor roll with advantage/disadvantage determined by pressed modifier keys in the triggering event.
+     * @param {Actor} caller The calling object of the wrapper.
      * @param {function} wrapper The roll wrapper to call.
      * @param {any} options Option data for the triggering event.
      * @param {string} id The identifier of the roll (eg. ability name/skill name/etc).
      * @param {boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<Roll>} The roll result of the wrapper.
      */
-    static async rollWrapper(wrapper, options, id, bypass = false) {
+    static async rollActorWrapper(caller, wrapper, options, id, bypass = false) {
         const advMode = CoreUtility.eventToAdvantage(options.event);
 
-        return await wrapper.call(this, id, {
+        return await wrapper.call(caller, id, {
             fastForward: !bypass,
             chatMessage: bypass,
             advantage: advMode > 0,
             disadvantage: advMode < 0
-        })
+        });
+    }
+
+    /**
+     * Calls the wrapped Item roll with advantage/disadvantage/alternate determined by pressed modifier keys in the triggering event.
+     * @param {Item} caller The calling object of the wrapper.
+     * @param {function} wrapper The roll wrapper to call.
+     * @param {any} options Option data for the triggering event.
+     * @param {string} id The identifier of the roll (eg. ability name/skill name/etc).
+     * @param {boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
+     * @returns {Promise<ChatData>} The roll result of the wrapper.
+     */
+    static async rollItemWrapper(caller, wrapper, config, options, bypass = false) {
+        const isAltRoll = CoreUtility.eventToAltRoll(options?.event);
+        const advMode = CoreUtility.eventToAdvantage(options?.event);
+
+        return await wrapper.call(caller, config, {
+            configureDialog: caller?.type === ITEM_TYPE.SPELL ? true : false,
+            createMessage: bypass,
+            advMode,
+            isAltRoll,
+            spellLevel: caller?.system?.level
+        });
     }
 
     /**
@@ -56,7 +88,8 @@ export class RollUtility {
             return null;
 		}
 
-        const title = CoreUtility.localize(CONFIG.DND5E.skills[skillId]);
+        const skill = CONFIG.DND5E.skills[skillId];
+        const title = `${CoreUtility.localize(skill.label)} (${CONFIG.DND5E.abilities[skill.ability]})`;
 
         return await getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
     }    
@@ -99,6 +132,16 @@ export class RollUtility {
         return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
     }
 
+    static async rollItem(item, params) {
+        if (params)
+        {
+            params.slotLevel = item.system.level;
+            item.system.level = params.spellLevel ?? item.system.level;
+        }
+
+        return await getItemRoll(item, params, ROLL_TYPE.ITEM)
+    }
+
     /**
      * Processes a set of dice results to check what type of critical was rolled (for showing colour in chat card).
      * @param {Die} die A die term to process into a crit type.
@@ -106,34 +149,35 @@ export class RollUtility {
      * @param {*} fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
-    static getCritType(die, critThreshold, fumbleThreshold) {
+    static getCritTypeForDie(die, critThreshold, fumbleThreshold) {
         if (!die) return null;
 
-		let crit = 0;
-		let fumble = 0;
+        const { crit, fumble } = countCritsFumbles(die, critThreshold, fumbleThreshold)		
 
-        if (die.faces > 1) {
-            for (const result of die.results) {
-                if (result.result >= (critThreshold || die.faces)) {
-                    crit += 1;
-                } else if (result.result <= (fumbleThreshold || 1)) {
-                    fumble += 1;
-                }
-            }
-        }
-
-		if (crit > 0 && fumble > 0) {
-			return CRIT_TYPE.MIXED;
-		}
-        
-        if (crit > 0) {
-			return CRIT_TYPE.SUCCESS;
-		}
-        
-        if (fumble > 0) {
-			return CRIT_TYPE.FAILURE;
-		}
+        return getCritResult(crit, fumble);
     }
+
+    /**
+     * Processes a set of dice results to check what type of critical was rolled (for showing colour in chat card).
+     * @param {Roll} roll A die term to process into a crit type.
+     * @param {*} critThreshold The threshold above which a result is considered a crit.
+     * @param {*} fumbleThreshold The threshold below which a result is considered a crit.
+     * @returns {CRIT_TYPE} The type of crit for the die term.
+     */
+    static getCritTypeForRoll(roll, critThreshold, fumbleThreshold) {
+        if (!roll) return null;
+
+		let totalCrit = 0;
+		let totalFumble = 0;
+
+        for (const die of roll.dice) {			
+            const { crit, fumble } = countCritsFumbles(die, critThreshold, fumbleThreshold)
+            totalCrit += crit;
+            totalFumble += fumble;
+		}
+
+        return getCritResult(totalCrit, totalFumble);
+    }    
 }
 
 /**
@@ -146,14 +190,24 @@ export class RollUtility {
  * @returns {Promise<QuickRoll>} The created actor quick roll.
  */
 async function getActorRoll(actor, title, roll, rollType, createMessage = true) {
-    const hasAdvantage = roll.hasAdvantage;
-    const hasDisadvantage = roll.hasDisadvantage;
-    
-    console.log(roll);
+    if (!actor instanceof Actor) {
+        LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Actor" }));
+        return null;
+    }
+
+    if (rollType !== ROLL_TYPE.SKILL && rollType !== ROLL_TYPE.ABILITY_SAVE && rollType !== ROLL_TYPE.ABILITY_TEST) {
+        LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectRollType`, { function: "Actor", type: rollType }));
+        return null;
+    }
 
     const quickroll = new QuickRoll(
         actor,
-        { hasAdvantage, hasDisadvantage },
+        { 
+            hasAdvantage: roll.hasAdvantage,
+            hasDisadvantage: roll.hasDisadvantage,
+            isCrit: roll.isCritical,
+            isFumble: roll.isFumble
+        },
         [
             [FIELD_TYPE.HEADER, { title }],
             [FIELD_TYPE.CHECK, { roll, rollType }]
@@ -162,4 +216,64 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
 
     await quickroll.toMessage({ createMessage });
     return quickroll;
+}
+
+async function getItemRoll(item, params, rollType, createMessage = true) {
+    if (!item instanceof Item) {
+        LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Item" }));
+        return null;
+    }
+
+    if (rollType !== ROLL_TYPE.ITEM) {
+        LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectRollType`, { function: "Item", type: rollType }));
+        return null;
+    }
+
+    const quickroll = new QuickRoll(
+        item,
+        { 
+            hasAdvantage: params?.advMode > 0 ?? false,
+            hasDisadvantage: params?.advMode < 0 ?? false
+        },
+        [
+            [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
+            ...await ItemUtility.getFieldsFromItem(item, params)
+        ]
+    );
+
+    await quickroll.toMessage({ createMessage });
+    return quickroll;
+}
+
+function getCritResult(crit, fumble)
+{
+    if (crit > 0 && fumble > 0) {
+        return CRIT_TYPE.MIXED;
+    }
+    
+    if (crit > 0) {
+        return CRIT_TYPE.SUCCESS;
+    }
+    
+    if (fumble > 0) {
+        return CRIT_TYPE.FAILURE;
+    }
+}
+
+function countCritsFumbles(die, critThreshold, fumbleThreshold)
+{
+    let crit = 0;
+    let fumble = 0;
+
+    if (die.faces > 1) {
+        for (const result of die.results) {
+            if (result.result >= (critThreshold || die.faces)) {
+                crit += 1;
+            } else if (result.result <= (fumbleThreshold || 1)) {
+                fumble += 1;
+            }
+        }
+    }
+
+    return { crit, fumble }
 }
