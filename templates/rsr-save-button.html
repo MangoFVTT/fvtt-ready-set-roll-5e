@@ -1,0 +1,8 @@
+<div class="card-buttons rsr-card-buttons" data-id="{{id}}">
+    <button data-action="save" data-ability="{{ability}}">
+        {{ abilityLabel }}
+        {{ localize "rsr5e.chat.saveDC" }}
+        <span {{#if hideDC}}class="hideSave"{{/if}} style="display:inline;line-height:inherit;">{{dc}}</span>        
+        {{#if context}}[{{ context }}]{{/if}}
+    </button>
+</div>

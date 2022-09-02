@@ -1,0 +1,26 @@
+<div class="dice-roll rsr-dual" data-id="{{id}}" {{#if group}}data-group="{{group}}"{{/if}} data-type="{{damageRollType}}">
+    {{#if damagetop}}
+    <div class="rsr5e-roll-label">{{damagetop}}</div>
+    {{/if}}
+    <div class="dice-result">
+		<div class="dice-formula dice-tooltip">{{formula}}</div>
+		<div class="dice-row tooltips">
+			{{#each tooltips}}
+				<div class="tooltip dual-left dice-row-item">{{{this}}}</div>
+			{{/each}}
+		</div>
+		<div class="dice-row">
+			<h4 class="dice-total dice-row-item rsr-damage" data-damageType="{{damageType}}">
+				{{#if base}}
+				<div class="rsr-base-die inline rsr-base-damage {{base.critType}}" data-value="{{base.total}}">{{base.total}}</div>
+				{{/if}}
+				{{#if crit}}
+					{{#if base}}+ {{/if}}<div class="rsr-extra-die inline rsr-crit-damage {{crit.critType}}" data-value="{{crit.total}}">{{crit.total}}</div>
+					{{#if crittext}}<div class="inline rsr5e-roll-label">{{crittext}}</div>{{/if}}
+				{{/if}}
+				{{#if damagemid}}<div class="damage-type" style="line-height:12px">{{damagemid}}</div>{{/if}}
+			</h4>
+		</div>
+		{{#if damagebottom}}<div class="damage-type">{{damagebottom}}</div>{{/if}}
+    </div>
+</div>
