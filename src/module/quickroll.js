@@ -1,5 +1,5 @@
 import { CoreUtility } from "../utils/core.js";
-import { HOOK_CHAT_MESSAGE, HOOK_RENDER } from "../utils/hooks.js";
+import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
 import { RenderUtility } from "../utils/render.js";
 
 let defaultParams = {
@@ -125,6 +125,7 @@ export class QuickRoll {
                 this.templates.push(render);
             }
 
+			await Hooks.callAll(HOOK_PROCESSED_ROLL, this);
             this.processed = true;
         }
 

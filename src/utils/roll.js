@@ -82,6 +82,8 @@ export class RollUtility {
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
     static async rollSkill(actor, skillId, roll) {
+        LogUtility.log(`Quick rolling skill check from Actor '${actor.name}'`);
+
         if (!(skillId in CONFIG.DND5E.skills)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
                 { type: "Skill", label: skillId, dictionary: "CONFIG.DND5E.skills" }));
@@ -102,6 +104,8 @@ export class RollUtility {
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
     static async rollAbilityTest(actor, ability, roll) {
+        LogUtility.log(`Quick rolling ability test from Actor '${actor.name}'`);
+
         if (!(ability in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
                 { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
@@ -121,6 +125,8 @@ export class RollUtility {
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
     static async rollAbilitySave(actor, ability, roll) {
+        LogUtility.log(`Quick rolling ability save from Actor '${actor.name}'`);
+
         if (!(ability in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
                 { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
@@ -133,6 +139,8 @@ export class RollUtility {
     }
 
     static async rollItem(item, params) {
+        LogUtility.log(`Quick rolling Item '${item.name}'`);
+
         if (params)
         {
             params.slotLevel = item.system.level;
