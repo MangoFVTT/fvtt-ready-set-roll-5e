@@ -16,7 +16,7 @@ export const ITEM_TYPE = {
 }
 
 export class ItemUtility {
-    static async getFieldsFromItem(item, params) {        
+    static async getFieldsFromItem(item, params) {
         //console.log(this.rollAttack());
         //console.log(this.rollDamage());
         //console.log(this.rollFormula());
@@ -35,21 +35,21 @@ export class ItemUtility {
                     content: chatData.chatFlavor,
                     isFlavor: true
                 }
-            ]);            
+            ]);
         }
 
         if (chatData.description && chatData.description.value !== "" && chatData.description.value !== "<p></p>") {
             fields.push([
                 FIELD_TYPE.DESCRIPTION,
                 {
-                    content:chatData.description.value,
+                    content: chatData.description.value,
                     isFlavor: false
                 }
             ]);
         }
 
         if (item.hasAttack) {
-            const roll = await item.rollAttack({ 
+            const roll = await item.rollAttack({
                 fastForward: true,
                 chatMessage: false,
                 advantage: params?.advMode > 0 ?? false,
@@ -63,7 +63,7 @@ export class ItemUtility {
                 {
                     roll,
                     rollType: ROLL_TYPE.ATTACK,
-                    consume: ItemUtility.getConsumeFromItem(item)        
+                    consume: ItemUtility.getConsumeFromItem(item)
                 }
             ]);
         }
@@ -95,7 +95,7 @@ export class ItemUtility {
             let damageTermGroups = [];
             item.system.damage.parts.forEach(part => {
                 const tmpRoll = new Roll(part[0]);
-                damageTermGroups.push({type: part[1], terms: roll.terms.splice(0, tmpRoll.terms.length)});
+                damageTermGroups.push({ type: part[1], terms: roll.terms.splice(0, tmpRoll.terms.length) });
                 roll.terms.shift();
             });
 
@@ -105,18 +105,26 @@ export class ItemUtility {
                 const group = damageTermGroups[i];
 
                 const baseRoll = Roll.fromTerms(group.terms);
+                console.log(baseRoll);
+                console.log(group.terms);
 
                 let critRoll = null;
                 if (rollCrit) {
                     const critTerms = roll.options.multiplyNumeric ? group.terms : group.terms.filter(t => !(t instanceof NumericTerm));
-
                     const firstDie = critTerms.find(t => t instanceof Die);
-                    if (i === 0 && firstDie)
-                    {
-                       firstDie.number += roll.options.criticalBonusDice ?? 0;
+
+                    if (i === 0 && firstDie) {
+                        critTerms[critTerms.indexOf(firstDie)] = new Die({
+                            number: firstDie.number + roll.options.criticalBonusDice ?? 0,
+                            faces: firstDie.faces,
+                            results: firstDie.results
+                        });
                     }
 
-                    critRoll = await Roll.fromTerms(critTerms).reroll({ maximize: roll.options.powerfulCritical, async: true });
+                    critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
+                        maximize: roll.options.powerfulCritical,
+                        async: true
+                    });
                 }
 
                 fields.push([
@@ -145,10 +153,10 @@ export class ItemUtility {
                     versatile: false
                 }
             ]);
-        } 
+        }
 
         if (item.type === ITEM_TYPE.TOOL) {
-            const roll = await item.rollToolCheck({ 
+            const roll = await item.rollToolCheck({
                 fastForward: true,
                 chatMessage: false,
                 advantage: params?.advMode > 0 ?? false,
@@ -159,7 +167,7 @@ export class ItemUtility {
                 FIELD_TYPE.CHECK,
                 {
                     roll,
-                    rollType: ROLL_TYPE.ITEM   
+                    rollType: ROLL_TYPE.ITEM
                 }
             ]);
         }
