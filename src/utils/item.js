@@ -17,10 +17,6 @@ export const ITEM_TYPE = {
 
 export class ItemUtility {
     static async getFieldsFromItem(item, params) {
-        //console.log(this.rollAttack());
-        //console.log(this.rollDamage());
-        //console.log(this.rollFormula());
-        //console.log(this.rollToolCheck);
         let fields = [];
         let rollCrit = false;
 
@@ -103,10 +99,7 @@ export class ItemUtility {
 
             for (let i = 0; i < damageTermGroups.length; i++) {
                 const group = damageTermGroups[i];
-
                 const baseRoll = Roll.fromTerms(group.terms);
-                console.log(baseRoll);
-                console.log(group.terms);
 
                 let critRoll = null;
                 if (rollCrit) {
