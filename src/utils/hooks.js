@@ -2,8 +2,10 @@ import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
 import { PatchingUtility } from "./patching.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
-import { SettingsUtility, SETTING_NAMES } from "./settings.js";
+import { SettingsUtility } from "./settings.js";
 import { RollUtility } from "./roll.js";
+import { SheetUtility } from "./sheet.js";
+import { ItemUtility } from "./item.js";
 
 export const HOOK_LOADED = `${MODULE_SHORT}Loaded`;
 export const HOOK_CHAT_MESSAGE = `${MODULE_SHORT}ChatMessage`;
@@ -27,6 +29,7 @@ export class HooksUtility {
             SettingsUtility.registerSettings();
             PatchingUtility.patchActors();
             PatchingUtility.patchItems();
+            PatchingUtility.patchItemSheets();
         });
 
         Hooks.on("ready", () => {
@@ -35,18 +38,35 @@ export class HooksUtility {
 
         Hooks.on(HOOK_LOADED, () => {          
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
+            CONFIG.rsr5e.combinedDamageTypes = foundry.utils.mergeObject(
+                CONFIG.DND5E.damageTypes,
+                CONFIG.DND5E.healingTypes,
+                { recursive: false }
+            );
 
-            HooksUtility.registerChatHooks();  
+            HooksUtility.registerChatHooks();
+            HooksUtility.registerSheetHooks();
         });
     }
 
     static registerItemHooks() {
+        Hooks.on("preCreateItem", (item) => {
+            ItemUtility.ensureFlagsOnItem(item);
+        });
+
         Hooks.on("dnd5e.useItem", (item, config, options) => {
             RollUtility.rollItem(item, { ...config, ...options });
         });
     }
 
     static registerChatHooks() {
-        
+
+    }
+
+    static registerSheetHooks() {
+        Hooks.on("renderItemSheet5e", (app, html, data) => {
+            SheetUtility.setAutoHeightOnSheet(app);
+            SheetUtility.addModuleContentToSheet(app, html);
+        });
     }
 }

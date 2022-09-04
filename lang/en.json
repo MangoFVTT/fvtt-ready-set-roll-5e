@@ -8,11 +8,11 @@
             "enableItemQuickRoll.name": "Enable Quick Roll for Items",
             "enableItemQuickRoll.hint": "When clicking on an item's image (weapons, spells, features, etc.), automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Roll for Items",
-            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately per item. Replaces the ability to bypass quick rolling for items.",
+            "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately, replacing the ability to bypass quick rolling for items. This setting has no effect if item quick rolling is disabled.",
             "d20IconsEnabled.name": "Show D20 Rolls for Quick Rolls",
             "d20IconsEnabled.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
             "rollModifierMode.name": "Roll Modifier Keys",
-	        "rollModifierMode.hint": "Determines which keys to use to modify quick rolls with advantage or disadvantage. This has no effect if quick rolls are disabled.",
+            "rollModifierMode.hint": "Determines which keys to use to modify quick rolls with advantage or disadvantage. This has no effect if quick rolls are disabled.",
             "defaultRollArt.name": "Quick Roll Image Used",
             "defaultRollArt.hint": "Determines which art is used by default for ability checks and saving throws for an actor. If this is not available, the other icon will be used instead.",
             "placementRollTitle.name": "Show Roll Title Labels",
@@ -41,7 +41,7 @@
         },
         "choices": {
             "rollModifierMode": {
-                "shiftAdv": "Shift ➔ Advantage, Ctrl/Cmd ➔ Disadvantage",                
+                "shiftAdv": "Shift ➔ Advantage, Ctrl/Cmd ➔ Disadvantage",
                 "ctrlAdv": "Ctrl/Cmd ➔ Advantage, Shift ➔ Disadvantage"
             },
             "placement": {
@@ -54,7 +54,35 @@
                 "0": "Never",
                 "1": "NPCs Only",
                 "2": "Always"
-            }   
+            }
+        },
+        "sheet": {
+            "tab": {
+                "title": "Quick Roll",
+                "section": {
+                    "defaultRoll": "Default Roll Options",
+                    "alternateRoll": "Alternate Roll Options"
+                },
+                "subsection": {
+                    "main": "Main Content",
+                    "damage": "Damage Rolls",
+                    "consume": "Consumables"
+                },
+                "options": {
+                    "description": "Description",
+                    "flavor": "Flavor",
+                    "footer": "Properties",
+                    "attack": "Attack",
+                    "template": "Place Template",
+                    "save": "Save DC",
+                    "other": "Other",
+                    "check": "Check",
+                    "quantity": "Quantity",
+                    "uses": "Uses",
+                    "resource": "Resource",
+                    "recharge": "Recharge"
+                }
+            }
         },
         "chat": {
             "attack": "Attack",

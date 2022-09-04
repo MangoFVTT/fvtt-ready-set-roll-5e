@@ -48,6 +48,10 @@ export class RenderUtility {
     static renderFullCard(props) {
         return renderModuleTemplate(TEMPLATE.FULL_CARD, props);
     }
+
+    static renderItemOptions(props) {
+        return renderModuleTemplate(TEMPLATE.OPTIONS, props);
+    }
 }
 
 function renderHeader(renderData = {}) {

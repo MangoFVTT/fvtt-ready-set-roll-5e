@@ -4,6 +4,7 @@ import { HooksUtility } from "./hooks.js";
 import { LogUtility } from "./log.js";
 import { RollUtility } from "./roll.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
+import { SheetUtility } from "./sheet.js";
 
 export class PatchingUtility {
     /**
@@ -34,6 +35,13 @@ export class PatchingUtility {
             HooksUtility.registerItemHooks();
             libWrapper.register(MODULE_NAME, `${itemPrototype}.use`, itemUse, "MIXED");
         }
+    }
+
+    static patchItemSheets() {        
+        LogUtility.log("Patching Item Sheets");
+        const itemSheetPrototype = "ItemSheet.prototype";
+
+        libWrapper.register(MODULE_NAME, `${itemSheetPrototype}._onChangeTab`, onChangeTab, "OVERRIDE");
     }
 }
 
@@ -100,7 +108,7 @@ async function itemUse(wrapper, options) {
  */
 async function actorProcessWrapper(caller, wrapper, options, id) {
     if (options?.chatMessage === false || options?.vanilla) {
-        return { roll: wrapper.call(caller, skillId, options), ignore: true };
+        return { roll: wrapper.call(caller, id, options), ignore: true };
     }
 
     // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
@@ -124,4 +132,14 @@ async function itemProcessWrapper(caller, wrapper, config, options) {
     // For item rolls, check the alternate item roll setting to see if the alt key should ignore quick roll.
     const ignore = (options?.event?.altKey && !CoreUtility.eventToAltRoll(options?.event)) ?? false;
     return await RollUtility.rollItemWrapper(caller, wrapper, config, options, ignore);
+}
+
+/**
+ * Override function that ensures tab height is automatically scaled when changing tabs.
+ * @param {*} event The triggering event.
+ * @param {Tabs} tabs The list of navigation tabs in the sheet.
+ * @param {string} active The currently active tab.
+ */
+function onChangeTab(event, tabs, active) {
+    SheetUtility.setAutoHeightOnSheet(this);
 }
