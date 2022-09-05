@@ -195,7 +195,7 @@ export class RollUtility {
 		}
 
         return getCritResult(totalCrit, totalFumble);
-    }    
+    }
 }
 
 /**

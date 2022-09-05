@@ -1,6 +1,6 @@
 import { CoreUtility } from "../utils/core.js";
 import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
-import { RenderUtility } from "../utils/render.js";
+import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 
 let defaultParams = {
 	label: "",
@@ -19,7 +19,7 @@ let defaultParams = {
  */
 export class QuickRoll {
     /**
-     * Current id that is auto-incremented. IDs need to be unique within a card.
+     * Data id that is auto-incremented. IDs need to be unique for each entry within a card.
      * @private
      */
     _currentId = -1;
@@ -87,10 +87,8 @@ export class QuickRoll {
 			speaker: ChatMessage.getSpeaker({ item, actor }),
 			flags: this._getFlags(),
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			roll: this._getApplyDamageRoll(),
 			...CoreUtility.getWhisperData(rollMode),
-
-			// If not blank, D&D will try to modify the card...
-			roll: new Roll("0").roll({ async: false })
 		}
 
 		await Hooks.callAll(HOOK_CHAT_MESSAGE, this, chatData);
@@ -173,6 +171,36 @@ export class QuickRoll {
 		flags["core.canPopout"] = true;
 
 		return flags;
+	}
+
+	_getApplyDamageRoll() {
+		const noDamageRoll = new Roll("0").roll({ async: false });
+
+        if (this.fields.length === 0) {
+            return noDamageRoll;
+        }
+
+        const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE).map(f => f[1]);
+		const plus = new OperatorTerm({ operator: "+" }).evaluate({ async: false });
+		const terms = []
+
+		damageFields.forEach(field => {
+			if (field.baseRoll) {
+				terms.push(plus);
+				terms.push(...field.baseRoll.terms);
+			}		
+
+			if (field.critRoll) {
+				terms.push(plus);
+				terms.push(...field.critRoll.terms);
+			}			
+		});
+
+		if (terms.length === 0) {
+            return noDamageRoll;
+        }
+
+		return Roll.fromTerms(Roll.simplifyTerms(terms));
 	}
 }
 
