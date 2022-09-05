@@ -9,7 +9,7 @@ export class LogUtility {
      * @param {string} logString The string to log as an info. 
      */
     static log(logString) {
-        console.log(processLog(logString));
+        console.log(...processLog(logString));
     }
 
     /**
@@ -17,7 +17,7 @@ export class LogUtility {
      * @param {string} logString The string to log as an error. 
      */
     static logError(logString) {
-        ui.notifications.error(processLog(logString));
+        ui.notifications.error(...processLog(logString));
     }
 
     /**
@@ -25,7 +25,7 @@ export class LogUtility {
      * @param {string} logString The string to log as a debug error.
      */
     static logDebugError(logString) {
-        console.error(processLog(logString));
+        console.error(...processLog(logString));
     }
 
     /**
@@ -33,7 +33,7 @@ export class LogUtility {
      * @param {string} logString The string to log as a warning. 
      */
     static logWarning(logString) {
-        ui.notifications.warn(processLog(logString));
+        ui.notifications.warn(...processLog(logString));
     }
 
     /**
@@ -41,7 +41,7 @@ export class LogUtility {
      * @param {string} logString The string to log as a debug warning. 
      */
     static logDebugWarning(logString) {        
-        console.warn(processLog(logString));
+        console.warn(...processLog(logString));
     }
 }
 
@@ -51,5 +51,5 @@ export class LogUtility {
  * @returns A formatted log string with the module debug tag attached.
  */
 function processLog(logString) {
-    return `${MODULE_DEBUG_TAG} | ${logString}`;
+    return [...MODULE_DEBUG_TAG, logString];
 }

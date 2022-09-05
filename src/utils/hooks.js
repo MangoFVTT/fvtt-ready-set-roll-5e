@@ -2,7 +2,7 @@ import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
 import { PatchingUtility } from "./patching.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
-import { SettingsUtility } from "./settings.js";
+import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
@@ -13,6 +13,9 @@ export const HOOK_RENDER = `${MODULE_SHORT}.render`;
 export const HOOK_PROCESSED_ROLL = `${MODULE_SHORT}.rollProcessed`;
 
 export class HooksUtility {
+    /**
+     * Register all necessary hooks for the module as a whole.
+     */
     static registerModuleHooks() {
         Hooks.once("init", () => {
             LogUtility.log(`Initialising ${MODULE_TITLE}`);
@@ -32,10 +35,6 @@ export class HooksUtility {
             PatchingUtility.patchItemSheets();
         });
 
-        Hooks.on("ready", () => {
-            Hooks.call(HOOK_LOADED);
-        });
-
         Hooks.on(HOOK_LOADED, () => {          
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
             CONFIG[`${MODULE_SHORT}`].combinedDamageTypes = foundry.utils.mergeObject(
@@ -45,10 +44,21 @@ export class HooksUtility {
             );
 
             HooksUtility.registerChatHooks();
-            HooksUtility.registerSheetHooks();
+
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+                HooksUtility.registerSheetHooks();
+                HooksUtility.registerItemHooks();
+            }
+        });
+
+        Hooks.on("ready", () => {
+            Hooks.call(HOOK_LOADED);
         });
     }
 
+    /**
+     * Register item specific hooks for module function.
+     */
     static registerItemHooks() {
         Hooks.on("createItem", (item) => {
             ItemUtility.ensureFlagsOnItem(item);
@@ -61,10 +71,16 @@ export class HooksUtility {
         });
     }
 
+    /**
+     * Register chat specific hooks for module function.
+     */
     static registerChatHooks() {
 
     }
 
+    /**
+     * Register sheet specific hooks for module function.
+     */
     static registerSheetHooks() {
         Hooks.on("renderItemSheet5e", (app, html, data) => {
             SheetUtility.setAutoHeightOnSheet(app);

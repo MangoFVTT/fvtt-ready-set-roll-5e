@@ -32,7 +32,6 @@ export class PatchingUtility {
         const itemPrototype = "CONFIG.Item.documentClass.prototype";
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {            
-            HooksUtility.registerItemHooks();
             libWrapper.register(MODULE_NAME, `${itemPrototype}.use`, itemUse, "MIXED");
         }
     }
@@ -41,7 +40,9 @@ export class PatchingUtility {
         LogUtility.log("Patching Item Sheets");
         const itemSheetPrototype = "ItemSheet.prototype";
 
-        libWrapper.register(MODULE_NAME, `${itemSheetPrototype}._onChangeTab`, onChangeTab, "OVERRIDE");
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {  
+            libWrapper.register(MODULE_NAME, `${itemSheetPrototype}._onChangeTab`, onChangeTab, "OVERRIDE");
+        }
     }
 }
 
