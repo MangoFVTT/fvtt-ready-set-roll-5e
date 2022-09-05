@@ -34,7 +34,7 @@ If you are feeling generous, and would like to support my work, you can do so th
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
-- RedReign for creating the original Better Rolls for 5e module, without which this module would have any reason to exist.
+- RedReign for creating the original Better Rolls for 5e module, without which this module would not exist.
 - All the wonderful folks on the Foundry VTT discord for their tireless help.
 
 ## License
