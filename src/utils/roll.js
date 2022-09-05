@@ -287,6 +287,10 @@ function countCritsFumbles(die, critThreshold, fumbleThreshold)
 
     if (die.faces > 1) {
         for (const result of die.results) {
+            if (result.rerolled) {
+                continue;
+            }
+
             if (result.result >= (critThreshold || die.faces)) {
                 crit += 1;
             } else if (result.result <= (fumbleThreshold || 1)) {

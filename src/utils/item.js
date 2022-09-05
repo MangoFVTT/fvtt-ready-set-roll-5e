@@ -22,8 +22,6 @@ export class ItemUtility {
         const isAltRoll = params?.isAltRoll ?? false;
         let fields = [];
 
-        console.log(item);
-
         if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", isAltRoll)) {
             addFieldFlavor(fields, chatData);
         }

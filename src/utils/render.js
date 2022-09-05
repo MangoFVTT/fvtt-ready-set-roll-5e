@@ -116,18 +116,27 @@ async function renderMultiRoll(renderData = {}) {
     const bonusRoll = bonusTerms ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
-    for (let i = 0; i < d20Rolls.number; i++) {
+    for (let i = 0; i < d20Rolls.results.length; i++) {
         // Die terms must have active results or the base roll total of the generated roll is 0.
-        let tmpResult = d20Rolls.results[i];
-        tmpResult.active = true;
+        let tmpResult = [];
+        tmpResult.push(d20Rolls.results[i]);
 
-        const baseTerm = new Die({number: 1, faces: 20, results: [tmpResult]});
+        if (roll.options.halflingLucky && d20Rolls.results[i].result === 1) {
+            i++;
+            tmpResult.push(d20Rolls.results[i]);
+        }
+
+        tmpResult.forEach(r => {
+            r.active = !r.rerolled ?? true; 
+        });
+
+        const baseTerm = new Die({number: 1, faces: 20, results: tmpResult});
         const baseRoll = Roll.fromTerms([baseTerm]);
 
         entries.push({
 			roll: baseRoll,
 			total: baseRoll.total + (bonusRoll?.total ?? 0),
-			ignored: d20Rolls.results[i].discarded ? true : undefined,
+			ignored: tmpResult.some(r => r.discarded) ? true : undefined,
 			isCrit: roll.isCritical,
 			critType: RollUtility.getCritTypeForDie(baseTerm),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
