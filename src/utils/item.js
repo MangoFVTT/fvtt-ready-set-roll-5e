@@ -268,6 +268,11 @@ async function addFieldDamage(fields, item, params) {
                     }));
                 }
 
+                // Remove trailing operators to avoid errors.
+                while (critTerms.at(-1) instanceof OperatorTerm) {
+                    critTerms.pop();
+                }
+
                 critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
                     maximize: roll.options.powerfulCritical,
                     async: true
