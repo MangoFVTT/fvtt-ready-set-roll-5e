@@ -26,9 +26,9 @@ If you are feeling generous, and would like to support my work, you can do so th
 - If enabled, items can also output an alternate roll when holding `alt`. This alternate roll can be configured independently of the default configuration.
 
 ## Planned Features
-- Implement damage context fields to convey what the damage comes from, or when it occurs.
-- Implement retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
-- Macro support.
+- Damage context fields to convey what the damage comes from, or when it occurs.
+- Retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
+- Macro support for more flexible quick rolling.
 
 ## Known Issues
 
