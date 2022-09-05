@@ -33,7 +33,7 @@
 				"type": "module",
 				"compatibility": {
 					"minimum": "1.0.0.0",
-					"verified": "1.12.7.1"
+					"verified": "1.12.8.0"
 				}
 			}
 		]
