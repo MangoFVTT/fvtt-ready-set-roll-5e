@@ -16,15 +16,26 @@ If you are feeling generous, and would like to support my work, you can do so th
 ## Implemented Features
 
 ### Quick Rolls
-- Rolls for skills, abilities, and items are outputted automatically to chat instead of relying on the default roll dialog system. These quick rolls can be enabled or disabled individually for each category of rolls.
+- Rolls for skills, abilities, and items are outputted automatically to chat instead of relying on the default roll dialog system. These quick rolls can be enabled or disabled individually for each category of rolls, or bypassed in favour of the default behaviour by holding `alt` when clicking the roll.
 - Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 - Items will automatically output damage, calculate critical damage (taking into account system settings for powerful criticals or critical numerical modifiers), place area templates, print Save DC buttons, and a variety of other options that can all be configured independently for each item.
 
+### Alt Rolls & Roll Configuration
+- Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
+- Item configuration extends system support for thrown items, consumables, ammunition, and items with otherwise limited quantities.
+- If enabled, items can also output an alternate roll when holding `alt`. This alternate roll can be configured independently of the default configuration.
+
 ## Planned Features
+- Implement damage context fields to convey what the damage comes from, or when it occurs.
+- Implement retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
+- Macro support.
 
 ## Known Issues
 
 ## Acknowledgements
+- Atropos and the Foundry development team for making a truly fantastic VTT.
+- RedReign for creating the original Better Rolls for 5e module, without which this module would have any reason to exist.
+- All the wonderful folks on the Foundry VTT discord for their tireless help.
 
 ## License
 The source code is licensed under GPL-3.0.
