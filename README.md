@@ -16,8 +16,8 @@ If you are feeling generous, and would like to support my work, you can do so th
 ## Implemented Features
 
 ### Quick Rolls
-- Rolls for skills, abilities, and items (can be enabled or disabled individually for each category of rolls) are outputted automatically to chat instead of relying on the default roll dialog system. 
-- Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy).
+- Rolls for skills, abilities, and items are outputted automatically to chat instead of relying on the default roll dialog system. These quick rolls can be enabled or disabled individually for each category of rolls.
+- Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 - Items will automatically output damage, calculate critical damage (taking into account system settings for powerful criticals or critical numerical modifiers), place area templates, print Save DC buttons, and a variety of other options that can all be configured independently for each item.
 
 ## Planned Features
