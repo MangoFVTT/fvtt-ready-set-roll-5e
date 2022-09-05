@@ -4,6 +4,10 @@
 If you are feeling generous, and would like to support my work, you can do so through this [Paypal](https://www.paypal.com/paypalme/MangoFVTT) link, or through the sponsorship options in the sidebar. Thank you!
 
 ## Installation
+1. Start up Foundry and click "Install Module" in the "Add-on Modules" tab.
+2. Paste this into the "Manifest URL" field: `https://raw.githubusercontent.com/MangoFVTT/fvtt-ready-set-roll-5e/master/module.json`.
+3. Click "Install" and the module should download and appear in your modules list.
+4. Enjoy!
 
 ## Implemented Features
 
