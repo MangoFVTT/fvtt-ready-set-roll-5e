@@ -72,6 +72,21 @@ export class RollUtility {
         const advMode = CoreUtility.eventToAdvantage(options?.event);
         const config = ItemUtility.getRollConfigFromItem(caller, isAltRoll)
 
+        // Handle quantity when uses are not consumed
+        // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
+        if (config.consumeQuantity && !config.consumeUsage) {  
+            if (caller.system.quantity === 0) {
+                ui.notifications.warn(CoreUtility.localize("DND5E.ItemNoUses", {name: caller.name})); 
+                return;  
+            }
+
+            config.consumeQuantity = false;
+
+            const itemUpdates = {};
+			itemUpdates["system.quantity"] = Math.max(0, caller.system.quantity - 1);            
+            await caller.update(itemUpdates);
+        }
+
         return await wrapper.call(caller, config, {
             configureDialog: caller?.type === ITEM_TYPE.SPELL ? true : false,
             createMessage: false,
