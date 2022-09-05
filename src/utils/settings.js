@@ -143,7 +143,8 @@ export class SettingsUtility {
 			scope: "world",
 			config: true,
 			type: Boolean,
-			default: true
+			default: true,
+            requiresReload: true
 		});
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.DEFAULT_ROLL_ART, {
