@@ -1,20 +1,6 @@
 import { ITEM_TYPE } from "../utils/item.js";
 import { MODULE_SHORT } from "./const.js";
 
-// quickDesc: { type: "Boolean", value: true, altValue: true },
-// quickFlavor: { type: "Boolean", value: true, altValue: true },
-// quickFooter: { type: "Boolean", value: true, altValue: true },
-// quickAttack: { type: "Boolean", value: true, altValue: true },
-// quickVersatile: { type: "Boolean", value: false, altValue: false },
-// quickTemplate: { type: "Boolean", value: true, altValue: true },
-// quickSave: { type: "Boolean", value: true, altValue: true },
-// quickDamage: { type: "Array", value: [], altValue: [], context: [] },
-// quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            
-// consumeQuantity: { type: "Boolean", value: true, altValue: true },
-// consumeUses: { type: "Boolean", value: true, altValue: true },
-// consumeResource: { type: "Boolean", value: true, altValue: true },
-// consumeRecharge: { type: "Boolean", value: true, altValue: true }
-
 CONFIG[`${MODULE_SHORT}`] = {
     validItemTypes: [
         ITEM_TYPE.WEAPON,
