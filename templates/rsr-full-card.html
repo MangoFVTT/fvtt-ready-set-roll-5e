@@ -1,4 +1,4 @@
-<div class="dnd5e rsr-full chat-card" {{#if actor}}data-actor-id="{{actor.id}}"{{/if}} {{#if item}}data-item-id="{{item.id}}"{{/if}} {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}} data-critical="{{isCritical}}">
+<div class="dnd5e chat-card {{#if item}}item-card{{/if}} rsr-full" {{#if actor}}data-actor-id="{{actor.id}}"{{/if}} {{#if item}}data-item-id="{{item.id}}"{{/if}} {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}} data-critical="{{isCritical}}">
 	{{#each templates}}
 		{{{this}}}
 	{{/each}}
