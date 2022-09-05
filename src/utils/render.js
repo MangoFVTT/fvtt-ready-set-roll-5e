@@ -130,7 +130,7 @@ async function renderMultiRoll(renderData = {}) {
 			ignored: d20Rolls.results[i].discarded ? true : undefined,
 			isCrit: roll.isCritical,
 			critType: RollUtility.getCritTypeForDie(baseTerm),
-            d20Result: d20Rolls.results[i].result
+            d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
 		});
     }
 
