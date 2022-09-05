@@ -242,13 +242,14 @@ async function addFieldDamage(fields, item, params) {
             if (params?.isCrit) {
                 const critTerms = roll.options.multiplyNumeric ? group.terms : group.terms.filter(t => !(t instanceof NumericTerm));
                 const firstDie = critTerms.find(t => t instanceof Die);
+                const index = critTerms.indexOf(firstDie);
 
                 if (i === 0 && firstDie) {
-                    critTerms[critTerms.indexOf(firstDie)] = new Die({
+                    critTerms.splice(index, 1, new Die({
                         number: firstDie.number + roll.options.criticalBonusDice ?? 0,
                         faces: firstDie.faces,
                         results: firstDie.results
-                    });
+                    }));
                 }
 
                 critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
