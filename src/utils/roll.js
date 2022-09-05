@@ -98,7 +98,8 @@ export class RollUtility {
 		}
 
         const skill = CONFIG.DND5E.skills[skillId];
-        const title = `${CoreUtility.localize(skill.label)} (${CONFIG.DND5E.abilities[skill.ability]})`;
+        let title = CoreUtility.localize(skill.label);
+        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[skill.ability]})` : "";
 
         return await getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
     }    
@@ -119,8 +120,7 @@ export class RollUtility {
             return null;
 		}
 
-        let title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])}`
-        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? `${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}` : "";
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
     }
