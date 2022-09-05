@@ -22,27 +22,38 @@ export class ItemUtility {
         const isAltRoll = params?.isAltRoll ?? false;
         let fields = [];
 
+
         if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", isAltRoll)) {
             addFieldFlavor(fields, chatData);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickDesc", isAltRoll)) {
             addFieldDescription(fields, chatData);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", isAltRoll)) {
             addFieldSave(fields, item);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", isAltRoll)) {
             await addFieldAttack(fields, item, params);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickCheck", isAltRoll)) {
             await addFieldToolCheck(fields, item, params);
-        }
-        if (ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)) {
+        }                
+        
+        params = params ?? {};
+
+        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)
+        if (params.damageFlags) {
             await addFieldDamage(fields, item, params);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickOther", isAltRoll)) {
             await addFieldOtherFormula(fields, item);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickFooter", isAltRoll)) {
             addFieldFooter(fields, chatData);
         }
@@ -64,21 +75,22 @@ export class ItemUtility {
         const config = {}
 
         if (item?.hasAreaTarget && item?.flags[`${MODULE_SHORT}`].quickTemplate) { 
-            config["createMeasuredTemplate"] = item.flags[`${MODULE_SHORT}`].quickTemplate[isAltRoll ? "altValue" : "value"];
+            config.createMeasuredTemplate = item.flags[`${MODULE_SHORT}`].quickTemplate[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasQuantity && item?.flags[`${MODULE_SHORT}`].consumeQuantity) {
-            config["consumeQuantity"] = item.flags[`${MODULE_SHORT}`].consumeQuantity[isAltRoll ? "altValue" : "value"];
+            config.consumeQuantity = item.flags[`${MODULE_SHORT}`].consumeQuantity[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasUses && item?.flags[`${MODULE_SHORT}`].consumeUses) {
-            config["consumeUsage"] = item.flags[`${MODULE_SHORT}`].consumeUses[isAltRoll ? "altValue" : "value"];
+            config.consumeUsage = item.flags[`${MODULE_SHORT}`].consumeUses[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasResource && item?.flags[`${MODULE_SHORT}`].consumeResource) {
-            config["consumeResource"] = item.flags[`${MODULE_SHORT}`].consumeResource[isAltRoll ? "altValue" : "value"];
+            config.consumeResource = item.flags[`${MODULE_SHORT}`].consumeResource[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasRecharge && item?.flags[`${MODULE_SHORT}`].consumeRecharge) {
-            config["consumeRecharge"] = item.flags[`${MODULE_SHORT}`].consumeRecharge[isAltRoll ? "altValue" : "value"];
+            config.consumeRecharge = item.flags[`${MODULE_SHORT}`].consumeRecharge[isAltRoll ? "altValue" : "value"];
         }
         
+        console.log(config);
         return config;
     }   
 
@@ -90,8 +102,8 @@ export class ItemUtility {
         return false;
     }
 
-    static ensureFlagsOnItem(item) {
-        LogUtility.log("Ensuring item flags for module.");
+    static refreshFlagsOnItem(item) {
+        LogUtility.log(`Refreshing ${MODULE_SHORT} item flags.`);
 
         if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
             return;
@@ -226,11 +238,15 @@ async function addFieldDamage(fields, item, params) {
         });
 
         let damageTermGroups = [];
-        item.system.damage.parts.forEach(part => {
-            const tmpRoll = new Roll(part[0]);
-            damageTermGroups.push({ type: part[1], terms: roll.terms.splice(0, tmpRoll.terms.length) });
+        for (let i = 0; i < item.system.damage.parts.length; i++) {
+            const tmpRoll = new Roll(item.system.damage.parts[i][0]);
+            const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
             roll.terms.shift();
-        });
+
+            if (params?.damageFlags[i] ?? true) {
+                damageTermGroups.push({ type: item.system.damage.parts[i][1], terms: partTerms});
+            }
+        }
 
         if (roll.terms.length > 0) damageTermGroups[0].terms.push(...roll.terms);
 
