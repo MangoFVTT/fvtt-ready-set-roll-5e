@@ -5,8 +5,9 @@ If you are feeling generous, and would like to support my work, you can do so th
 
 ## Installation
 1. Start up Foundry and click "Install Module" in the "Add-on Modules" tab.
-2. Paste the following into the "Manifest URL" field:
-    - `https://raw.githubusercontent.com/MangoFVTT/fvtt-ready-set-roll-5e/master/module.json`.
+2. Paste one of the following into the "Manifest URL" field:
+    - Latest Release: `https://raw.githubusercontent.com/MangoFVTT/fvtt-ready-set-roll-5e/master/module.json`
+    - Previous Releases: A link to the `module.json` file from any of the [previous releases](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/releases).
 3. Click "Install" and the module should download and appear in your modules list.
 4. Enjoy!
 
