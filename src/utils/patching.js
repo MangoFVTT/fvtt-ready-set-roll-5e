@@ -95,7 +95,7 @@ async function itemUse(wrapper, options) {
 
     //TO-DO: generate roll config from set flags in sheet, see item.mjs -> use()
     //idea is to get flags from sheet and change config to let the system handle all consumption/etc.
-    return await itemProcessWrapper(this, wrapper, undefined, options);
+    return await itemProcessWrapper(this, wrapper, options);
 }
 
 /**
@@ -124,14 +124,14 @@ async function actorProcessWrapper(caller, wrapper, options, id) {
  * @param {*} options Options for processing the wrapper.
  * @returns {Promise<ChatMessage>} The processed chat data for the wrapper.
  */
-async function itemProcessWrapper(caller, wrapper, config, options) {
+async function itemProcessWrapper(caller, wrapper, options) {
     if (options?.chatMessage === false || options?.vanilla) {
 		return wrapper.call(caller, options);
 	}
 
     // For item rolls, check the alternate item roll setting to see if the alt key should ignore quick roll.
     const ignore = (options?.event?.altKey && !CoreUtility.eventToAltRoll(options?.event)) ?? false;
-    return await RollUtility.rollItemWrapper(caller, wrapper, config, options, ignore);
+    return await RollUtility.rollItemWrapper(caller, wrapper, options, ignore);
 }
 
 /**

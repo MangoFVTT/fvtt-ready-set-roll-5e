@@ -61,13 +61,19 @@ export class RollUtility {
      * @param {boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<ChatData>} The roll result of the wrapper.
      */
-    static async rollItemWrapper(caller, wrapper, config, options, bypass = false) {
+    static async rollItemWrapper(caller, wrapper, options, bypass = false) {
+        // We can ignore the item if it is not one of the types that requires a quick roll.
+        if (bypass || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(caller?.type)) {
+            return await wrapper.call(caller, {}, { ignore: true });
+        }
+
         const isAltRoll = CoreUtility.eventToAltRoll(options?.event);
         const advMode = CoreUtility.eventToAdvantage(options?.event);
+        const config = ItemUtility.getRollConfigFromItem(caller, isAltRoll)
 
         return await wrapper.call(caller, config, {
             configureDialog: caller?.type === ITEM_TYPE.SPELL ? true : false,
-            createMessage: bypass,
+            createMessage: false,
             advMode,
             isAltRoll,
             spellLevel: caller?.system?.level
@@ -138,14 +144,18 @@ export class RollUtility {
         return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
     }
 
+    /**
+     * Rolls a single usage from a given item.
+     * @param {Item} item The item to roll.
+     * @param {*} params A set of parameters for rolling the Item.
+     * @returns {Promise<QuickRoll>} The created quick roll.
+     */
     static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'`);
 
-        if (params)
-        {
-            params.slotLevel = item.system.level;
-            item.system.level = params.spellLevel ?? item.system.level;
-        }
+        params = params ?? {};
+        params.slotLevel = item.system.level;
+        item.system.level = params.spellLevel ?? item.system.level;
 
         return await getItemRoll(item, params, ROLL_TYPE.ITEM)
     }

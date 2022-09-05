@@ -7,10 +7,10 @@ import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
 
-export const HOOK_LOADED = `${MODULE_SHORT}Loaded`;
-export const HOOK_CHAT_MESSAGE = `${MODULE_SHORT}ChatMessage`;
-export const HOOK_RENDER = `${MODULE_SHORT}Render`;
-export const HOOK_PROCESSED_ROLL = `${MODULE_SHORT}RollProcessed`;
+export const HOOK_LOADED = `${MODULE_SHORT}.loaded`;
+export const HOOK_CHAT_MESSAGE = `${MODULE_SHORT}.chatMessage`;
+export const HOOK_RENDER = `${MODULE_SHORT}.render`;
+export const HOOK_PROCESSED_ROLL = `${MODULE_SHORT}.rollProcessed`;
 
 export class HooksUtility {
     static registerModuleHooks() {
@@ -38,7 +38,7 @@ export class HooksUtility {
 
         Hooks.on(HOOK_LOADED, () => {          
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
-            CONFIG.rsr5e.combinedDamageTypes = foundry.utils.mergeObject(
+            CONFIG[`${MODULE_SHORT}`].combinedDamageTypes = foundry.utils.mergeObject(
                 CONFIG.DND5E.damageTypes,
                 CONFIG.DND5E.healingTypes,
                 { recursive: false }
@@ -50,12 +50,14 @@ export class HooksUtility {
     }
 
     static registerItemHooks() {
-        Hooks.on("preCreateItem", (item) => {
+        Hooks.on("createItem", (item) => {
             ItemUtility.ensureFlagsOnItem(item);
         });
 
         Hooks.on("dnd5e.useItem", (item, config, options) => {
-            RollUtility.rollItem(item, { ...config, ...options });
+            if (!options?.ignore) {
+                RollUtility.rollItem(item, { ...config, ...options });
+            }
         });
     }
 

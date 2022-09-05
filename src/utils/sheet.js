@@ -24,7 +24,7 @@ export class SheetUtility {
             return;
         }
 
-        if (!CONFIG.rsr5e.validItemTypes.includes(item.type)) {
+        if (!CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
             return;
         }
         
@@ -60,29 +60,20 @@ function addItemOptionsTab(html) {
 async function addItemOptions(item, html) {
     const settingsContainer = html.find(".sheet-body");
 
-    // For items with quantity (weapons, tools, consumables...)
-	const hasQuantity = ("quantity" in item.system);
-	// For items with "Limited Uses" configured
-	const hasUses = !!(item.system.uses?.value);
-	// For items with "Resource Consumption" configured
-	const hasResource = !!(item.system.consume?.target);
-	// For abilities with "Action Recharge" configured
-	const hasRecharge = !!(item.system.recharge?.value);
-
     const properties = {
         dnd5e: CONFIG.DND5E,
         altRollEnabled: SettingsUtility.getSettingValue(SETTING_NAMES.ALT_ROLL_ENABLED),
         flags: item.flags,
         defLabel: CoreUtility.localize(`${MODULE_SHORT}.sheet.tab.section.defaultRoll`),
         altLabel: CoreUtility.localize(`${MODULE_SHORT}.sheet.tab.section.alternateRoll`),
-        combinedDamageTypes: CONFIG.rsr5e.combinedDamageTypes,
+        combinedDamageTypes: CONFIG[`${MODULE_SHORT}`].combinedDamageTypes,
         hasFlavor: item.system.chatFlavor && item.system.chatFlavor !== "",
         hasDamage: item.hasDamage,
-        hasConsume: hasQuantity || hasUses || hasResource || hasRecharge,
-        hasQuantity,
-        hasUses,
-        hasResource,
-        hasRecharge: hasRecharge,
+        hasConsume: item.hasQuantity || item.hasUse || item.hasResource || item.hasRecharge,
+        hasQuantity: item.hasQuantity,
+        hasUses: item.hasUses,
+        hasResource: item.hasResource,
+        hasRecharge: item.hasRecharge,
         isAttack: item.hasAttack,
         isSave: item.hasSave,
         isCheck: item.hasAbilityCheck || item.type === ITEM_TYPE.TOOL,

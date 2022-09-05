@@ -1,4 +1,5 @@
 import { ITEM_TYPE } from "../utils/item.js";
+import { MODULE_SHORT } from "./const.js";
 
 // quickDesc: { type: "Boolean", value: true, altValue: true },
 // quickFlavor: { type: "Boolean", value: true, altValue: true },
@@ -14,7 +15,7 @@ import { ITEM_TYPE } from "../utils/item.js";
 // consumeResource: { type: "Boolean", value: true, altValue: true },
 // consumeRecharge: { type: "Boolean", value: true, altValue: true }
 
-CONFIG.rsr5e = {
+CONFIG[`${MODULE_SHORT}`] = {
     validItemTypes: [
         ITEM_TYPE.WEAPON,
         ITEM_TYPE.SPELL,
@@ -62,7 +63,7 @@ CONFIG.rsr5e = {
             consumeUses: { type: "Boolean", value: false, altValue: true },
             consumeResource: { type: "Boolean", value: false, altValue: true }
         },
-        feature: {
+        feat: {
             quickDesc: { type: "Boolean", value: true, altValue: true },
             quickFlavor: { type: "Boolean", value: true, altValue: true },
             quickFooter: { type: "Boolean", value: true, altValue: true },
