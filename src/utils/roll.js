@@ -4,6 +4,7 @@ import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { QuickRoll } from "../module/quickroll.js";
 import { ItemUtility, ITEM_TYPE } from "./item.js";
+import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
  * A list of different roll types that can be made.
@@ -118,7 +119,8 @@ export class RollUtility {
             return null;
 		}
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        let title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])}`
+        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? `${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}` : "";
 
         return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
     }

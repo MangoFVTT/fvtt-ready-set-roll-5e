@@ -11,6 +11,8 @@
             "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately, replacing the ability to bypass quick rolling for items. This setting has no effect if item quick rolling is disabled.",
             "d20IconsEnabled.name": "Show D20 Rolls for Quick Rolls",
             "d20IconsEnabled.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
+            "showSkillAbilities.name": "Show Ability Names for Skills",
+            "showSkillAbilities.hint": "When outputting a skill quick roll, display the name of the ability used next to the skill name.",
             "rollModifierMode.name": "Roll Modifier Keys",
             "rollModifierMode.hint": "Determines which keys to use to modify quick rolls with advantage or disadvantage. This has no effect if quick rolls are disabled.",
             "defaultRollArt.name": "Quick Roll Image Used",

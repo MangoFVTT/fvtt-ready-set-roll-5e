@@ -16,7 +16,8 @@ export const SETTING_NAMES = {
     CONTEXT_REPLACE_DAMAGE: "contextReplacesDamage",
     D20_ICONS_ENABLED: "d20IconsEnabled",
     DEFAULT_ROLL_ART: "defaultRollArt",
-    HIDE_SAVE_DC: "hideSaveDC"
+    HIDE_SAVE_DC: "hideSaveDC",
+    SHOW_SKILL_ABILITIES: "showSkillAbilities"
 }
 
 export class SettingsUtility {
@@ -130,6 +131,15 @@ export class SettingsUtility {
         game.settings.register(MODULE_NAME, SETTING_NAMES.D20_ICONS_ENABLED, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.name`),
 			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.hint`),
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: true
+		});
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.hint`),
 			scope: "world",
 			config: true,
 			type: Boolean,
