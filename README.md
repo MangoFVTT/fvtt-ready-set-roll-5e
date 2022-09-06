@@ -13,6 +13,11 @@ If you are feeling generous, and would like to support my work, you can do so th
 3. Click "Install" and the module should download and appear in your modules list.
 4. Enjoy!
 
+## Compatibility
+Ready Set Roll is not compatible with other modules which modify DnD5e rolls. While it is possible that such modules may also still work, it is likely to cause issues, and is not recommended.
+
+Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper/) as a dependency to avoid conflicts with other modules.
+
 ## Implemented Features
 
 ### Quick Rolls
