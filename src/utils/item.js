@@ -125,6 +125,14 @@ export class ItemUtility {
         return false;
     }
 
+    static getDamageContextFromItem(item, index) {
+        if (item?.flags[MODULE_SHORT].quickDamage) {          
+            return item.flags[MODULE_SHORT].quickDamage.context[index] ?? undefined;
+        }
+
+        return undefined;
+    }
+
     /**
      * Checks the specified item to make sure specific consume booleans exist.
      * These booleans give a quick indication on if the item has that specific consume property.
@@ -356,20 +364,21 @@ async function _addFieldDamage(fields, item, params) {
         });
 
         let damageTermGroups = [];
-        for (let i = 0; i < item.system.damage.parts.length; i++) {
-            const tmpRoll = new Roll(item.system.damage.parts[i][0]);
+        item.system.damage.parts.forEach((part, i) => {
+            const tmpRoll = new Roll(part[0]);
             const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
             roll.terms.shift();
 
             if (params?.damageFlags[i] ?? true) {
-                damageTermGroups.push({ type: item.system.damage.parts[i][1], terms: partTerms});
+                damageTermGroups.push({ type: part[1], terms: partTerms});
             }
+        });
+
+        if (roll.terms.length > 0) {
+            damageTermGroups[0].terms.push(...roll.terms);
         }
 
-        if (roll.terms.length > 0) damageTermGroups[0].terms.push(...roll.terms);
-
-        for (let i = 0; i < damageTermGroups.length; i++) {
-            const group = damageTermGroups[i];
+        damageTermGroups.forEach(async (group, i) => {
             const baseRoll = Roll.fromTerms(group.terms);
 
             let critRoll = null;
@@ -403,11 +412,12 @@ async function _addFieldDamage(fields, item, params) {
                     damageType: group.type,
                     baseRoll,
                     critRoll,
-                    context: undefined,
+                    context: ItemUtility.getDamageContextFromItem(item, i),
                     versatile: i !== 0 ? false : params?.versatile ?? false
                 }
             ]);
-        }
+
+        });
     }
 }
 
