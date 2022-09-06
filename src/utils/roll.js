@@ -66,7 +66,7 @@ export class RollUtility {
      */
     static async rollItemWrapper(caller, wrapper, options, bypass = false) {
         // We can ignore the item if it is not one of the types that requires a quick roll.
-        if (bypass || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(caller?.type)) {
+        if (bypass || !CONFIG[MODULE_SHORT].validItemTypes.includes(caller?.type)) {
             return await wrapper.call(caller, {}, { ignore: true });
         }
 

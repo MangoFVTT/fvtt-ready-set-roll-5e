@@ -91,20 +91,20 @@ export class ItemUtility {
 
         const config = {}
 
-        if (item?.hasAreaTarget && item?.flags[`${MODULE_SHORT}`].quickTemplate) { 
-            config.createMeasuredTemplate = item.flags[`${MODULE_SHORT}`].quickTemplate[isAltRoll ? "altValue" : "value"];
+        if (item?.hasAreaTarget && item?.flags[MODULE_SHORT].quickTemplate) { 
+            config.createMeasuredTemplate = item.flags[MODULE_SHORT].quickTemplate[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasQuantity && item?.flags[`${MODULE_SHORT}`].consumeQuantity) {
-            config.consumeQuantity = item.flags[`${MODULE_SHORT}`].consumeQuantity[isAltRoll ? "altValue" : "value"];
+        if (item?.hasQuantity && item?.flags[MODULE_SHORT].consumeQuantity) {
+            config.consumeQuantity = item.flags[MODULE_SHORT].consumeQuantity[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasUses && item?.flags[`${MODULE_SHORT}`].consumeUses) {
-            config.consumeUsage = item.flags[`${MODULE_SHORT}`].consumeUses[isAltRoll ? "altValue" : "value"];
+        if (item?.hasUses && item?.flags[MODULE_SHORT].consumeUses) {
+            config.consumeUsage = item.flags[MODULE_SHORT].consumeUses[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasResource && item?.flags[`${MODULE_SHORT}`].consumeResource) {
-            config.consumeResource = item.flags[`${MODULE_SHORT}`].consumeResource[isAltRoll ? "altValue" : "value"];
+        if (item?.hasResource && item?.flags[MODULE_SHORT].consumeResource) {
+            config.consumeResource = item.flags[MODULE_SHORT].consumeResource[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasRecharge && item?.flags[`${MODULE_SHORT}`].consumeRecharge) {
-            config.consumeRecharge = item.flags[`${MODULE_SHORT}`].consumeRecharge[isAltRoll ? "altValue" : "value"];
+        if (item?.hasRecharge && item?.flags[MODULE_SHORT].consumeRecharge) {
+            config.consumeRecharge = item.flags[MODULE_SHORT].consumeRecharge[isAltRoll ? "altValue" : "value"];
         }
 
         return config;
@@ -118,8 +118,8 @@ export class ItemUtility {
      * @returns {boolean} Whether the flag is set to true or false.
      */
     static getFlagValueFromItem(item, flag, isAltRoll = false) {
-        if (item?.flags[`${MODULE_SHORT}`][flag]) {
-            return item.flags[`${MODULE_SHORT}`][flag][isAltRoll ? "altValue" : "value"] ?? false;
+        if (item?.flags[MODULE_SHORT][flag]) {
+            return item.flags[MODULE_SHORT][flag][isAltRoll ? "altValue" : "value"] ?? false;
         }
         
         return false;
@@ -148,11 +148,11 @@ export class ItemUtility {
      * @param {Item} item The item on which to ensure flags exist.
      */
     static ensureFlagsOnitem(item) {
-        if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
+        if (!item || !CONFIG[MODULE_SHORT].validItemTypes.includes(item.type)) {
             return;
         }
 
-        if (item.flags && item.flags[`${MODULE_SHORT}`]) {
+        if (item.flags && item.flags[MODULE_SHORT]) {
             return;
         }
 
@@ -166,18 +166,18 @@ export class ItemUtility {
     static refreshFlagsOnItem(item) {
         LogUtility.log(`Refreshing ${MODULE_SHORT} item flags.`);
 
-        if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
+        if (!item || !CONFIG[MODULE_SHORT].validItemTypes.includes(item.type)) {
             return;
         }
 
         item.flags = item.flags ?? {};
 
-        const baseFlags = foundry.utils.duplicate(CONFIG[`${MODULE_SHORT}`].flags[item.type]);
-        let moduleFlags = item.flags[`${MODULE_SHORT}`] ?? {};
+        const baseFlags = foundry.utils.duplicate(CONFIG[MODULE_SHORT].flags[item.type]);
+        let moduleFlags = item.flags[MODULE_SHORT] ?? {};
         moduleFlags = foundry.utils.mergeObject(baseFlags, moduleFlags ?? {});
 
         // If quickDamage flags should exist, update them based on which damage formulae are available
-        if (CONFIG[`${MODULE_SHORT}`].flags[item.type].quickDamage) {
+        if (CONFIG[MODULE_SHORT].flags[item.type].quickDamage) {
             let newQuickDamageValues = [];
             let newQuickDamageAltValues = [];
 
@@ -195,7 +195,7 @@ export class ItemUtility {
             moduleFlags.quickDamage.altValue = newQuickDamageAltValues;
         }
 
-        item.flags[`${MODULE_SHORT}`] = moduleFlags;        
+        item.flags[MODULE_SHORT] = moduleFlags;        
         
         ItemUtility.ensureConsumePropertiesOnItem(item);
     }

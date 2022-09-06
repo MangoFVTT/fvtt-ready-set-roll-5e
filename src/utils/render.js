@@ -23,6 +23,12 @@ export const FIELD_TYPE = {
  * Utility class to handle all rendering from provided fields into HTML data.
  */
 export class RenderUtility {
+    /**
+     * Handles individual field types and renders the appropriate template.
+     * @param {object} field Data and type for the requested field.
+     * @param {object} metadata Additional metadata for rendering.
+     * @returns {Promise<string>|string} The rendered html data for the field. 
+     */
     static async renderFromField(field, metadata) {
         let [fieldType, fieldData] = field;
         fieldData = mergeObject(metadata, fieldData ?? {}, { recursive: false });
@@ -37,20 +43,30 @@ export class RenderUtility {
             case FIELD_TYPE.SAVE:
                 return renderSaveButton(fieldData);
             case FIELD_TYPE.CHECK:
-                return await renderMultiRoll(fieldData);
+                return renderMultiRoll(fieldData);
             case FIELD_TYPE.ATTACK:
-                return await renderAttackRoll(fieldData);
+                return renderAttackRoll(fieldData);
             case FIELD_TYPE.DAMAGE:
-                return await renderDamageRoll(fieldData);
+                return renderDamageRoll(fieldData);
         }
     }
 
+    /**
+     * Renders a full module chat card with all the fields provided as props.
+     * @param {object} props The necessary render props for the template.
+     * @returns {Promise<string>} The rendered html data for the chat card.
+     */
     static renderFullCard(props) {
-        return renderModuleTemplate(TEMPLATE.FULL_CARD, props);
+        return _renderModuleTemplate(TEMPLATE.FULL_CARD, props);
     }
 
+    /**
+     * Renders a user interface for creating roll configurations, which is added to the item sheet.
+     * @param {object} props The necessary render props for the template.
+     * @returns {Promise<string>} The rendered html data for the chat card.
+     */
     static renderItemOptions(props) {
-        return renderModuleTemplate(TEMPLATE.OPTIONS, props);
+        return _renderModuleTemplate(TEMPLATE.OPTIONS, props);
     }
 }
 
@@ -69,7 +85,7 @@ function renderHeader(renderData = {}) {
         title += ` (${CONFIG.DND5E.abilities[item.system.ability]})`;
     }
 
-    return renderModuleTemplate(TEMPLATE.HEADER, {
+    return _renderModuleTemplate(TEMPLATE.HEADER, {
         id,
         item: { img: img ?? DEFAULT_IMG, name: title },
         slotLevel
@@ -79,7 +95,7 @@ function renderHeader(renderData = {}) {
 function renderFooter(renderData = {}) {
     const { properties } = renderData;
 
-    return renderModuleTemplate(TEMPLATE.FOOTER, {
+    return _renderModuleTemplate(TEMPLATE.FOOTER, {
         properties
     });
 }
@@ -87,7 +103,7 @@ function renderFooter(renderData = {}) {
 function renderDescription(renderData = {}) {
     const { content, isFlavor } = renderData;
 
-    return renderModuleTemplate(TEMPLATE.DESCRIPTION, {
+    return _renderModuleTemplate(TEMPLATE.DESCRIPTION, {
         content,
         isFlavor
     });
@@ -98,7 +114,7 @@ function renderSaveButton(renderData = {}) {
 
     const abilityLabel = CONFIG.DND5E.abilities[ability];
 
-    return renderModuleTemplate(TEMPLATE.SAVE_BUTTON, {
+    return _renderModuleTemplate(TEMPLATE.SAVE_BUTTON, {
         id,
         ability,
         abilityLabel,
@@ -147,7 +163,7 @@ async function renderMultiRoll(renderData = {}) {
     const tooltips = await Promise.all(entries.map(e => e.roll.getTooltip()));
     const bonusTooltip = await bonusRoll?.getTooltip();
 
-    return renderModuleTemplate(TEMPLATE.MULTIROLL, {
+    return _renderModuleTemplate(TEMPLATE.MULTIROLL, {
         id,
         title,
         formula: roll.formula,
@@ -229,7 +245,7 @@ async function renderDamageRoll(renderData = {}) {
         critRoll?.getTooltip()
     ])).filter(t => t);
 
-    return renderModuleTemplate(TEMPLATE.DAMAGE, {
+    return _renderModuleTemplate(TEMPLATE.DAMAGE, {
         id,        
         damageRollType: ROLL_TYPE.DAMAGE,
         tooltips,
@@ -249,8 +265,9 @@ async function renderDamageRoll(renderData = {}) {
  * @param {string} template Name (or sub path) of the template in the templates folder.
  * @param {Object} props The props data to render the template with.
  * @returns {Promise<string>} A rendered html template.
+ * @private
  */
-function renderModuleTemplate(template, props) {
+function _renderModuleTemplate(template, props) {
     return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, props);
 }
 
