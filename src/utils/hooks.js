@@ -24,8 +24,7 @@ export class HooksUtility {
                 Hooks.once("ready", () => {
                     const version = "v1.4.0.0";                    
                     LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.libWrapperMinVersion`, { version }));
-                });
-        
+                });        
                 return;
             }
 
