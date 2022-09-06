@@ -16,7 +16,7 @@ If you are feeling generous, and would like to support my work, you can do so th
 ## Compatibility
 Ready Set Roll is not compatible with other modules which modify DnD5e rolls. While it is possible that such modules may also still work, it is likely to cause issues, and is not recommended.
 
-Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper/) as a dependency to avoid conflicts with other modules.
+Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper/) as a dependency to avoid conflicts with other modules. This dependency will be automatically resolved by Foundry when installed.
 
 ## Implemented Features
 
