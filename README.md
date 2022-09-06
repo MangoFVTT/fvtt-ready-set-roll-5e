@@ -31,7 +31,7 @@ If you are feeling generous, and would like to support my work, you can do so th
 
 ## Planned Features
 - Damage context fields to convey what the damage comes from, or when it occurs.
-- Individual damage overlay buttons to apply the damage of a single field.
+- Individual damage overlay buttons to apply the damage of a single field. In the meantime, you can still apply the total damage of a roll to a token like you would in the core system.
 - Retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
 - Macro support for more flexible quick rolling.
 
