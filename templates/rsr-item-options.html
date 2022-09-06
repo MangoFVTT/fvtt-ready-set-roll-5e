@@ -92,6 +92,18 @@
 						{{localize "rsr5e.sheet.tab.options.template"}}
 					</label>
 					{{/if}}{{/if}}
+					{{#if flags.rsr5e.quickOther}} {{#if hasOther}}
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="flags.rsr5e.quickOther.value"
+							value="flags.rsr5e.quickOther.value"
+							data-dtype="{{flags.rsr5e.quickOther.type}}"
+							{{checked flags.rsr5e.quickOther.value}}
+						/>
+						{{localize "rsr5e.sheet.tab.options.other"}}
+					</label>
+					{{/if}}{{/if}}
 					{{#if flags.rsr5e.quickVersatile}} {{#if isVersatile}}
 					<label class="checkbox">
 						<input
@@ -281,6 +293,18 @@
 							{{checked flags.rsr5e.quickTemplate.altValue}}
 						/>
 						{{localize "rsr5e.sheet.tab.options.template"}}
+					</label>
+					{{/if}}{{/if}}										
+					{{#if flags.rsr5e.quickOther}} {{#if hasOther}}
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="flags.rsr5e.quickOther.altValue"
+							value="flags.rsr5e.quickOther.altValue"
+							data-dtype="{{flags.rsr5e.quickOther.type}}"
+							{{checked flags.rsr5e.quickOther.altValue}}
+						/>
+						{{localize "rsr5e.sheet.tab.options.other"}}
 					</label>
 					{{/if}}{{/if}}
 					{{#if flags.rsr5e.quickVersatile}} {{#if isVersatile}}
