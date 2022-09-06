@@ -1,3 +1,7 @@
+/**
+ * A list of templates available for rendering.
+ * Used by the module for chat cards and item sheet renders.
+ */
 export const TEMPLATE = {
     FULL_CARD: "rsr-full-card.html",
     HEADER: "rsr-header.html",

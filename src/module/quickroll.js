@@ -2,6 +2,10 @@ import { CoreUtility } from "../utils/core.js";
 import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 
+/**
+ * Default quick roll parameters to fill in the parameter list that is passed on to field generation
+ * and rendering.
+ */
 let defaultParams = {
 	label: "",
 	forceCrit: false,
@@ -51,21 +55,37 @@ export class QuickRoll {
 		this.processed = false;
 	}
 
+	/**
+	 * Sets the item associated with this quick roll.
+	 * @param {Item} item The item to store in this quick roll.
+	 */
 	set item(item) {
 		this._item = item;
 		this.itemId = item?.id;
 	}
 
+	/**
+	 * Gets the item associated with this quick roll.
+	 * @returns {Item} The item stored in this quick roll.
+	 */
 	get item() {
 		return this._item;
 	}
 
+	/**
+	 * Sets the actor associated with this quick roll.
+	 * @param {Actor} actor The actor to store in this quick roll.
+	 */
 	set actor(actor) {
 		this._actor = actor;
 		this.actorId = actor?.id;
 		this.tokenId = actor?.token ? actor.token.uuid : null;
 	}
 
+	/**
+	 * Gets the actor associated with this quick roll.
+	 * @returns {Actor} The actor stored in this quick roll.
+	 */
 	get actor() {
 		return this._actor;
 	}
@@ -105,7 +125,7 @@ export class QuickRoll {
 
     /**
 	 * Renders HTML templates for the provided fields and combines them into a card.
-	 * @returns Combined HTML chat data for all the roll fields.
+	 * @returns {Promise<string>} Combined HTML chat data for all the roll fields.
 	 * @private
 	 */
 	async _render() {
@@ -140,7 +160,7 @@ export class QuickRoll {
 
 	/**
 	 * Allows this roll to be serialized into message flags.
-	 * @returns A set of flags to attach to the chat message.
+	 * @returns {any} A set of flags to attach to the chat message.
 	 * @private
 	 */
 	_getFlags() {
@@ -173,6 +193,12 @@ export class QuickRoll {
 		return flags;
 	}
 
+	/**
+	 * Function that concatenates damage rolls together into a single roll for use with the context menu
+	 * apply damage, healing, half-damage, etc.
+	 * @returns {Roll} A single roll compounding all the damage in the chat card into a single value.
+	 * @private
+	 */
 	_getApplyDamageRoll() {
 		const noDamageRoll = new Roll("0").roll({ async: false });
 
