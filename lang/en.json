@@ -39,6 +39,9 @@
                 "labelNotInDictionary": "{type} '{label}' does not exist. Valid values can be found in {dictionary}.",
                 "objectNotExpectedType": "Data object did not match the expected type. Expected type '{type}'.",
                 "incorrectRollType": "Cannot roll an {function} roll for roll type '{type}'."
+            },
+            "warning": {
+                "emptyDamageField": "One or more damage fields on this item are empty! To roll damage, ensure all damage fields are filled."
             }
         },
         "choices": {

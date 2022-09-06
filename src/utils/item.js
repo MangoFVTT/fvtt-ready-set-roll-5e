@@ -1,4 +1,5 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
 import { ROLL_TYPE } from "./roll.js";
@@ -254,6 +255,11 @@ async function addFieldAttack(fields, item, params) {
 
 async function addFieldDamage(fields, item, params) {
     if (item.hasDamage) {
+        if (item.system.damage.parts.some(p => p[0] === '')) {
+            LogUtility.logWarning(CoreUtility.localize(`${MODULE_SHORT}.messages.warning.emptyDamageField`));
+            return;
+        }
+
         const roll = await item.rollDamage({
             critical: false,
             versatile: params?.versatile ?? false,
