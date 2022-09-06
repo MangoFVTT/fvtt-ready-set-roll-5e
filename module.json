@@ -16,7 +16,7 @@
 	],
 	"system": [ "dnd5e" ],
 	"esmodules": [
-		"./lib/libwrapper/shim.js",
+		"./lib/libWrapper/shim.js",
 		"./src/ready-set-roll.js",		
 		"./src/module/config.js"
 	],
