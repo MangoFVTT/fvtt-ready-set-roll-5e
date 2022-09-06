@@ -57,12 +57,13 @@ export class ItemUtility {
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickCheck", isAltRoll)) {
-            await _addFieldToolCheck(fields, item, params);
+            await _addFieldAbilityCheck(fields, item, params);
         }                
         
         params = params ?? {};
+        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll);
+        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", isAltRoll);
 
-        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)
         if (params.damageFlags) {
             await _addFieldDamage(fields, item, params);
         }
@@ -365,7 +366,7 @@ async function _addFieldDamage(fields, item, params) {
 
         let damageTermGroups = [];
         item.system.damage.parts.forEach((part, i) => {
-            const tmpRoll = new Roll(part[0]);
+            const tmpRoll = new CONFIG.Dice.DamageRoll(part[0], item.getRollData());
             const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
             roll.terms.shift();
 
@@ -451,7 +452,7 @@ async function _addFieldOtherFormula(fields, item) {
  * @param {object} params Additional parameters for the attack roll.
  * @private
  */
-async function _addFieldToolCheck(fields, item, params) {
+async function _addFieldAbilityCheck(fields, item, params) {
     if (item.type === ITEM_TYPE.TOOL) {
         const roll = await item.rollToolCheck({
             fastForward: true,
@@ -467,5 +468,27 @@ async function _addFieldToolCheck(fields, item, params) {
                 rollType: ROLL_TYPE.ITEM
             }
         ]);
-    }
+    } else if (item.hasAbilityCheck && item.actor) {
+        if (!(item.hasAbilityCheck in CONFIG.DND5E.abilities)) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
+                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+            return;
+		}
+
+        const roll = await item.actor.rollAbilityTest(item.hasAbilityCheck, {
+            fastForward: true,
+            chatMessage: false,
+            advantage: params?.advMode > 0 ?? false,
+            disadvantage: params?.advMode < 0 ?? false
+        });
+
+        fields.push([
+            FIELD_TYPE.ATTACK,
+            {
+                roll,
+                rollType: ROLL_TYPE.ATTACK,
+                title: `Ability Check - ${CONFIG.DND5E.abilities[item.hasAbilityCheck]}`
+            }
+        ]);
+    }    
 }
