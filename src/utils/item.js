@@ -61,8 +61,9 @@ export class ItemUtility {
         }                
         
         params = params ?? {};
+        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll);
+        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", isAltRoll);
 
-        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)
         if (params.damageFlags) {
             await _addFieldDamage(fields, item, params);
         }
