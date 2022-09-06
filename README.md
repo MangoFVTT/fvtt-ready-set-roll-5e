@@ -20,13 +20,16 @@ If you are feeling generous, and would like to support my work, you can do so th
 - Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 - Items will automatically output damage, calculate critical damage (taking into account system settings for powerful criticals or critical numerical modifiers), place area templates, print Save DC buttons, and a variety of other options that can all be configured independently for each item.
 
-### Alt Rolls & Roll Configuration
+### Roll Configuration
 - Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
 - Item configuration extends system support for thrown items, consumables, ammunition, and items with otherwise limited quantities.
+
+### Alternate Item Rolls
 - If enabled, items can also output an alternate roll when holding `alt`. This alternate roll can be configured independently of the default configuration.
 
 ## Planned Features
 - Damage context fields to convey what the damage comes from, or when it occurs.
+- Individual damage overlay buttons to apply the damage of a single field.
 - Retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
 - Macro support for more flexible quick rolling.
 
@@ -35,7 +38,7 @@ If you are feeling generous, and would like to support my work, you can do so th
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
 - RedReign for creating the original Better Rolls for 5e module, without which this module would not exist.
-- All the wonderful folks on the Foundry VTT discord for their tireless help.
+- All the wonderful folks on the Foundry VTT discord for their tireless community efforts.
 
 ## License
 The source code is licensed under GPL-3.0.
