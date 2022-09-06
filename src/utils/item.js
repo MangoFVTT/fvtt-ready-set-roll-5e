@@ -18,6 +18,8 @@ export const ITEM_TYPE = {
 
 export class ItemUtility {
     static async getFieldsFromItem(item, params) {
+        ItemUtility.ensureFlagsOnitem(item);
+
         const chatData = await item.getChatData();
         const isAltRoll = params?.isAltRoll ?? false;
         let fields = [];
@@ -70,6 +72,7 @@ export class ItemUtility {
     }
     
     static getRollConfigFromItem(item, isAltRoll = false) {
+        ItemUtility.ensureFlagsOnitem(item);
         ItemUtility.ensureConsumePropertiesOnItem(item);
 
         const config = {}
@@ -89,8 +92,7 @@ export class ItemUtility {
         if (item?.hasRecharge && item?.flags[`${MODULE_SHORT}`].consumeRecharge) {
             config.consumeRecharge = item.flags[`${MODULE_SHORT}`].consumeRecharge[isAltRoll ? "altValue" : "value"];
         }
-        
-        console.log(config);
+
         return config;
     }   
 
@@ -100,6 +102,31 @@ export class ItemUtility {
         }
         
         return false;
+    }
+
+    static ensureFlagsOnitem(item) {
+        if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
+            return;
+        }
+
+        if (item.flags && item.flags[`${MODULE_SHORT}`]) {
+            return;
+        }
+
+        this.refreshFlagsOnItem(item);
+    }
+
+    static ensureConsumePropertiesOnItem(item) {
+        if (item) {
+            // For items with quantity (weapons, tools, consumables...)
+            item.hasQuantity = ("quantity" in item.system);
+            // For items with "Limited Uses" configured
+            item.hasUses = !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
+            // For items with "Resource Consumption" configured
+            item.hasResource = !!(item.system.consume?.target);
+            // For abilities with "Action Recharge" configured
+            item.hasRecharge = !!(item.system.recharge?.value);
+        }
     }
 
     static refreshFlagsOnItem(item) {
@@ -137,19 +164,6 @@ export class ItemUtility {
         item.flags[`${MODULE_SHORT}`] = moduleFlags;        
         
         ItemUtility.ensureConsumePropertiesOnItem(item);
-    }
-
-    static ensureConsumePropertiesOnItem(item) {
-        if (item) {
-            // For items with quantity (weapons, tools, consumables...)
-            item.hasQuantity = ("quantity" in item.system);
-            // For items with "Limited Uses" configured
-            item.hasUses = !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
-            // For items with "Resource Consumption" configured
-            item.hasResource = !!(item.system.consume?.target);
-            // For abilities with "Action Recharge" configured
-            item.hasRecharge = !!(item.system.recharge?.value);
-        }
     }
 }
 
@@ -203,12 +217,26 @@ function addFieldSave(fields, item) {
 
 async function addFieldAttack(fields, item, params) {
     if (item.hasAttack) {
+        let ammoConsumeBypass = false;
+        if (item.system?.consume?.type === "ammo") {
+            item.system.consume.type = "rsr5e";
+            ammoConsumeBypass = true;
+        }
+
         const roll = await item.rollAttack({
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
             disadvantage: params?.advMode < 0 ?? false
         });
+
+        if (params) {
+            params.isCrit = params.isCrit || roll.isCritical;
+        }
+
+        if (ammoConsumeBypass) {
+            item.system.consume.type = "ammo";
+        }
 
         fields.push([
             FIELD_TYPE.ATTACK,
@@ -218,10 +246,6 @@ async function addFieldAttack(fields, item, params) {
                 consume: ItemUtility.getConsumeTargetFromItem(item)
             }
         ]);
-
-        if (params) {
-            params.isCrit = params.isCrit || roll.isCritical;
-        }
     }
 }
 
@@ -262,7 +286,7 @@ async function addFieldDamage(fields, item, params) {
 
                 if (i === 0 && firstDie) {
                     critTerms.splice(index, 1, new Die({
-                        number: firstDie.number + roll.options.criticalBonusDice ?? 0,
+                        number: firstDie.number + (roll.options.criticalBonusDice ?? 0),
                         faces: firstDie.faces,
                         results: firstDie.results
                     }));

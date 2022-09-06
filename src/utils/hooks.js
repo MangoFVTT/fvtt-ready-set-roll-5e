@@ -61,7 +61,7 @@ export class HooksUtility {
      */
     static registerItemHooks() {
         Hooks.on("createItem", (item) => {
-            ItemUtility.refreshFlagsOnItem(item);
+            ItemUtility.ensureFlagsOnitem(item);
         });
 
         Hooks.on("dnd5e.useItem", (item, config, options) => {
