@@ -7,7 +7,8 @@ import { ItemUtility, ITEM_TYPE } from "./item.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
- * A list of different roll types that can be made.
+ * Enumerable of identifiers for different roll types that can be made.
+ * @enum {string}
  */
 export const ROLL_TYPE = {
     SKILL: "skill",
@@ -21,7 +22,8 @@ export const ROLL_TYPE = {
 }
 
 /**
- * A list of crit result types.
+ * Enumerable of identifiers for crit result types.
+ * @enum {string}
  */
 export const CRIT_TYPE = {
     MIXED: "mixed",
@@ -253,6 +255,14 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
     return quickroll;
 }
 
+/**
+ * Gets an item-based quick roll.
+ * @param {Item} item The item object from which the roll is being generated.
+ * @param {*} params The combined parameters of the item roll (config and options).
+ * @param {*} rollType The type (as a string identifier) of the roll being quick rolled.
+ * @param {boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
+ * @returns {Promise<QuickRoll>} The created item quick roll.
+ */
 async function getItemRoll(item, params, rollType, createMessage = true) {
     if (!item instanceof Item) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Item" }));

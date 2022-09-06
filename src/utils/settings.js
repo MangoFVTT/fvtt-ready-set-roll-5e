@@ -2,6 +2,10 @@ import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 
+/**
+ * Enumerable of identifiers for setting names.
+ * @enum {string}
+ */
 export const SETTING_NAMES = {
     ROLL_MODIFIER_MODE: "rollModifierMode",
     QUICK_SKILL_ENABLED: "enableSkillQuickRoll",
@@ -20,9 +24,15 @@ export const SETTING_NAMES = {
     SHOW_SKILL_ABILITIES: "showSkillAbilities"
 }
 
+/**
+ * Utility class for registry of module settings and retrieval of setting data.
+ */
 export class SettingsUtility {
+    /**
+     * Registers all necessary module settings.
+     */
     static registerSettings() {
-        LogUtility.log("Registering Settings");
+        LogUtility.log("Registering module settings");
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.ROLL_MODIFIER_MODE, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ROLL_MODIFIER_MODE}.name`),
@@ -170,11 +180,16 @@ export class SettingsUtility {
 		// 	choices: {
 		// 		0: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.0`),
 		// 		1: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.1`),
-        //         2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.2`)
+        //      2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.2`)
 		// 	}
 		// });
     }
     
+    /**
+     * Retrieve a specific setting value for the provided key.
+     * @param {SETTING_NAMES|string} settingKey The identifier of the setting to retrieve.
+     * @returns {string|boolean} The value of the setting as set for the world/client.
+     */
     static getSettingValue(settingKey) {
         return game.settings.get(MODULE_NAME, settingKey);
     }

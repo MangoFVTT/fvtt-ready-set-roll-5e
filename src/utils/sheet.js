@@ -7,6 +7,9 @@ import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 let _activate = false;
 
+/**
+ * Utility class to handle additional sheet functionality for the module.
+ */
 export class SheetUtility {
     static setAutoHeightOnSheet(sheet) {
         sheet?.setPosition({ height: "auto" })
@@ -36,8 +39,8 @@ export class SheetUtility {
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
-            addItemOptionsTab(html);
-            await addItemOptions(item, html);
+            _addItemOptionsTab(html);
+            await _addItemOptions(item, html);
         }        
 
         // Re-activate roll options tab if needed (after certain events it may be necessary).
@@ -50,14 +53,25 @@ export class SheetUtility {
     }
 }
 
-function addItemOptionsTab(html) {
+/**
+ * Adds an item options tab to the provided item sheet.
+ * @param {Object} html The html data container of the sheet.
+ * @private
+ */
+function _addItemOptionsTab(html) {
     const tabContainer = html.find("form nav.sheet-navigation.tabs");
     const tabTitle = `<a class="item" data-tab="${MODULE_SHORT}">${CoreUtility.localize(`${MODULE_SHORT}.sheet.tab.title`)}</a>`;
 
     tabContainer.append($(tabTitle));
 }
 
-async function addItemOptions(item, html) {
+/**
+ * Adds roll configuration UI for a specific item sheet.
+ * @param {Item} item The item to whom the sheet belongs.
+ * @param {object} html The html data container of the sheet.
+ * @private
+ */
+async function _addItemOptions(item, html) {
     const settingsContainer = html.find(".sheet-body");
 
     const properties = {
@@ -86,7 +100,8 @@ async function addItemOptions(item, html) {
 
     settingsContainer.append(optionsTemplate);
 
-    // Activate the tab if anything changes in any sub-field
+    // Activate the quick roll tab if anything changes in any sub-field.
+    // This is necessary because sometimes the sheet will revert to the original tab when re-rendering.
 	const newSection = settingsContainer.find(".tab.item-rsr5e");
 	newSection.find("input[type=text]").change(() => { _activate = true; });
 	newSection.find("input[type=number]").change(() => { _activate = true; });

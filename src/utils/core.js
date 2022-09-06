@@ -18,7 +18,7 @@ export class CoreUtility {
      * Shorthand for both game.i18n.format() and game.i18n.localize() depending on whether data is supplied or not.
      * @param {string} key The key string to localize for.
      * @param {object?} data Optional data that if given will do a i18n.format() instead.
-     * @returns A localized string (with formatting if needed).
+     * @returns {string} A localized string (with formatting if needed).
      */
     static localize(key, data = null) {
         if (data) {
@@ -59,7 +59,7 @@ export class CoreUtility {
 
     /**
      * Checks a given data object to determine if it is an item or an actor.
-     * @param {*} dataObject 
+     * @param {object} dataObject 
      * @returns {Item | Actor} A tuple containing an item and its actor if given an item, or just the actor otherwise.
      */
     static resolveActorOrItem(dataObject) {
