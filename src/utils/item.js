@@ -4,6 +4,10 @@ import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
 import { ROLL_TYPE } from "./roll.js";
 
+/**
+ * Enumerable of identifiers for different types of dnd5e items.
+ * @enum {string}
+ */
 export const ITEM_TYPE = {
     WEAPON: "weapon",
     EQUIPMENT: "equipment",
@@ -17,7 +21,17 @@ export const ITEM_TYPE = {
     CLASS: "class"
 }
 
+/**
+ * Utility class to handle setting and retrieving information to/from items.
+ */
 export class ItemUtility {
+    /**
+     * Generates a list of the different fields required for this item roll.
+     * Will only generate fields that are available and enabled via the roll configuraton flags.
+     * @param {Item} item The item from which to retrieve the roll fields. 
+     * @param {object} params Addtional parameters for the item roll.
+     * @returns {Array} A list of fields as specified by the roll configuration.
+     */
     static async getFieldsFromItem(item, params) {
         ItemUtility.ensureFlagsOnitem(item);
 
@@ -31,34 +45,34 @@ export class ItemUtility {
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickDesc", isAltRoll)) {
-            addFieldDescription(fields, chatData);
+            _addFieldDescription(fields, chatData);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", isAltRoll)) {
-            addFieldSave(fields, item);
+            _addFieldSave(fields, item);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", isAltRoll)) {
-            await addFieldAttack(fields, item, params);
+            await _addFieldAttack(fields, item, params);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickCheck", isAltRoll)) {
-            await addFieldToolCheck(fields, item, params);
+            await _addFieldToolCheck(fields, item, params);
         }                
         
         params = params ?? {};
 
         params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)
         if (params.damageFlags) {
-            await addFieldDamage(fields, item, params);
+            await _addFieldDamage(fields, item, params);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickOther", isAltRoll)) {
-            await addFieldOtherFormula(fields, item);
+            await _addFieldOtherFormula(fields, item);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickFooter", isAltRoll)) {
-            addFieldFooter(fields, chatData);
+            _addFieldFooter(fields, chatData);
         }
 
         return fields;
@@ -164,6 +178,7 @@ export class ItemUtility {
  * Gets the given item's targeted item for consuming (generally ammunition).
  * @param {Item} item The item to search for consume targets.
  * @returns The target item to consume.
+ * @private
  */
 function _getConsumeTargetFromItem(item) {
     if (item.system.consume.type === "ammo") {
@@ -177,6 +192,7 @@ function _getConsumeTargetFromItem(item) {
  * Adds a render field for item chat flavor.
  * @param {Array} fields The current array of fields to add to. 
  * @param {object} chatData The chat data for the item (from item.getChatData).
+ * @private
  */
 function _addFieldFlavor(fields, chatData) {
     if (chatData.chatFlavor && chatData.chatFlavor !== "") {
@@ -194,8 +210,9 @@ function _addFieldFlavor(fields, chatData) {
  * Adds a render field for item description.
  * @param {Array} fields The current array of fields to add to. 
  * @param {object} chatData The chat data for the item (from item.getChatData). 
+ * @private
  */
-function addFieldDescription(fields, chatData) {
+function _addFieldDescription(fields, chatData) {
     if (chatData.description && chatData.description.value !== "" && chatData.description.value !== "<p></p>") {
         fields.push([
             FIELD_TYPE.DESCRIPTION,
@@ -210,9 +227,10 @@ function addFieldDescription(fields, chatData) {
 /**
  * Adds a render field for item footer properties.
  * @param {Array} fields The current array of fields to add to. 
- * @param {object} chatData The chat data for the item (from item.getChatData). 
+ * @param {object} chatData The chat data for the item (from item.getChatData).
+ * @private
  */
-function addFieldFooter(fields, chatData) {
+function _addFieldFooter(fields, chatData) {
     fields.push([
         FIELD_TYPE.FOOTER,
         {
@@ -225,8 +243,9 @@ function addFieldFooter(fields, chatData) {
  * Adds a render field for item save DC button.
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
+ * @private
  */
-function addFieldSave(fields, item) {
+function _addFieldSave(fields, item) {
     if (item.hasSave) {
         //const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
 
@@ -246,8 +265,9 @@ function addFieldSave(fields, item) {
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
  * @param {object} params Additional parameters for the attack roll.
+ * @private
  */
-async function addFieldAttack(fields, item, params) {
+async function _addFieldAttack(fields, item, params) {
     if (item.hasAttack) {
         // The dnd5e default attack roll automatically consumes ammo without any option for external configuration.
         // This code will bypass this consumption since we have already consumed or not consumed via the roll config earlier.
@@ -289,8 +309,9 @@ async function addFieldAttack(fields, item, params) {
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
  * @param {object} params Additional parameters for the attack roll.
+ * @private
  */
-async function addFieldDamage(fields, item, params) {
+async function _addFieldDamage(fields, item, params) {
     if (item.hasDamage) {
         if (item.system.damage.parts.some(p => p[0] === '')) {
             LogUtility.logWarning(CoreUtility.localize(`${MODULE_SHORT}.messages.warning.emptyDamageField`));
@@ -367,8 +388,9 @@ async function addFieldDamage(fields, item, params) {
  * Adds a render field for item other formula.
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
+ * @private
  */
-async function addFieldOtherFormula(fields, item) {
+async function _addFieldOtherFormula(fields, item) {
     if (item.system.formula) {
         const otherRoll = await new Roll(item.system.formula).roll({ async: true });
 
@@ -390,8 +412,9 @@ async function addFieldOtherFormula(fields, item) {
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
  * @param {object} params Additional parameters for the attack roll.
+ * @private
  */
-async function addFieldToolCheck(fields, item, params) {
+async function _addFieldToolCheck(fields, item, params) {
     if (item.type === ITEM_TYPE.TOOL) {
         const roll = await item.rollToolCheck({
             fastForward: true,

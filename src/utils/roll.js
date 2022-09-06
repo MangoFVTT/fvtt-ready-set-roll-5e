@@ -7,7 +7,8 @@ import { ItemUtility, ITEM_TYPE } from "./item.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
- * A list of different roll types that can be made.
+ * Enumerable of identifiers for different roll types that can be made.
+ * @enum {string}
  */
 export const ROLL_TYPE = {
     SKILL: "skill",
@@ -21,7 +22,8 @@ export const ROLL_TYPE = {
 }
 
 /**
- * A list of crit result types.
+ * Enumerable of identifiers for crit result types.
+ * @enum {string}
  */
 export const CRIT_TYPE = {
     MIXED: "mixed",

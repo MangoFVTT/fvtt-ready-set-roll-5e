@@ -20,7 +20,7 @@ export const FIELD_TYPE = {
 }
 
 /**
- * Class that handles all rendering from provided fields into HTML data.
+ * Utility class to handle all rendering from provided fields into HTML data.
  */
 export class RenderUtility {
     static async renderFromField(field, metadata) {

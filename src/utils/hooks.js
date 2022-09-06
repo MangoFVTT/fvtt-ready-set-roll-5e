@@ -7,11 +7,15 @@ import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
 
+// A list of module specific hooks that are fired throughout the module.
 export const HOOK_LOADED = `${MODULE_SHORT}.loaded`;
 export const HOOK_CHAT_MESSAGE = `${MODULE_SHORT}.chatMessage`;
 export const HOOK_RENDER = `${MODULE_SHORT}.render`;
 export const HOOK_PROCESSED_ROLL = `${MODULE_SHORT}.rollProcessed`;
 
+/**
+ * Utility class to handle registering listeners for hooks needed throughout the module.
+ */
 export class HooksUtility {
     /**
      * Register all necessary hooks for the module as a whole.
@@ -41,7 +45,7 @@ export class HooksUtility {
                 CONFIG.DND5E.healingTypes,
                 { recursive: false }
             );
-
+            
             HooksUtility.registerChatHooks();
 
             if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
