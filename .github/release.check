@@ -1,0 +1,17 @@
+1. Merge develop to master
+2. Update module.json
+-- Update version string
+-- Update download link (ensure both instances of version are updated)
+-- Update compatibility
+-- Update relationships
+-- Push to master
+3. Create a new release on github
+4. Select target (master) and tag (add new tag based on version string)
+5. Add release title (same as tag)
+6. Select previous tag
+7. Add description
+8. Package a zip file with everything in it except .git, .code-workspace, .lock
+9. Rename zip file with correct release name
+10. Upload zip file and module.json to release page
+11. Double check details
+12. Publish
