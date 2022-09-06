@@ -62,14 +62,6 @@ export class ItemUtility {
 
         return fields;
     }
-
-    static getConsumeTargetFromItem(item) {
-        if (item.system.consume.type === "ammo") {
-            return item.actor.items.get(item.system.consume.target);
-        }
-
-        return undefined;
-    }
     
     static getRollConfigFromItem(item, isAltRoll = false) {
         ItemUtility.ensureFlagsOnitem(item);
@@ -167,6 +159,14 @@ export class ItemUtility {
     }
 }
 
+function getConsumeTargetFromItem(item) {
+    if (item.system.consume.type === "ammo") {
+        return item.actor.items.get(item.system.consume.target);
+    }
+
+    return undefined;
+}
+
 function addFieldFlavor(fields, chatData) {
     if (chatData.chatFlavor && chatData.chatFlavor !== "") {
         fields.push([
@@ -217,6 +217,8 @@ function addFieldSave(fields, item) {
 
 async function addFieldAttack(fields, item, params) {
     if (item.hasAttack) {
+        // The dnd5e default attack roll automatically consumes ammo without any option for external configuration.
+        // This code will bypass this consumption since we have already consumed or not consumed via the roll config earlier.
         let ammoConsumeBypass = false;
         if (item.system?.consume?.type === "ammo") {
             item.system.consume.type = "rsr5e";
@@ -234,6 +236,7 @@ async function addFieldAttack(fields, item, params) {
             params.isCrit = params.isCrit || roll.isCritical;
         }
 
+        // Reset ammo type to avoid issues.
         if (ammoConsumeBypass) {
             item.system.consume.type = "ammo";
         }
@@ -243,7 +246,7 @@ async function addFieldAttack(fields, item, params) {
             {
                 roll,
                 rollType: ROLL_TYPE.ATTACK,
-                consume: ItemUtility.getConsumeTargetFromItem(item)
+                consume: getConsumeTargetFromItem(item)
             }
         ]);
     }
