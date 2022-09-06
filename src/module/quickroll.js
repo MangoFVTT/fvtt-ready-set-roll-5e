@@ -3,8 +3,7 @@ import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/ho
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 
 /**
- * Default quick roll parameters to fill in the parameter list that is passed on to field generation
- * and rendering.
+ * Default quick roll parameters to fill in the parameter list that is passed on to field generation and rendering.
  */
 let defaultParams = {
 	label: "",
