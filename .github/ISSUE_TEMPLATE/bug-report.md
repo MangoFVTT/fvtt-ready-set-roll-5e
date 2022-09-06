@@ -16,13 +16,10 @@ A clear and concise description of what the bug is, along with any other context
 3. Scroll down to '....'
 4. See error
 
-**Expected Result**
-A clear and concise description of what you expected to happen.
-
-**Actual Result**
-A clear and concise description of what actually happens.
-
 **Versions**
  - Module: [x.x.x]
  - dnd5e: [x.x.x]
  - Foundry: [10.xxx]
+
+**Other Modules**
+A list of any other installed modules that might be related to the issue.
