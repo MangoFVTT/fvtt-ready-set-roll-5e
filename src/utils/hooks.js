@@ -56,7 +56,7 @@ export class HooksUtility {
     }
 
     /**
-     * Register item specific hooks for module function.
+     * Register item specific hooks for module functionality.
      */
     static registerItemHooks() {
         Hooks.on("createItem", (item) => {
@@ -71,14 +71,14 @@ export class HooksUtility {
     }
 
     /**
-     * Register chat specific hooks for module function.
+     * Register chat specific hooks for module functionality.
      */
     static registerChatHooks() {
 
     }
 
     /**
-     * Register sheet specific hooks for module function.
+     * Register sheet specific hooks for module functionality.
      */
     static registerSheetHooks() {
         Hooks.on("renderItemSheet5e", (app, html, data) => {

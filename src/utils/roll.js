@@ -253,6 +253,14 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
     return quickroll;
 }
 
+/**
+ * Gets an item-based quick roll.
+ * @param {Item} item The item object from which the roll is being generated.
+ * @param {*} params The combined parameters of the item roll (config and options).
+ * @param {*} rollType The type (as a string identifier) of the roll being quick rolled.
+ * @param {boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
+ * @returns {Promise<QuickRoll>} The created item quick roll.
+ */
 async function getItemRoll(item, params, rollType, createMessage = true) {
     if (!item instanceof Item) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Item" }));
