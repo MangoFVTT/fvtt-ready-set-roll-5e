@@ -78,6 +78,13 @@ export class ItemUtility {
         return fields;
     }
     
+    /**
+     * Retrieves a roll configuration to pass to the default Foundry VTT item.use().
+     * This configuration largely handles what the item will consume, as specified in the roll configuration tab.
+     * @param {Item} item The item from which to retrieve the roll configuration.
+     * @param {boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
+     * @returns {object} A roll configuration in the format necessary for the dnd5e system.
+     */
     static getRollConfigFromItem(item, isAltRoll = false) {
         ItemUtility.ensureFlagsOnitem(item);
         ItemUtility.ensureConsumePropertiesOnItem(item);
@@ -103,6 +110,13 @@ export class ItemUtility {
         return config;
     }   
 
+    /**
+     * Gets a specific value for a set module flag from an item.
+     * @param {Item} item The item from which to retrieve the flag value.
+     * @param {string} flag The identifier of the flag to retrieve.
+     * @param {boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
+     * @returns {boolean} Whether the flag is set to true or false.
+     */
     static getFlagValueFromItem(item, flag, isAltRoll = false) {
         if (item?.flags[`${MODULE_SHORT}`][flag]) {
             return item.flags[`${MODULE_SHORT}`][flag][isAltRoll ? "altValue" : "value"] ?? false;
@@ -111,18 +125,11 @@ export class ItemUtility {
         return false;
     }
 
-    static ensureFlagsOnitem(item) {
-        if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
-            return;
-        }
-
-        if (item.flags && item.flags[`${MODULE_SHORT}`]) {
-            return;
-        }
-
-        this.refreshFlagsOnItem(item);
-    }
-
+    /**
+     * Checks the specified item to make sure specific consume booleans exist.
+     * These booleans give a quick indication on if the item has that specific consume property.
+     * @param {Item} item The item on which to ensure consume properties exist.
+     */
     static ensureConsumePropertiesOnItem(item) {
         if (item) {
             // For items with quantity (weapons, tools, consumables...)
@@ -136,6 +143,26 @@ export class ItemUtility {
         }
     }
 
+    /**
+     * Checks the specified item to make sure module flags exist on it, and generates them if not.
+     * @param {Item} item The item on which to ensure flags exist.
+     */
+    static ensureFlagsOnitem(item) {
+        if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
+            return;
+        }
+
+        if (item.flags && item.flags[`${MODULE_SHORT}`]) {
+            return;
+        }
+
+        this.refreshFlagsOnItem(item);
+    }
+
+    /**
+     * Refreshes the stored flags on an item or generates them from default if they don't exist.
+     * @param {Item} item The item on which to refresh module flags.
+     */
     static refreshFlagsOnItem(item) {
         LogUtility.log(`Refreshing ${MODULE_SHORT} item flags.`);
 
