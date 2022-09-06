@@ -5,7 +5,7 @@ If you are feeling generous, and would like to support my work, you can do so th
 
 ## Installation
 
-### Method 2
+### Method 1
 1. Start up Foundry and click "Install Module" in the "Add-on Modules" tab.
 2. Search for "Ready Set Roll" in the pop up window.
 3. Click "Install" and the module should download and appear in your modules list.
