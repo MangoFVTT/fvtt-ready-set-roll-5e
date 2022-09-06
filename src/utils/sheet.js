@@ -28,7 +28,7 @@ export class SheetUtility {
             return;
         }
         
-        ItemUtility.ensureFlagsOnItem(item);
+        ItemUtility.refreshFlagsOnItem(item);
 
         let html = protoHtml;
         if (html[0].localName !== "div") {
@@ -63,6 +63,7 @@ async function addItemOptions(item, html) {
     const properties = {
         dnd5e: CONFIG.DND5E,
         altRollEnabled: SettingsUtility.getSettingValue(SETTING_NAMES.ALT_ROLL_ENABLED),
+        item,
         flags: item.flags,
         defLabel: CoreUtility.localize(`${MODULE_SHORT}.sheet.tab.section.defaultRoll`),
         altLabel: CoreUtility.localize(`${MODULE_SHORT}.sheet.tab.section.alternateRoll`),

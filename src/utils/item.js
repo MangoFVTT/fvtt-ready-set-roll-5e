@@ -18,69 +18,73 @@ export const ITEM_TYPE = {
 
 export class ItemUtility {
     static async getFieldsFromItem(item, params) {
+        ItemUtility.ensureFlagsOnitem(item);
+
         const chatData = await item.getChatData();
         const isAltRoll = params?.isAltRoll ?? false;
         let fields = [];
 
-        console.log(item);
 
         if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", isAltRoll)) {
             addFieldFlavor(fields, chatData);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickDesc", isAltRoll)) {
             addFieldDescription(fields, chatData);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", isAltRoll)) {
             addFieldSave(fields, item);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", isAltRoll)) {
             await addFieldAttack(fields, item, params);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickCheck", isAltRoll)) {
             await addFieldToolCheck(fields, item, params);
-        }
-        if (ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)) {
+        }                
+        
+        params = params ?? {};
+
+        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll)
+        if (params.damageFlags) {
             await addFieldDamage(fields, item, params);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickOther", isAltRoll)) {
             await addFieldOtherFormula(fields, item);
         }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickFooter", isAltRoll)) {
             addFieldFooter(fields, chatData);
         }
 
         return fields;
     }
-
-    static getConsumeTargetFromItem(item) {
-        if (item.system.consume.type === "ammo") {
-            return item.actor.items.get(item.system.consume.target);
-        }
-
-        return undefined;
-    }
     
     static getRollConfigFromItem(item, isAltRoll = false) {
+        ItemUtility.ensureFlagsOnitem(item);
         ItemUtility.ensureConsumePropertiesOnItem(item);
 
         const config = {}
 
         if (item?.hasAreaTarget && item?.flags[`${MODULE_SHORT}`].quickTemplate) { 
-            config["createMeasuredTemplate"] = item.flags[`${MODULE_SHORT}`].quickTemplate[isAltRoll ? "altValue" : "value"];
+            config.createMeasuredTemplate = item.flags[`${MODULE_SHORT}`].quickTemplate[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasQuantity && item?.flags[`${MODULE_SHORT}`].consumeQuantity) {
-            config["consumeQuantity"] = item.flags[`${MODULE_SHORT}`].consumeQuantity[isAltRoll ? "altValue" : "value"];
+            config.consumeQuantity = item.flags[`${MODULE_SHORT}`].consumeQuantity[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasUses && item?.flags[`${MODULE_SHORT}`].consumeUses) {
-            config["consumeUsage"] = item.flags[`${MODULE_SHORT}`].consumeUses[isAltRoll ? "altValue" : "value"];
+            config.consumeUsage = item.flags[`${MODULE_SHORT}`].consumeUses[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasResource && item?.flags[`${MODULE_SHORT}`].consumeResource) {
-            config["consumeResource"] = item.flags[`${MODULE_SHORT}`].consumeResource[isAltRoll ? "altValue" : "value"];
+            config.consumeResource = item.flags[`${MODULE_SHORT}`].consumeResource[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasRecharge && item?.flags[`${MODULE_SHORT}`].consumeRecharge) {
-            config["consumeRecharge"] = item.flags[`${MODULE_SHORT}`].consumeRecharge[isAltRoll ? "altValue" : "value"];
+            config.consumeRecharge = item.flags[`${MODULE_SHORT}`].consumeRecharge[isAltRoll ? "altValue" : "value"];
         }
-        
+
         return config;
     }   
 
@@ -92,8 +96,33 @@ export class ItemUtility {
         return false;
     }
 
-    static ensureFlagsOnItem(item) {
-        LogUtility.log("Ensuring item flags for module.");
+    static ensureFlagsOnitem(item) {
+        if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
+            return;
+        }
+
+        if (item.flags && item.flags[`${MODULE_SHORT}`]) {
+            return;
+        }
+
+        this.refreshFlagsOnItem(item);
+    }
+
+    static ensureConsumePropertiesOnItem(item) {
+        if (item) {
+            // For items with quantity (weapons, tools, consumables...)
+            item.hasQuantity = ("quantity" in item.system);
+            // For items with "Limited Uses" configured
+            item.hasUses = !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
+            // For items with "Resource Consumption" configured
+            item.hasResource = !!(item.system.consume?.target);
+            // For abilities with "Action Recharge" configured
+            item.hasRecharge = !!(item.system.recharge?.value);
+        }
+    }
+
+    static refreshFlagsOnItem(item) {
+        LogUtility.log(`Refreshing ${MODULE_SHORT} item flags.`);
 
         if (!item || !CONFIG[`${MODULE_SHORT}`].validItemTypes.includes(item.type)) {
             return;
@@ -128,19 +157,14 @@ export class ItemUtility {
         
         ItemUtility.ensureConsumePropertiesOnItem(item);
     }
+}
 
-    static ensureConsumePropertiesOnItem(item) {
-        if (item) {
-            // For items with quantity (weapons, tools, consumables...)
-            item.hasQuantity = ("quantity" in item.system);
-            // For items with "Limited Uses" configured
-            item.hasUses = !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
-            // For items with "Resource Consumption" configured
-            item.hasResource = !!(item.system.consume?.target);
-            // For abilities with "Action Recharge" configured
-            item.hasRecharge = !!(item.system.recharge?.value);
-        }
+function getConsumeTargetFromItem(item) {
+    if (item.system.consume.type === "ammo") {
+        return item.actor.items.get(item.system.consume.target);
     }
+
+    return undefined;
 }
 
 function addFieldFlavor(fields, chatData) {
@@ -193,6 +217,14 @@ function addFieldSave(fields, item) {
 
 async function addFieldAttack(fields, item, params) {
     if (item.hasAttack) {
+        // The dnd5e default attack roll automatically consumes ammo without any option for external configuration.
+        // This code will bypass this consumption since we have already consumed or not consumed via the roll config earlier.
+        let ammoConsumeBypass = false;
+        if (item.system?.consume?.type === "ammo") {
+            item.system.consume.type = "rsr5e";
+            ammoConsumeBypass = true;
+        }
+
         const roll = await item.rollAttack({
             fastForward: true,
             chatMessage: false,
@@ -200,18 +232,23 @@ async function addFieldAttack(fields, item, params) {
             disadvantage: params?.advMode < 0 ?? false
         });
 
+        if (params) {
+            params.isCrit = params.isCrit || roll.isCritical;
+        }
+
+        // Reset ammo type to avoid issues.
+        if (ammoConsumeBypass) {
+            item.system.consume.type = "ammo";
+        }
+
         fields.push([
             FIELD_TYPE.ATTACK,
             {
                 roll,
                 rollType: ROLL_TYPE.ATTACK,
-                consume: ItemUtility.getConsumeTargetFromItem(item)
+                consume: getConsumeTargetFromItem(item)
             }
         ]);
-
-        if (params) {
-            params.isCrit = params.isCrit || roll.isCritical;
-        }
     }
 }
 
@@ -228,11 +265,15 @@ async function addFieldDamage(fields, item, params) {
         });
 
         let damageTermGroups = [];
-        item.system.damage.parts.forEach(part => {
-            const tmpRoll = new Roll(part[0]);
-            damageTermGroups.push({ type: part[1], terms: roll.terms.splice(0, tmpRoll.terms.length) });
+        for (let i = 0; i < item.system.damage.parts.length; i++) {
+            const tmpRoll = new Roll(item.system.damage.parts[i][0]);
+            const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
             roll.terms.shift();
-        });
+
+            if (params?.damageFlags[i] ?? true) {
+                damageTermGroups.push({ type: item.system.damage.parts[i][1], terms: partTerms});
+            }
+        }
 
         if (roll.terms.length > 0) damageTermGroups[0].terms.push(...roll.terms);
 
@@ -244,13 +285,19 @@ async function addFieldDamage(fields, item, params) {
             if (params?.isCrit) {
                 const critTerms = roll.options.multiplyNumeric ? group.terms : group.terms.filter(t => !(t instanceof NumericTerm));
                 const firstDie = critTerms.find(t => t instanceof Die);
+                const index = critTerms.indexOf(firstDie);
 
                 if (i === 0 && firstDie) {
-                    critTerms[critTerms.indexOf(firstDie)] = new Die({
-                        number: firstDie.number + roll.options.criticalBonusDice ?? 0,
+                    critTerms.splice(index, 1, new Die({
+                        number: firstDie.number + (roll.options.criticalBonusDice ?? 0),
                         faces: firstDie.faces,
                         results: firstDie.results
-                    });
+                    }));
+                }
+
+                // Remove trailing operators to avoid errors.
+                while (critTerms.at(-1) instanceof OperatorTerm) {
+                    critTerms.pop();
                 }
 
                 critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
