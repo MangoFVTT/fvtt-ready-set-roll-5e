@@ -20,12 +20,14 @@ If you are feeling generous, and would like to support my work, you can do so th
 - Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 - Items will automatically output damage, calculate critical damage (taking into account system settings for powerful criticals or critical numerical modifiers), place area templates, print Save DC buttons, and a variety of other options that can all be configured independently for each item.
 
-### Roll Configuration
+![quickrolls](https://user-images.githubusercontent.com/110994627/188636272-a557cd66-082d-46a3-a4e9-bf44e9c03535.png)
+
+### Roll Configuration & Alt Rolls
 - Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
 - Item configuration extends system support for thrown items, consumables, ammunition, and items with otherwise limited quantities.
-
-### Alternate Item Rolls
 - If enabled, items can also output an alternate roll when holding `alt`. This alternate roll can be configured independently of the default configuration.
+
+![rollconfig](https://user-images.githubusercontent.com/110994627/188637202-f0e4ba7b-7790-4c97-9be6-bc64f4be7015.png)
 
 ## Planned Features
 - Damage context fields to convey what the damage comes from, or when it occurs.
