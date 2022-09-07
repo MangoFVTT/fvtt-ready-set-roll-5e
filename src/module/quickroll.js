@@ -106,7 +106,7 @@ export class QuickRoll {
 			speaker: ChatMessage.getSpeaker({ item, actor }),
 			flags: this._getFlags(),
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-			roll: this._getApplyDamageRoll(),
+			roll: this._getChatMessageRolls(),
 			...CoreUtility.getRollSound(),
 			...CoreUtility.getWhisperData(rollMode),
 		}
@@ -194,18 +194,19 @@ export class QuickRoll {
 	}
 
 	/**
-	 * Function that concatenates damage rolls together into a single roll for use with the context menu
-	 * apply damage, healing, half-damage, etc.
+	 * Function that concatenates all the compounded rolls in a quick roll into a set of roll instances.
+	 * Damage rolls go together into a single roll for use with the context menu apply damage, healing, half-damage, etc.
 	 * @returns {Roll} A single roll compounding all the damage in the chat card into a single value.
 	 * @private
 	 */
-	_getApplyDamageRoll() {
-		const noDamageRoll = new Roll("0").roll({ async: false });
-
+	_getChatMessageRolls() {
+		let roll = new Roll("1d0").evaluate({ async: false });
+	
         if (this.fields.length === 0) {
-            return noDamageRoll;
+            return roll;
         }
 
+		// Concatenate damage rolls into a single roll (for apply damage context menu).
         const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE).map(f => f[1]);
 		const plus = new OperatorTerm({ operator: "+" }).evaluate({ async: false });
 		const terms = []
@@ -222,11 +223,21 @@ export class QuickRoll {
 			}			
 		});
 
-		if (terms.length === 0) {
-            return noDamageRoll;
+		// Damage rolls must be added first into index 0 for applyChatCardDamage() to work.
+		if (terms.length !== 0) {
+            roll = Roll.fromTerms(Roll.simplifyTerms(terms));
         }
+		
+		// Add in dice for all other roll types.
+		const rollFields = this.fields.filter(f => f[0] === FIELD_TYPE.CHECK || f[0] === FIELD_TYPE.ATTACK).map(f => f[1]);
 
-		return Roll.fromTerms(Roll.simplifyTerms(terms));
+		rollFields.forEach(field => {
+			roll.terms.push(...field.roll.dice);
+		});
+
+		console.log(roll);
+
+		return roll;
 	}
 }
 
