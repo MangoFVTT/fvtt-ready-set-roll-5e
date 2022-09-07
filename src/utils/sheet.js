@@ -111,6 +111,12 @@ async function _addItemOptions(item, html) {
 	newSection.find("select").change(() => { _activate = true; });
 }
 
+/**
+ * Adds context text fields to an item sheet next to all damage fields and the other formula field.
+ * @param {Item} item The item to whom the sheet belongs.
+ * @param {object} html The html data container of the sheet.
+ * @private 
+ */
 function _addDamageContextFields(item, html) {
     if (SettingsUtility.getSettingValue(SETTING_NAMES.PLACEMENT_DAMAGE_CONTEXT) === 0) {
         return;
