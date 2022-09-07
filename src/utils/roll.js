@@ -215,6 +215,26 @@ export class RollUtility {
 
         return getCritResult(totalCrit, totalFumble);
     }
+
+    /**
+     * Checks if the roll needs to be forced to multi roll and returns the updated roll if needed.
+     * @param {Roll} roll The roll to check.
+     * @param {object} params Additional parameters to consider when enforcing.
+     * @returns {Promise<Roll>} The version of the roll with multi roll enforced if needed, or the original roll otherwise.
+     */
+    static async ensureMultiRoll(roll, params = {}) {
+        if (roll && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !(roll?.hasAdvantage || roll?.hasDisadvantage)) {
+            //const forcedDiceCount = params?.
+
+            const d20Additional = await new CONFIG.Dice.D20Roll("1d20").evaluate({ async: true });
+            const d20BaseTerm = roll.terms.find(d => d.faces === 20);
+            const d20Forced = new Die({number: 2, faces: 20, results: [...d20BaseTerm.results, ...d20Additional.dice[0].results]});
+
+            roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
+        }
+
+        return roll;
+    }
 }
 
 /**
@@ -248,7 +268,7 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
         [
             [FIELD_TYPE.HEADER, { title }],
             [FIELD_TYPE.BLANK, { display: false }],
-            [FIELD_TYPE.CHECK, { roll, rollType }]
+            [FIELD_TYPE.CHECK, { roll: await RollUtility.ensureMultiRoll(roll), rollType }]
         ]
     );
 

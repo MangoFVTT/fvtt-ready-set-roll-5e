@@ -22,7 +22,8 @@ export const SETTING_NAMES = {
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
     DEFAULT_ROLL_ART: "defaultRollArt",
     HIDE_SAVE_DC: "hideSaveDC",
-    SHOW_SKILL_ABILITIES: "showSkillAbilities"
+    SHOW_SKILL_ABILITIES: "showSkillAbilities",
+    ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti"
 }
 
 /**
@@ -86,6 +87,43 @@ export class SettingsUtility {
             type: Boolean,
             default: false,
         });
+        
+        game.settings.register(MODULE_NAME, SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALWAYS_ROLL_MULTIROLL}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALWAYS_ROLL_MULTIROLL}.hint`),
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: false
+		});
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.hint`),
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: true,
+            requiresReload: true
+		});
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.D20_ICONS_ENABLED, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.hint`),
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: true
+		});
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.DICE_SOUNDS_ENABLED, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DICE_SOUNDS_ENABLED}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DICE_SOUNDS_ENABLED}.hint`),
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: true
+		});
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.PLACEMENT_ROLL_TITLE, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.PLACEMENT_ROLL_TITLE}.name`),
@@ -137,34 +175,6 @@ export class SettingsUtility {
 				type: Boolean,
 				default: false
 			});
-		});
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.D20_ICONS_ENABLED, {
-			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.name`),
-			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.hint`),
-			scope: "world",
-			config: true,
-			type: Boolean,
-			default: true
-		});
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.DICE_SOUNDS_ENABLED, {
-			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DICE_SOUNDS_ENABLED}.name`),
-			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DICE_SOUNDS_ENABLED}.hint`),
-			scope: "world",
-			config: true,
-			type: Boolean,
-			default: true
-		});
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
-			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.name`),
-			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.hint`),
-			scope: "world",
-			config: true,
-			type: Boolean,
-			default: true,
-            requiresReload: true
 		});
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.DEFAULT_ROLL_ART, {
