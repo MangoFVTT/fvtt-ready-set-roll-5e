@@ -18,7 +18,8 @@ export const SETTING_NAMES = {
     PLACEMENT_DAMAGE_TYPE: "placementDamageType",
     CONTEXT_REPLACE_TITLE: "contextReplacesTitle",
     CONTEXT_REPLACE_DAMAGE: "contextReplacesDamage",
-    D20_ICONS_ENABLED: "d20IconsEnabled",
+    D20_ICONS_ENABLED: "enableD20Icons",
+    DICE_SOUNDS_ENABLED: "enableDiceSounds",
     DEFAULT_ROLL_ART: "defaultRollArt",
     HIDE_SAVE_DC: "hideSaveDC",
     SHOW_SKILL_ABILITIES: "showSkillAbilities"
@@ -141,6 +142,15 @@ export class SettingsUtility {
         game.settings.register(MODULE_NAME, SETTING_NAMES.D20_ICONS_ENABLED, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.name`),
 			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.D20_ICONS_ENABLED}.hint`),
+			scope: "world",
+			config: true,
+			type: Boolean,
+			default: true
+		});
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.DICE_SOUNDS_ENABLED, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DICE_SOUNDS_ENABLED}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.DICE_SOUNDS_ENABLED}.hint`),
 			scope: "world",
 			config: true,
 			type: Boolean,
