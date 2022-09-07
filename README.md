@@ -40,11 +40,14 @@ Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper
 
 ![rollconfig](https://user-images.githubusercontent.com/110994627/188637202-f0e4ba7b-7790-4c97-9be6-bc64f4be7015.png)
 
+### Damage Context
+- Damage fields can be given additional context strings to convey extra information about that particular damage group. This context will be then shown on the chat card, as either part of the overall damage description or a replacement to default damage titles/type strings.
+
 ## Planned Features
-- Damage context fields to convey what the damage comes from, or when it occurs.
 - Individual damage overlay buttons to apply the damage of a single field. In the meantime, you can still apply the total damage of a roll to a token like you would in the core system.
 - Retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
 - Macro support for more flexible quick rolling.
+- Compatibility with other modules.
 
 ## Known Issues
 - "Other" formula does not appear in roll configuration tab.

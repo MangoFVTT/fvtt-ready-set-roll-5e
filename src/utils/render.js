@@ -24,6 +24,12 @@ export const FIELD_TYPE = {
  * Utility class to handle all rendering from provided fields into HTML data.
  */
 export class RenderUtility {
+    /**
+     * Handles individual field types and renders the appropriate template.
+     * @param {object} field Data and type for the requested field.
+     * @param {object} metadata Additional metadata for rendering.
+     * @returns {Promise<string>|string} The rendered html data for the field. 
+     */
     static async renderFromField(field, metadata) {
         let [fieldType, fieldData] = field;
         fieldData = mergeObject(metadata, fieldData ?? {}, { recursive: false });
@@ -40,18 +46,28 @@ export class RenderUtility {
             case FIELD_TYPE.SAVE:
                 return _renderSaveButton(fieldData);
             case FIELD_TYPE.CHECK:
-                return await _renderMultiRoll(fieldData);
+                return _renderMultiRoll(fieldData);
             case FIELD_TYPE.ATTACK:
-                return await _renderAttackRoll(fieldData);
+                return _renderAttackRoll(fieldData);
             case FIELD_TYPE.DAMAGE:
-                return await _renderDamageRoll(fieldData);
+                return _renderDamageRoll(fieldData);
         }
     }
 
+    /**
+     * Renders a full module chat card with all the fields provided as props.
+     * @param {object} props The necessary render props for the template.
+     * @returns {Promise<string>} The rendered html data for the chat card.
+     */
     static renderFullCard(props) {
         return _renderModuleTemplate(TEMPLATE.FULL_CARD, props);
     }
 
+    /**
+     * Renders a user interface for creating roll configurations, which is added to the item sheet.
+     * @param {object} props The necessary render props for the template.
+     * @returns {Promise<string>} The rendered html data for the chat card.
+     */
     static renderItemOptions(props) {
         return _renderModuleTemplate(TEMPLATE.OPTIONS, props);
     }
@@ -261,6 +277,7 @@ async function _renderDamageRoll(renderData = {}) {
  * @param {string} template Name (or sub path) of the template in the templates folder.
  * @param {Object} props The props data to render the template with.
  * @returns {Promise<string>} A rendered html template.
+ * @private
  */
 function _renderModuleTemplate(template, props) {
     return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, props);

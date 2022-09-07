@@ -87,6 +87,10 @@
                     "resource": "Resource",
                     "recharge": "Recharge"
                 }
+            },
+            "placeholder": {
+                "context": "Context",
+                "label": "Label"
             }
         },
         "chat": {
