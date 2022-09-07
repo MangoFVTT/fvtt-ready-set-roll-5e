@@ -135,8 +135,8 @@ function _addDamageContextFields(item, html) {
     });
 
     // Add context field for Other Formula field
-    if (getProperty(item, `flags.${MODULE_SHORT}.quickOther`)) {
-        const otherRoll = html.find(`.tab.details .form-fields input[name="data.formula"]`);
+    if (foundry.utils.getProperty(item, `flags.${MODULE_SHORT}.quickOther`)) {
+        const otherRoll = html.find(`.tab.details .form-fields input[name="system.formula"]`);
         const otherContextField = $(`<input type="text" name="flags.${MODULE_SHORT}.quickOther.context" value="${(item.flags[MODULE_SHORT].quickOther.context || "")}" placeholder="${CoreUtility.localize(placeholder)}" data-dtype="String" style="margin-left:5px;">`);
         
         if (otherRoll[0]) {

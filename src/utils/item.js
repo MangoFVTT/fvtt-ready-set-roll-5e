@@ -445,7 +445,7 @@ async function _addFieldOtherFormula(fields, item) {
                 damageType: ROLL_TYPE.OTHER,
                 baseRoll: otherRoll,
                 critRoll: undefined,
-                context: undefined,
+                context: item.flags[MODULE_SHORT].quickOther.context ?? undefined,
                 versatile: false
             }
         ]);
