@@ -89,6 +89,7 @@ async function _addItemOptions(item, html) {
         hasUses: item.hasUses,
         hasResource: item.hasResource,
         hasRecharge: item.hasRecharge,
+        hasOther: item.system.formula ? true : false,
         isAttack: item.hasAttack,
         isSave: item.hasSave,
         isCheck: item.hasAbilityCheck || item.type === ITEM_TYPE.TOOL,

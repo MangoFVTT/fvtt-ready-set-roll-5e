@@ -420,7 +420,7 @@ async function _addFieldDamage(fields, item, params) {
  */
 async function _addFieldOtherFormula(fields, item) {
     if (item.system.formula) {
-        const otherRoll = await new Roll(item.system.formula).roll({ async: true });
+        const otherRoll = await new Roll(item.system.formula, item.getRollData()).roll({ async: true });
 
         fields.push([
             FIELD_TYPE.DAMAGE,
