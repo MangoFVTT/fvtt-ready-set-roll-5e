@@ -48,6 +48,10 @@ export class ItemUtility {
             _addFieldDescription(fields, chatData);
         }
 
+        if (!fields.some(f => f[0] === FIELD_TYPE.DESCRIPTION)) {
+            fields.push([FIELD_TYPE.BLANK, { display: false }]);
+        }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", isAltRoll)) {
             _addFieldSave(fields, item);
         }
@@ -329,6 +333,9 @@ async function _addFieldAttack(fields, item, params) {
             item.system.consume.type = "ammo";
         }
 
+        // Adds a seperator for UI clarity.
+        fields.push([FIELD_TYPE.BLANK, { display: true }]);
+
         fields.push([
             FIELD_TYPE.ATTACK,
             {
@@ -430,7 +437,7 @@ async function _addFieldDamage(fields, item, params) {
  */
 async function _addFieldOtherFormula(fields, item) {
     if (item.system.formula) {
-        const otherRoll = await new Roll(item.system.formula).roll({ async: true });
+        const otherRoll = await new Roll(item.system.formula, item.getRollData()).roll({ async: true });
 
         fields.push([
             FIELD_TYPE.DAMAGE,
@@ -481,6 +488,9 @@ async function _addFieldAbilityCheck(fields, item, params) {
             advantage: params?.advMode > 0 ?? false,
             disadvantage: params?.advMode < 0 ?? false
         });
+
+        // Adds a seperator for UI clarity.
+        fields.push([FIELD_TYPE.BLANK, { display: true }]);
 
         fields.push([
             FIELD_TYPE.ATTACK,

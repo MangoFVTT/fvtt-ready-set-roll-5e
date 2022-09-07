@@ -47,6 +47,8 @@ Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper
 - Macro support for more flexible quick rolling.
 
 ## Known Issues
+- "Other" formula does not appear in roll configuration tab.
+- "Uses" does not appear in the consume row for Features until another consumable is added.
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.

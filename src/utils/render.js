@@ -16,7 +16,8 @@ export const FIELD_TYPE = {
     CHECK: 'check',
     ATTACK: 'attack',
     DAMAGE: 'damage',
-    SAVE: 'save'
+    SAVE: 'save',
+    BLANK: 'blank'
 }
 
 /**
@@ -34,20 +35,22 @@ export class RenderUtility {
         fieldData = mergeObject(metadata, fieldData ?? {}, { recursive: false });
 
         switch (fieldType) {
+            case FIELD_TYPE.BLANK:
+                return _renderBlank(fieldData);
             case FIELD_TYPE.HEADER:
-                return renderHeader(fieldData);
+                return _renderHeader(fieldData);
             case FIELD_TYPE.FOOTER:
-                return renderFooter(fieldData);
+                return _renderFooter(fieldData);
             case FIELD_TYPE.DESCRIPTION:
-                return renderDescription(fieldData);
+                return _renderDescription(fieldData);
             case FIELD_TYPE.SAVE:
-                return renderSaveButton(fieldData);
+                return _renderSaveButton(fieldData);
             case FIELD_TYPE.CHECK:
-                return renderMultiRoll(fieldData);
+                return _renderMultiRoll(fieldData);
             case FIELD_TYPE.ATTACK:
-                return renderAttackRoll(fieldData);
+                return _renderAttackRoll(fieldData);
             case FIELD_TYPE.DAMAGE:
-                return renderDamageRoll(fieldData);
+                return _renderDamageRoll(fieldData);
         }
     }
 
@@ -70,7 +73,16 @@ export class RenderUtility {
     }
 }
 
-function renderHeader(renderData = {}) {
+function _renderBlank(renderData = {}) {
+    const { id, display } = renderData;
+
+    return _renderModuleTemplate(TEMPLATE.BLANK, {
+        id,
+        display
+    });
+}
+
+function _renderHeader(renderData = {}) {
     const { id, item, slotLevel } = renderData;
     const actor = renderData?.actor ?? item?.actor;
     const img = renderData.img ?? item?.img ?? CoreUtility.getActorImage(actor);
@@ -92,7 +104,7 @@ function renderHeader(renderData = {}) {
     });
 }
 
-function renderFooter(renderData = {}) {
+function _renderFooter(renderData = {}) {
     const { properties } = renderData;
 
     return _renderModuleTemplate(TEMPLATE.FOOTER, {
@@ -100,7 +112,7 @@ function renderFooter(renderData = {}) {
     });
 }
 
-function renderDescription(renderData = {}) {
+function _renderDescription(renderData = {}) {
     const { content, isFlavor } = renderData;
 
     return _renderModuleTemplate(TEMPLATE.DESCRIPTION, {
@@ -109,7 +121,7 @@ function renderDescription(renderData = {}) {
     });
 }
 
-function renderSaveButton(renderData = {}) {
+function _renderSaveButton(renderData = {}) {
     const { id, ability, dc, hideDC } = renderData;    
 
     const abilityLabel = CONFIG.DND5E.abilities[ability];
@@ -123,7 +135,7 @@ function renderSaveButton(renderData = {}) {
     });
 }
 
-async function renderMultiRoll(renderData = {}) {
+async function _renderMultiRoll(renderData = {}) {
     const { id, roll, title } = renderData;
     const entries = [];
 
@@ -173,7 +185,7 @@ async function renderMultiRoll(renderData = {}) {
     });
 }
 
-async function renderAttackRoll(renderData = {}) {
+async function _renderAttackRoll(renderData = {}) {
     const { consume } = renderData;
 
     const title = renderData.title ??
@@ -181,10 +193,10 @@ async function renderAttackRoll(renderData = {}) {
 
     renderData = mergeObject({ title }, renderData ?? {}, { recursive: false });
 
-    return renderMultiRoll(renderData);
+    return _renderMultiRoll(renderData);
 }
 
-async function renderDamageRoll(renderData = {}) {
+async function _renderDamageRoll(renderData = {}) {
     const { id, damageType, baseRoll, critRoll, context, versatile } = renderData;
     
     // If there's no content in the damage roll, silently end rendering the field.
