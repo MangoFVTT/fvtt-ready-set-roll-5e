@@ -38,6 +38,9 @@ export class PatchingUtility {
         }
     }
 
+    /**
+     * Patches item sheets: quick roll configuration tabs, and damage context fields.
+     */
     static patchItemSheets() {        
         LogUtility.log("Patching Item Sheets");
         const itemSheetPrototype = "ItemSheet.prototype";
