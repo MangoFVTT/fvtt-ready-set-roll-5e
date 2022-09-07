@@ -247,6 +247,7 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
         },
         [
             [FIELD_TYPE.HEADER, { title }],
+            [FIELD_TYPE.BLANK, { display: false }],
             [FIELD_TYPE.CHECK, { roll, rollType }]
         ]
     );
