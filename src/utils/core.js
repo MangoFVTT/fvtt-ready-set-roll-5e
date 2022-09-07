@@ -81,7 +81,31 @@ export class CoreUtility {
 	}
 
     /**
-     * Returns data about whispers and roll mode for use in rendering messages.
+     * Lock variable to prevent multiple roll sounds from playing simultaneously.
+     * This comes into play when rolling multiple quick rolls at a go, since otherwise the sound is deafening.
+     * @private
+     */
+    static _lockRollSound = false;
+
+    /**
+     * Gets the default configured dice sound from Foundry VTT config.
+     * @returns 
+     */
+    static getRollSound() {
+        let sound = undefined;
+
+        if (!CoreUtility._lockRollSound && SettingsUtility.getSettingValue(SETTING_NAMES.DICE_SOUNDS_ENABLED)) {
+            CoreUtility._lockRollSound = true;
+            setTimeout(() => CoreUtility._lockRollSound = false, 300);
+            
+            sound = CONFIG.sounds.dice;
+        }
+
+        return { sound }
+    }
+
+    /**
+     * Gets data about whispers and roll mode for use in rendering messages.
      * @param {*} rollMode 
      * @returns A data package with the current roll mode 
      */
