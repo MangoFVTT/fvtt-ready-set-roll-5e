@@ -46,6 +46,9 @@ Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper
 
 ### Damage Context
 - Damage fields can be given additional context strings to convey extra information about that particular damage group. This context will be then shown on the chat card, as either part of the overall damage description or a replacement to default damage titles/type strings.
+- Damage context can be configured via the module settings to be placed at various positions of the chat card, and even replace default damage title and type labels.
+
+![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
 ## Planned Features
 - Individual damage overlay buttons to apply the damage of a single field. In the meantime, you can still apply the total damage of a roll to a token like you would in the core system.
