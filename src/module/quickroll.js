@@ -107,6 +107,7 @@ export class QuickRoll {
 			flags: this._getFlags(),
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			roll: this._getApplyDamageRoll(),
+			...CoreUtility.getRollSound(),
 			...CoreUtility.getWhisperData(rollMode),
 		}
 
