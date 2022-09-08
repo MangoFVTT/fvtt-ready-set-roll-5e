@@ -235,8 +235,6 @@ export class QuickRoll {
 			roll.terms.push(...field.roll.dice);
 		});
 
-		console.log(roll);
-
 		return roll;
 	}
 }
