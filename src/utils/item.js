@@ -2,7 +2,7 @@ import { MODULE_SHORT } from "../module/const.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
-import { ROLL_TYPE } from "./roll.js";
+import { RollUtility, ROLL_TYPE } from "./roll.js";
 
 /**
  * Enumerable of identifiers for different types of dnd5e items.
@@ -38,6 +38,12 @@ export class ItemUtility {
         const chatData = await item.getChatData();
         const isAltRoll = params?.isAltRoll ?? false;
         let fields = [];
+        
+        params = params ?? {};
+        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll);
+        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", isAltRoll);
+        params.elvenAccuracy = (item.actor?.flags?.dnd5e?.elvenAccuracy && 
+            CONFIG.DND5E.characterFlags.elvenAccuracy.abilities.includes(item.abilityMod)) || undefined
 
 
         if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", isAltRoll)) {
@@ -62,11 +68,7 @@ export class ItemUtility {
 
         if (ItemUtility.getFlagValueFromItem(item, "quickCheck", isAltRoll)) {
             await _addFieldAbilityCheck(fields, item, params);
-        }                
-        
-        params = params ?? {};
-        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll);
-        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", isAltRoll);
+        }
 
         if (params.damageFlags) {
             await _addFieldDamage(fields, item, params);
@@ -339,7 +341,7 @@ async function _addFieldAttack(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll,
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
                 consume: _getConsumeTargetFromItem(item)
             }
@@ -471,7 +473,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.CHECK,
             {
-                roll,
+                roll: await RollUtility.ensureMultiRoll(roll),
                 rollType: ROLL_TYPE.ITEM
             }
         ]);
@@ -495,7 +497,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll,
+                roll: await RollUtility.ensureMultiRoll(roll),
                 rollType: ROLL_TYPE.ATTACK,
                 title: `Ability Check - ${CONFIG.DND5E.abilities[item.hasAbilityCheck]}`
             }
