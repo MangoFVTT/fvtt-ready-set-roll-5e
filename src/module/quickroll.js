@@ -1,5 +1,6 @@
 import { CoreUtility } from "../utils/core.js";
 import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
+import { ITEM_TYPE } from "../utils/item.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 
 /**
@@ -186,6 +187,11 @@ export class QuickRoll {
 				fields
 			}
 		};
+
+		// If the item was destroyed in the process of displaying its card embed the item data in the chat message.
+		if (this.item?.type === ITEM_TYPE.CONSUMABLE && !this.actor?.items?.has(this.itemId)) {
+			flags["dnd5e.itemData"] = this.item;
+		}
 
 		// Allow the roll to popout
 		flags["core.canPopout"] = true;
