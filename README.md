@@ -36,10 +36,15 @@ The following modules have been verified as compatible from the specified module
 
 ### Quick Rolls
 - Rolls for skills, abilities, and items are outputted automatically to chat instead of relying on the default roll dialog system. These quick rolls can be enabled or disabled individually for each category of rolls, or bypassed in favour of the default behaviour by holding `alt` when clicking the roll.
-- Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 - Items will automatically output damage, calculate critical damage (taking into account system settings for powerful criticals or critical numerical modifiers), place area templates, print Save DC buttons, and a variety of other options that can all be configured independently for each item.
+- Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 
 ![quickrolls](https://user-images.githubusercontent.com/110994627/188636272-a557cd66-082d-46a3-a4e9-bf44e9c03535.png)
+
+- If the correct setting is enabled, quick rolls can also always display the maximum amount of correct dice for a roll (2 normally, 3 for an Elven Accuracy roll) even when the roll does not have advantage or disadvantage. This can be interchangeably combined with using modifier keys to grant a roll advantage or disadvantage, in which case the correct roll of the displayed rolls will be highlighted instead of all rolls shown as neutral.
+
+![alwayson](https://user-images.githubusercontent.com/110994627/189175659-22c15f1f-f597-430e-bc22-dab3606c1b0f.png)
+
 
 ### Roll Configuration & Alt Rolls
 - Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
