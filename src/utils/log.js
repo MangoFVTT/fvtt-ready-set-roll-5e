@@ -16,32 +16,18 @@ export class LogUtility {
      * Sends an error log to the console and displays an error UI notification.
      * @param {string} logString The string to log as an error. 
      */
-    static logError(logString) {
-        ui.notifications.error(logString);
-    }
-
-    /**
-     * Sends an error log only to the console (for debug purposes).
-     * @param {string} logString The string to log as a debug error.
-     */
-    static logDebugError(logString) {
-        console.error(..._processLog(logString));
+    static logError(logString, options = {}) {
+        if (options.ui ?? true) ui.notifications.error(logString, { console: false });
+        if (options.console ?? true) console.error(..._processLog(logString));
     }
 
     /**
      * Sends a warning log to the console and displays a warning UI notification.
      * @param {string} logString The string to log as a warning. 
      */
-    static logWarning(logString) {
-        ui.notifications.warn(logString);
-    }
-
-    /**
-     * Sends a warning log only to the console (for debug purposes).
-     * @param {string} logString The string to log as a debug warning. 
-     */
-    static logDebugWarning(logString) {        
-        console.warn(..._processLog(logString));
+    static logWarning(logString, options = {}) {
+        if (options.ui ?? true) ui.notifications.warn(logString, { console: false });
+        if (options.console ?? true) console.warn(..._processLog(logString));
     }
 }
 

@@ -64,7 +64,7 @@ export class CoreUtility {
      */
     static resolveActorOrItem(dataObject) {
 		if (!dataObject) {
-            LogUtility.logDebugError("Cannot resolve a null data object as an Actor or an Item.");
+            LogUtility.logError("Cannot resolve a null data object as an Actor or an Item.", { ui: false });
 			return {};
 		}
 
@@ -76,7 +76,7 @@ export class CoreUtility {
 			return { actor: dataObject };
 		}
 
-        LogUtility.logDebugError("Failed to resolve data object as an Actor or an Item.");
+        LogUtility.logError("Failed to resolve data object as an Actor or an Item.", { ui: false });
         return {};
 	}
 
@@ -135,7 +135,7 @@ export class CoreUtility {
 	 */
 	static getActorImage(actor) {
 		if (!actor) {
-            LogUtility.logWarning("Attempted to get image for a null actor.");
+            LogUtility.logWarning("Attempted to get an image for a null actor.", { ui: false });
             return null;
         }
 
