@@ -24,9 +24,13 @@ If you are feeling generous, and would like to support my work, you can do so th
 4. Enjoy!
 
 ## Compatibility
-Ready Set Roll is not compatible with other modules which modify DnD5e rolls. While it is possible that such modules may also still work, it is likely to cause issues, and is not recommended.
+**IMPORTANT:** Ready Set Roll is likely to not be compatible with other modules which modify DnD5e rolls (for example, [Midi-QOL](https://gitlab.com/tposney/midi-qol) or [MRE](https://github.com/ElfFriend-DnD/FVTT-Minimal-Rolling-Enhancements-DND5E)). While it is possible that such modules may also still work, using their roll automation features alongside this module is likely to cause issues, and is not recommended.
 
 Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper/) as a dependency to avoid conflicts with other modules. This dependency will be automatically resolved by Foundry when installed. It is recommended to have the latest version of libWrapper installed at all times.
+
+### Verified Modules
+The following modules have been verified as compatible from the specified module release onward. Note that updates to Foundry VTT or the module in question may cause incompatibilities that need to be re-tested, so always proceed with caution.
+- [Dice So Nice](https://gitlab.com/riccisi/foundryvtt-dice-so-nice) <sub>(1.2.0+)</sub>
 
 ## Implemented Features
 
