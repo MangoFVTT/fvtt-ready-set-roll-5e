@@ -224,11 +224,15 @@ export class RollUtility {
      */
     static async ensureMultiRoll(roll, params = {}) {
         if (roll && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !(roll?.hasAdvantage || roll?.hasDisadvantage)) {
-            //const forcedDiceCount = params?.
-
-            const d20Additional = await new CONFIG.Dice.D20Roll("1d20").evaluate({ async: true });
+            const forcedDiceCount = params?.elvenAccuracy ? 3 : 2;
+            const d20Additional = await new Roll(`${forcedDiceCount - 1}d20`).evaluate({ async: true });
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
-            const d20Forced = new Die({number: 2, faces: 20, results: [...d20BaseTerm.results, ...d20Additional.dice[0].results]});
+
+            const d20Forced = new Die({
+                number: forcedDiceCount,
+                faces: 20,
+                results: [...d20BaseTerm.results, ...d20Additional.dice[0].results]
+            });
 
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
