@@ -2,6 +2,7 @@ import { CoreUtility } from "../utils/core.js";
 import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
 import { ITEM_TYPE } from "../utils/item.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
+import { ROLL_TYPE } from "../utils/roll.js";
 
 /**
  * Default quick roll parameters to fill in the parameter list that is passed on to field generation and rendering.
@@ -186,7 +187,15 @@ export class QuickRoll {
 				params: this.params,
 				fields
 			}
-		};
+		};		
+
+		if (this.fields.some(f => f[0] === ROLL_TYPE.ATTACK)) {
+			flags["dnd5e.roll.type"] = ROLL_TYPE.ATTACK;
+		}
+
+		if (this.itemId) {
+			flags["dnd5e.roll.itemId"] = this.itemId;
+		}
 
 		// If the item was destroyed in the process of displaying its card embed the item data in the chat message.
 		if (this.item?.type === ITEM_TYPE.CONSUMABLE && !this.actor?.items?.has(this.itemId)) {
