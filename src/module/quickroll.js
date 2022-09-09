@@ -1,5 +1,5 @@
 import { CoreUtility } from "../utils/core.js";
-import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
+import { HOOKS_MODULE } from "../utils/hooks.js";
 import { ITEM_TYPE } from "../utils/item.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { ROLL_TYPE } from "../utils/roll.js";
@@ -8,15 +8,11 @@ import { ROLL_TYPE } from "../utils/roll.js";
  * Default quick roll parameters to fill in the parameter list that is passed on to field generation and rendering.
  */
 let defaultParams = {
-	label: "",
 	forceCrit: false,
 	forceFumble: false,
     forceMultiRoll: false,
-	preset: null,
-	properties: true,
 	hasAdvantage: false,
-	hasDisadvantage: false,
-	infoOnly: false,
+	hasDisadvantage: false
 };
 
 /**
@@ -47,7 +43,6 @@ export class QuickRoll {
 
 		this.fields = fields ?? []; // Where requested roll fields are stored, in the order they should be rendered.
 		this.templates = []; // Data results from fields, rendered into HTML templates.
-        this.properties = []; // Properties for the roll, shown in the card footer.
 
 		this.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
 		this.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
@@ -113,7 +108,7 @@ export class QuickRoll {
 			...CoreUtility.getWhisperData(rollMode),
 		}
 
-		await Hooks.callAll(HOOK_CHAT_MESSAGE, this, chatData);
+		await Hooks.callAll(HOOKS_MODULE.CHAT_MSG, this, chatData);
 
 		// Send the chat message
 		if (createMessage) {
@@ -138,6 +133,7 @@ export class QuickRoll {
                     item: this.item,
                     actor: this.actor,
                     isCrit: this.isCrit,
+					isFumble: this.isFumble,
                     isMultiRoll: this.isMultiRoll
                 };
 
@@ -145,11 +141,11 @@ export class QuickRoll {
                 this.templates.push(render);
             }
 
-			await Hooks.callAll(HOOK_PROCESSED_ROLL, this);
+			await Hooks.callAll(HOOKS_MODULE.PROCESSED_ROLL, this);
             this.processed = true;
         }
 
-		await Hooks.callAll(HOOK_RENDER, this);
+		await Hooks.callAll(HOOKS_MODULE.RENDER, this);
 
 		return RenderUtility.renderFullCard({
 			item: this.item,
@@ -166,26 +162,14 @@ export class QuickRoll {
 	 * @private
 	 */
 	_getFlags() {
-		// Transform rolls in fields into formulas when saving into flags
-		const fields = this.fields.map((field) => {
-			const newField = deepClone(field);
-			if (field[1] && 'formula' in field[1] && field[1].formula?.formula) {
-				newField[1].formula = field[1].formula.formula;
-			}
-			return newField;
-		});
-
 		const flags = {
 			rsr5e: {
 				version: CoreUtility.getVersion(),
 				actorId: this.actorId,
 				itemId: this.itemId,
 				tokenId: this.tokenId,
-				isCrit: this.isCrit,
-				isFumble: this.isFumble,
-				properties: this.properties,
 				params: this.params,
-				fields
+				fields: this.fields
 			}
 		};		
 
