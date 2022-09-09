@@ -12,14 +12,15 @@ export const SETTING_NAMES = {
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
     ALT_ROLL_ENABLED: "enableAltQuickRoll",
+    D20_ICONS_ENABLED: "enableD20Icons",
+    DICE_SOUNDS_ENABLED: "enableDiceSounds",
+    OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     PLACEMENT_ROLL_TITLE: "placementRollTitle",
     PLACEMENT_DAMAGE_TITLE: "placementDamageTitle",
     PLACEMENT_DAMAGE_CONTEXT: "placementDamageContext",
     PLACEMENT_DAMAGE_TYPE: "placementDamageType",
     CONTEXT_REPLACE_TITLE: "contextReplacesTitle",
     CONTEXT_REPLACE_DAMAGE: "contextReplacesDamage",
-    D20_ICONS_ENABLED: "enableD20Icons",
-    DICE_SOUNDS_ENABLED: "enableDiceSounds",
     DEFAULT_ROLL_ART: "defaultRollArt",
     HIDE_SAVE_DC: "hideSaveDC",
     SHOW_SKILL_ABILITIES: "showSkillAbilities",
@@ -49,53 +50,51 @@ export class SettingsUtility {
 			}
 		});
 
-        game.settings.register(MODULE_NAME, SETTING_NAMES.QUICK_ABILITY_ENABLED, {
-            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.QUICK_ABILITY_ENABLED}.name`),
-            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.QUICK_ABILITY_ENABLED}.hint`),
+        // QUICK ROLL SETTINGS        
+		const quickRollOptions = [
+            SETTING_NAMES.QUICK_ABILITY_ENABLED,
+            SETTING_NAMES.QUICK_SKILL_ENABLED,
+            SETTING_NAMES.QUICK_ITEM_ENABLED
+        ];
+
+        quickRollOptions.forEach(option => {
+            game.settings.register(MODULE_NAME, option, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: true,
+                requiresReload: true
+            });
+        });
+
+        // ADDITIONAL ROLL SETTINGS
+        const extraRollOptions = [
+            SETTING_NAMES.ALT_ROLL_ENABLED,
+            SETTING_NAMES.ALWAYS_ROLL_MULTIROLL
+        ];
+
+        extraRollOptions.forEach(option => {
+            game.settings.register(MODULE_NAME, option, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: false,
+            });
+        });
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, {
+            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.OVERLAY_BUTTONS_ENABLED}.name`),
+            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.OVERLAY_BUTTONS_ENABLED}.hint`),
             scope: "world",
             config: true,
             type: Boolean,
             default: true,
             requiresReload: true
         });
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.QUICK_SKILL_ENABLED, {
-            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.QUICK_SKILL_ENABLED}.name`),
-            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.QUICK_SKILL_ENABLED}.hint`),
-            scope: "world",
-            config: true,
-            type: Boolean,
-            default: true,
-            requiresReload: true
-        });
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.QUICK_ITEM_ENABLED, {
-            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.QUICK_ITEM_ENABLED}.name`),
-            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.QUICK_ITEM_ENABLED}.hint`),
-            scope: "world",
-            config: true,
-            type: Boolean,
-            default: true,
-            requiresReload: true
-        });
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.ALT_ROLL_ENABLED, {
-            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALT_ROLL_ENABLED}.name`),
-            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALT_ROLL_ENABLED}.hint`),
-            scope: "world",
-            config: true,
-            type: Boolean,
-            default: false,
-        });
-        
-        game.settings.register(MODULE_NAME, SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, {
-			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALWAYS_ROLL_MULTIROLL}.name`),
-			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALWAYS_ROLL_MULTIROLL}.hint`),
-			scope: "world",
-			config: true,
-			type: Boolean,
-			default: false
-		});
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.name`),
@@ -124,6 +123,13 @@ export class SettingsUtility {
 			type: Boolean,
 			default: true
 		});
+        
+        // PLACEMENT SETTINGS        
+		const placementOptions = [
+            SETTING_NAMES.PLACEMENT_DAMAGE_TITLE,
+            SETTING_NAMES.PLACEMENT_DAMAGE_CONTEXT,
+            SETTING_NAMES.PLACEMENT_DAMAGE_TYPE
+        ];
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.PLACEMENT_ROLL_TITLE, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.PLACEMENT_ROLL_TITLE}.name`),
@@ -138,16 +144,10 @@ export class SettingsUtility {
 			}
 		});
 
-		const placementOptions = [
-            SETTING_NAMES.PLACEMENT_DAMAGE_TITLE,
-            SETTING_NAMES.PLACEMENT_DAMAGE_CONTEXT,
-            SETTING_NAMES.PLACEMENT_DAMAGE_TYPE
-        ];
-
-        placementOptions.forEach(placementOption => {
-            game.settings.register(MODULE_NAME, placementOption, {
-                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${placementOption}.name`),
-                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${placementOption}.hint`),
+        placementOptions.forEach(option => {
+            game.settings.register(MODULE_NAME, option, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
                 scope: "world",
                 config: true,
                 type: Number,
@@ -161,15 +161,16 @@ export class SettingsUtility {
             });
         });
 
+        // CONTEXT SETTINGS
         const contextOptions = [
             SETTING_NAMES.CONTEXT_REPLACE_TITLE,
             SETTING_NAMES.CONTEXT_REPLACE_DAMAGE
         ];
 
-		contextOptions.forEach(contextOption => {
-			game.settings.register(MODULE_NAME, contextOption, {
-				name: CoreUtility.localize(`${MODULE_SHORT}.settings.${contextOption}.name`),
-				hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${contextOption}.hint`),
+		contextOptions.forEach(option => {
+			game.settings.register(MODULE_NAME, option, {
+				name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
+				hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
 				scope: "world",
 				config: true,
 				type: Boolean,
