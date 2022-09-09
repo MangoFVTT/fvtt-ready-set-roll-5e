@@ -7,11 +7,24 @@ import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
 
-// A list of module specific hooks that are fired throughout the module.
-export const HOOK_LOADED = `${MODULE_SHORT}.loaded`;
-export const HOOK_CHAT_MESSAGE = `${MODULE_SHORT}.chatMessage`;
-export const HOOK_RENDER = `${MODULE_SHORT}.render`;
-export const HOOK_PROCESSED_ROLL = `${MODULE_SHORT}.rollProcessed`;
+export const HOOKS_CORE = {
+    INIT: "init",
+    READY: "ready",
+    CREATE_ITEM: "createItem",
+    RENDER_CHAT_MSG: "renderChatMessage"
+}
+
+export const HOOKS_DND5E = {
+    USE_ITEM: "dnd5e.useItem",
+    RENDER_ITEM_SHEET: "renderItemSheet5e"
+}
+
+export const HOOKS_MODULE = {
+    LOADED: `${MODULE_SHORT}.loaded`,
+    CHAT_MSG: `${MODULE_SHORT}.chatMessage`,
+    RENDER: `${MODULE_SHORT}.render`,
+    PROCESSED_ROLL: `${MODULE_SHORT}.rollProcessed`
+}
 
 /**
  * Utility class to handle registering listeners for hooks needed throughout the module.
@@ -21,11 +34,11 @@ export class HooksUtility {
      * Register all necessary hooks for the module as a whole.
      */
     static registerModuleHooks() {
-        Hooks.once("init", () => {
+        Hooks.once(HOOKS_CORE.INIT, () => {
             LogUtility.log(`Initialising ${MODULE_TITLE}`);
 
             if (!libWrapper.is_fallback && !libWrapper.version_at_least?.(1, 4, 0)) {
-                Hooks.once("ready", () => {
+                Hooks.once(HOOKS_CORE.READY, () => {
                     const version = "v1.4.0.0";                    
                     LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.libWrapperMinVersion`, { version }));
                 });        
@@ -38,7 +51,11 @@ export class HooksUtility {
             PatchingUtility.patchItemSheets();
         });
 
-        Hooks.on(HOOK_LOADED, () => {          
+        Hooks.on(HOOKS_CORE.READY, () => {
+            Hooks.call(HOOKS_MODULE.LOADED);
+        });
+
+        Hooks.on(HOOKS_MODULE.LOADED, () => {          
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
             CONFIG[MODULE_SHORT].combinedDamageTypes = foundry.utils.mergeObject(
                 CONFIG.DND5E.damageTypes,
@@ -46,16 +63,14 @@ export class HooksUtility {
                 { recursive: false }
             );
             
-            HooksUtility.registerChatHooks();
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
+                HooksUtility.registerChatHooks();
+            }
 
             if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
                 HooksUtility.registerSheetHooks();
                 HooksUtility.registerItemHooks();
             }
-        });
-
-        Hooks.on("ready", () => {
-            Hooks.call(HOOK_LOADED);
         });
     }
 
@@ -63,11 +78,11 @@ export class HooksUtility {
      * Register item specific hooks for module functionality.
      */
     static registerItemHooks() {
-        Hooks.on("createItem", (item) => {
+        Hooks.on(HOOKS_CORE.CREATE_ITEM, (item) => {
             ItemUtility.ensureFlagsOnitem(item);
         });
 
-        Hooks.on("dnd5e.useItem", (item, config, options) => {
+        Hooks.on(HOOKS_DND5E.USE_ITEM, (item, config, options) => {
             if (!options?.ignore) {
                 RollUtility.rollItem(item, { ...config, ...options });
             }
@@ -85,7 +100,7 @@ export class HooksUtility {
      * Register sheet specific hooks for module functionality.
      */
     static registerSheetHooks() {
-        Hooks.on("renderItemSheet5e", (app, html, data) => {
+        Hooks.on(HOOKS_DND5E.RENDER_ITEM_SHEET, (app, html, data) => {
             SheetUtility.setAutoHeightOnSheet(app);
             SheetUtility.addModuleContentToSheet(app, html);
         });
