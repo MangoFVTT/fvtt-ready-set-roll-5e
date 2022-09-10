@@ -107,7 +107,17 @@
             "damage": "Damage",
             "healing": "Healing",
             "crit": "Crit",
-            "other": "Other"
+            "other": "Other",
+            "buttons": {
+                "damageFull": "Click to apply full damage to selected token(s).",
+                "damageHalf": "Click to apply half damage to selected token(s).",
+                "damageQuarter": "Click to apply quarter damage to selected token(s).",
+                "damageDouble": "Click to apply double damage to selected token(s).",
+                "healing": "Click to apply healing to selected token(s).",
+                "rollCrit": "Click to roll critical damage.",
+                "rollAdvantage": "Click to roll with advantage.",
+                "rollDisadvantage": "Click to roll with disadvantage."
+            }
         }
     }
 }

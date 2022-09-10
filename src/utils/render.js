@@ -71,6 +71,10 @@ export class RenderUtility {
     static renderItemOptions(props) {
         return _renderModuleTemplate(TEMPLATE.OPTIONS, props);
     }
+
+    static renderOverlayDamage() {
+        return _renderModuleTemplate(TEMPLATE.OVERLAY_DAMAGE, {});
+    }
 }
 
 function _renderBlank(renderData = {}) {

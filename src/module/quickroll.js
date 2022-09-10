@@ -87,6 +87,15 @@ export class QuickRoll {
 	}
 
 	/**
+	 * Gets if the current user has advanced permissions over the chat card.
+	 * @returns {boolean}
+	 */
+	 get hasPermission() {
+		const message = game.messages.get(this.messageId);
+		return game.user.isGM || message?.isAuthor;
+	}
+
+	/**
 	 * Creates and sends a chat message to all players (based on whisper config).
 	 * @param {object} param0 Additional message options.
 	 * @param {string} param0.rollMode The message roll mode (private/public/blind/etc).
@@ -114,6 +123,7 @@ export class QuickRoll {
 		if (createMessage) {
 			const message = await ChatMessage.create(chatData);
 			this.messageId = message.id;
+			message.quickRoll = this;
 			return message;
 		} else {
 			return chatData;

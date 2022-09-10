@@ -6,6 +6,7 @@ import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
+import { ChatUtility } from "./chat.js";
 
 export const HOOKS_CORE = {
     INIT: "init",
@@ -93,7 +94,9 @@ export class HooksUtility {
      * Register chat specific hooks for module functionality.
      */
     static registerChatHooks() {
-
+        Hooks.on(HOOKS_CORE.RENDER_CHAT_MSG, (message, html, data) => {
+            ChatUtility.bindChatCard(message, html);           
+        });
     }
 
     /**
