@@ -1,7 +1,7 @@
 <div class="die-result-overlay-br damage-overlay-br">
 	<span>
 		<span class="apply-damage-buttons">
-			<button data-modifier="-1" class="icon heart-plus" title="{{ localize "rsr5e.chat.buttons.healing" }}">
+			<button data-modifier="-1" class="icon overlay-healing" title="{{ localize "rsr5e.chat.buttons.healing" }}">
 			</button>
 		</span>
 		<!--<button class="crit-button" title="{{ localize "br5e.chat.damageButtons.crit.hint"}}">
@@ -9,17 +9,13 @@
 		</button>-->
 	</span>
 	<span class="apply-damage-buttons">
-		<button data-modifier="1" title="{{ localize "rsr5e.chat.buttons.damageFull" }}">
-			<i class="fas fa-user-minus"></i>
+		<button data-modifier="1" class="icon overlay-damage-full" title="{{ localize "rsr5e.chat.buttons.damageFull" }}">
 		</button>
-		<button data-modifier="0.5" title="{{ localize "rsr5e.chat.buttons.damageHalf" }}">
-			<i class="fas fa-user-shield"></i>
+		<button data-modifier="0.5" class="icon overlay-damage-half" title="{{ localize "rsr5e.chat.buttons.damageHalf" }}">
 		</button>
-		<button data-modifier="0.25" title="{{ localize "rsr5e.chat.buttons.damageQuarter" }}">
-			<i class="fas fa-user-check"></i>
+		<button data-modifier="0.25" class="icon overlay-damage-quarter" title="{{ localize "rsr5e.chat.buttons.damageQuarter" }}">
 		</button>
-		<button data-modifier="2" title="{{ localize "rsr5e.chat.buttons.damageDouble" }}">
-			<i class="fas fa-user-injured"></i>
+		<button data-modifier="2" class="icon overlay-damage-double" title="{{ localize "rsr5e.chat.buttons.damageDouble" }}">
 		</button>
 	</span>
 </div>
