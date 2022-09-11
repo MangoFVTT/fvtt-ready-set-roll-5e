@@ -23,8 +23,6 @@ export class QuickCard {
 	 * @param {JQuery} html The object data for the chat message.
 	 */
     updateBinding(message, html) {
-        console.log(message);
-
         this.roll = QuickRoll.fromMessage(message);
         this.speaker = game.actors.get(message.speaker.actor);
         this.id = message.id;
