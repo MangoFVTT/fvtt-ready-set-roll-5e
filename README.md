@@ -30,7 +30,7 @@ Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper
 
 ### Verified Modules
 The following modules have been verified as compatible from the specified module release onward. Note that updates to Foundry VTT or the module in question may cause incompatibilities that need to be re-tested, so always proceed with caution.
-- [Dice So Nice](https://gitlab.com/riccisi/foundryvtt-dice-so-nice) <sub>(1.2.0+)</sub>
+- [Dice So Nice](https://gitlab.com/riccisi/foundryvtt-dice-so-nice) <sup>(1.2.0+)</sup>
 
 ## Implemented Features
 
