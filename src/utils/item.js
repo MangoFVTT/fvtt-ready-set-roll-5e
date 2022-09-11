@@ -30,7 +30,7 @@ export class ItemUtility {
      * Will only generate fields that are available and enabled via the roll configuraton flags.
      * @param {Item} item The item from which to retrieve the roll fields. 
      * @param {object} params Addtional parameters for the item roll.
-     * @returns {Array} A list of fields as specified by the roll configuration.
+     * @returns {Promies<Array>} A list of fields as specified by the roll configuration.
      */
     static async getFieldsFromItem(item, params) {
         ItemUtility.ensureFlagsOnitem(item);
@@ -326,17 +326,6 @@ async function _addFieldAttack(fields, item, params) {
             disadvantage: params?.advMode < 0 ?? false
         });
 
-        roll = await RollUtility.ensureMultiRoll(roll, params);
-
-        if (params) {
-            const critType = RollUtility.getCritTypeForDie(
-                roll.terms.find(d => d.faces === 20),
-                roll.options.critical,
-                roll.options.fumble
-            );
-            params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
-        }
-
         // Reset ammo type to avoid later issues.
         if (ammoConsumeBypass) {
             item.system.consume.type = "ammo";
@@ -348,7 +337,7 @@ async function _addFieldAttack(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll,
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
                 consume: _getConsumeTargetFromItem(item)
             }

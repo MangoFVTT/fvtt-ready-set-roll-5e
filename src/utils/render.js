@@ -181,7 +181,6 @@ async function _renderMultiRoll(renderData = {}) {
 			roll: baseRoll,
 			total: baseRoll.total + (bonusRoll?.total ?? 0),
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
-			isCrit: roll.isCritical,
 			critType: RollUtility.getCritTypeForDie(baseTerm),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
 		});

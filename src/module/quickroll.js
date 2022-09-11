@@ -50,7 +50,7 @@ export class QuickRoll {
 
 		this.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
 		this.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
-        this.isMultiRoll = this.params.forceMultiRoll || this.params.hasAdvantage || this.params.hasDisadvantage
+        this.isMultiRoll = this.params.forceMultiRoll || (this.params.isMultiRoll ?? false);
 
 		this.processed = false;
 	}
@@ -111,9 +111,6 @@ export class QuickRoll {
 
 		roll.messageId = message.id
 
-		roll.isCrit = data?.isCrit ?? false;
-		roll.params = data?.params ?? {};
-
 		if (data?.actorId) {
 			roll.actor = game.actors.get(data.actorId);
 		}
@@ -171,7 +168,7 @@ export class QuickRoll {
         if (!this.processed) {
             for (const field of this.fields) {
                 const metadata = {
-                    id: this._currentId++,
+                    id: ++this._currentId,
                     item: this.item,
                     actor: this.actor,
                     isCrit: this.isCrit,

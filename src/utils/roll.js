@@ -219,11 +219,13 @@ export class RollUtility {
     /**
      * Checks if the roll needs to be forced to multi roll and returns the updated roll if needed.
      * @param {Roll} roll The roll to check.
-     * @param {object} params Additional parameters to consider when enforcing.
+     * @param {Object} params Additional parameters to consider when enforcing, also stores crit type separately to the roll due to incorrect logic in core dnd5e.
      * @returns {Promise<Roll>} The version of the roll with multi roll enforced if needed, or the original roll otherwise.
      */
     static async ensureMultiRoll(roll, params = {}) {
         if (roll && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !(roll?.hasAdvantage || roll?.hasDisadvantage)) {
+            params.isMultiRoll = true;
+
             const forcedDiceCount = params?.elvenAccuracy ? 3 : 2;
             const d20Additional = await new Roll(`${forcedDiceCount - 1}d20`).evaluate({ async: true });
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
@@ -236,6 +238,16 @@ export class RollUtility {
 
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
+
+        const critType = RollUtility.getCritTypeForDie(
+            roll.terms.find(d => d.faces === 20),
+            roll.options.critical,
+            roll.options.fumble
+        );
+
+        params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
+        params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
+        params.isMultiRoll = params.isMultiRoll || roll.hasAdvantage || roll.hasDisadvantage;
 
         return roll;
     }
@@ -261,18 +273,22 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
         return null;
     }
 
+    const params = {};
+    const ensuredRoll = await RollUtility.ensureMultiRoll(roll, params);
+
+    const hasAdvantage = roll.hasAdvantage;
+    const hasDisadvantage = roll.hasDisadvantage;
+    const isCrit = params?.isCrit ?? false;
+    const isFumble = params?.isFumble ?? false;
+    const isMultiRoll = params?.isMultiRoll ?? false;
+
     const quickroll = new QuickRoll(
         actor,
-        { 
-            hasAdvantage: roll.hasAdvantage,
-            hasDisadvantage: roll.hasDisadvantage,
-            isCrit: roll.isCritical,
-            isFumble: roll.isFumble
-        },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
         [
             [FIELD_TYPE.HEADER, { title }],
             [FIELD_TYPE.BLANK, { display: false }],
-            [FIELD_TYPE.CHECK, { roll: await RollUtility.ensureMultiRoll(roll), rollType }]
+            [FIELD_TYPE.CHECK, { roll: ensuredRoll, rollType }]
         ]
     );
 
@@ -299,15 +315,20 @@ async function getItemRoll(item, params, rollType, createMessage = true) {
         return null;
     }
 
+    const itemFields = await ItemUtility.getFieldsFromItem(item, params);
+
+    const hasAdvantage = params?.advMode > 0 ?? false;
+    const hasDisadvantage = params?.advMode < 0 ?? false;
+    const isCrit = params?.isCrit ?? false;
+    const isFumble = params?.isFumble ?? false;
+    const isMultiRoll = params?.isMultiRoll ?? false;
+
     const quickroll = new QuickRoll(
         item,
-        { 
-            hasAdvantage: params?.advMode > 0 ?? false,
-            hasDisadvantage: params?.advMode < 0 ?? false
-        },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
         [
             [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
-            ...await ItemUtility.getFieldsFromItem(item, params)
+            ...itemFields
         ]
     );
 
