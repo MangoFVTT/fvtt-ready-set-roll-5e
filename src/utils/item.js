@@ -2,7 +2,7 @@ import { MODULE_SHORT } from "../module/const.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
-import { RollUtility, ROLL_TYPE } from "./roll.js";
+import { CRIT_TYPE, RollUtility, ROLL_TYPE } from "./roll.js";
 
 /**
  * Enumerable of identifiers for different types of dnd5e items.
@@ -319,15 +319,22 @@ async function _addFieldAttack(fields, item, params) {
             ammoConsumeBypass = true;
         }
 
-        const roll = await item.rollAttack({
+        let roll = await item.rollAttack({
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
             disadvantage: params?.advMode < 0 ?? false
         });
 
+        roll = await RollUtility.ensureMultiRoll(roll, params);
+
         if (params) {
-            params.isCrit = params.isCrit || roll.isCritical;
+            const critType = RollUtility.getCritTypeForDie(
+                roll.terms.find(d => d.faces === 20),
+                roll.options.critical,
+                roll.options.fumble
+            );
+            params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
         }
 
         // Reset ammo type to avoid later issues.
@@ -341,7 +348,7 @@ async function _addFieldAttack(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll, params),
+                roll,
                 rollType: ROLL_TYPE.ATTACK,
                 consume: _getConsumeTargetFromItem(item)
             }
