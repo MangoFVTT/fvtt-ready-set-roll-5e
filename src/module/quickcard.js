@@ -5,6 +5,9 @@ import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
 import { QuickRoll } from "./quickroll.js";
 
+/**
+ * Class that parses a base system card into a module card, with functionality for adding overlay card elements.
+ */
 export class QuickCard {
     constructor (message, html) {
         this.updateBinding(message, html);
@@ -14,6 +17,11 @@ export class QuickCard {
 		return game.messages.get(this.id);
 	}
 
+    /**
+	 * Inflates an existing chat message, adding runtime elements and events to it. Does nothing if the message is not the correct type.
+	 * @param {ChatMessage} message The chat message to inflate.
+	 * @param {JQuery} html The object data for the chat message.
+	 */
     updateBinding(message, html) {
         console.log(message);
 
@@ -31,28 +39,6 @@ export class QuickCard {
                 LogUtility.log("Hover buttons for quick card initialised.")
             }
         })
-    }
-
-    async _setupOverlayButtons(html) {
-        const template = await RenderUtility.renderOverlayDamage();
-        const elements = html.find('.dice-total .rsr-base-die, .dice-total .rsr-extra-die').parents('.dice-row').toArray();
-
-        elements.forEach(element => {
-            element = $(element);
-            element.append($(template));
-        });
-
-        // Handle applying damage/healing via overlay button click events.
-		html.find('.apply-damage-buttons button').click(async evt => {
-			await this._processApplyEvent(evt, false);
-        });
-        html.find('.apply-temphp-buttons button').click(async evt => {
-			await this._processApplyEvent(evt, true);
-        });
-
-        // Enable Hover Events (to show/hide the elements).
-		this._onHoverEnd(html);
-		html.hover(this._onHover.bind(this, html), this._onHoverEnd.bind(this, html));
     }
 
     /**
@@ -79,6 +65,32 @@ export class QuickCard {
 	_onHoverEnd(html) {
 		html.find(".die-result-overlay-br").attr("style", "display: none;");
 	}
+
+    /**
+     * Adds overlay buttons to a chat card for applying damage/temphp or retroactive advantage/disadvantage/crit.
+     * @param {JQuery} html The object to add overlay buttons to.
+     */
+    async _setupOverlayButtons(html) {
+        const template = await RenderUtility.renderOverlayDamage();
+        const elements = html.find('.dice-total .rsr-base-die, .dice-total .rsr-extra-die').parents('.dice-row').toArray();
+
+        elements.forEach(element => {
+            element = $(element);
+            element.append($(template));
+        });
+
+        // Handle applying damage/healing via overlay button click events.
+		html.find('.apply-damage-buttons button').click(async evt => {
+			await this._processApplyEvent(evt, false);
+        });
+        html.find('.apply-temphp-buttons button').click(async evt => {
+			await this._processApplyEvent(evt, true);
+        });
+
+        // Enable Hover Events (to show/hide the elements).
+		this._onHoverEnd(html);
+		html.hover(this._onHover.bind(this, html), this._onHoverEnd.bind(this, html));
+    }
 
     /**
      * Processes and handles an apply damage/healing/temphp button click event.
