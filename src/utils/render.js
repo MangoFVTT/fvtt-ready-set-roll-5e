@@ -26,9 +26,9 @@ export const FIELD_TYPE = {
 export class RenderUtility {
     /**
      * Handles individual field types and renders the appropriate template.
-     * @param {object} field Data and type for the requested field.
-     * @param {object} metadata Additional metadata for rendering.
-     * @returns {Promise<string>|string} The rendered html data for the field. 
+     * @param {Object} field Data and type for the requested field.
+     * @param {Object} metadata Additional metadata for rendering.
+     * @returns {Promise<String>|String} The rendered html data for the field. 
      */
     static async renderFromField(field, metadata) {
         let [fieldType, fieldData] = field;
@@ -57,7 +57,7 @@ export class RenderUtility {
     /**
      * Renders a full module chat card with all the fields provided as props.
      * @param {object} props The necessary render props for the template.
-     * @returns {Promise<string>} The rendered html data for the chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
      */
     static renderFullCard(props) {
         return _renderModuleTemplate(TEMPLATE.FULL_CARD, props);
@@ -66,14 +66,26 @@ export class RenderUtility {
     /**
      * Renders a user interface for creating roll configurations, which is added to the item sheet.
      * @param {object} props The necessary render props for the template.
-     * @returns {Promise<string>} The rendered html data for the chat card.
+     * @returns {Promise<String>} The rendered html data for the item sheet.
      */
     static renderItemOptions(props) {
         return _renderModuleTemplate(TEMPLATE.OPTIONS, props);
     }
 
+    /**
+     * Renders overlay buttons for applying damage from a chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
+     */
     static renderOverlayDamage() {
         return _renderModuleTemplate(TEMPLATE.OVERLAY_DAMAGE, {});
+    }    
+
+     /**
+     * Renders overlay buttons for retroactively applying advantage/disadvantage/crit to a chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
+     */
+    static renderOverlayMultiRoll() {
+        return _renderModuleTemplate(TEMPLATE.OVERLAY_MULTIROLL, {});
     }
 }
 
