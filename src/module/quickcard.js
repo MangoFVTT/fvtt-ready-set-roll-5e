@@ -1,6 +1,7 @@
 import { CoreUtility } from "../utils/core.js";
 import { LogUtility } from "../utils/log.js";
 import { RenderUtility } from "../utils/render.js";
+import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
 import { QuickRoll } from "./quickroll.js";
 
@@ -126,33 +127,38 @@ export class QuickCard {
      */
     async _resolveCritDamage(damage, crit, position) {
 		if (damage && crit) {
-			return await new Promise(async (resolve, reject) => {
-				const options = {
-					left: position.x,
-					top: position.y,
-					width: 100
-				};
-
-				const data = {
-					title: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.title`),
-					content: "",
-					buttons: {
-						one: {
-							icon: '<i class="fas fa-check"></i>',
-							label: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.yes`),
-							callback: () => { resolve(damage + crit); }
-						},
-						two: {
-							icon: '<i class="fas fa-times"></i>',
-							label: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.no`),
-							callback: () => { resolve(damage); }
-						}
-					},
-					default: "two"
-				}
-
-				new Dialog(data, options).render(true);
-			});
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_APPLY_CRIT)) {
+                return damage + crit;
+            }
+            else {
+                return await new Promise(async (resolve, reject) => {
+                    const options = {
+                        left: position.x,
+                        top: position.y,
+                        width: 100
+                    };
+    
+                    const data = {
+                        title: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.title`),
+                        content: "",
+                        buttons: {
+                            one: {
+                                icon: '<i class="fas fa-check"></i>',
+                                label: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.yes`),
+                                callback: () => { resolve(damage + crit); }
+                            },
+                            two: {
+                                icon: '<i class="fas fa-times"></i>',
+                                label: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.no`),
+                                callback: () => { resolve(damage); }
+                            }
+                        },
+                        default: "two"
+                    }
+    
+                    new Dialog(data, options).render(true);
+                });
+            }
 		}
 
 		return damage || crit;

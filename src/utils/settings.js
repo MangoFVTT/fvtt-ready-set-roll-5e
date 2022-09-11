@@ -15,6 +15,7 @@ export const SETTING_NAMES = {
     D20_ICONS_ENABLED: "enableD20Icons",
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
+    ALWAYS_APPLY_CRIT: "alwaysApplyCrit",
     PLACEMENT_ROLL_TITLE: "placementRollTitle",
     PLACEMENT_DAMAGE_TITLE: "placementDamageTitle",
     PLACEMENT_DAMAGE_CONTEXT: "placementDamageContext",
@@ -86,14 +87,22 @@ export class SettingsUtility {
             });
         });
 
-        game.settings.register(MODULE_NAME, SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, {
-            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.OVERLAY_BUTTONS_ENABLED}.name`),
-            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.OVERLAY_BUTTONS_ENABLED}.hint`),
-            scope: "world",
-            config: true,
-            type: Boolean,
-            default: true,
-            requiresReload: true
+        // OVERLAY BUTTON OPTIONS
+        const overlayOptions = [
+            SETTING_NAMES.OVERLAY_BUTTONS_ENABLED,
+            SETTING_NAMES.ALWAYS_APPLY_CRIT
+        ]        
+
+        overlayOptions.forEach(option => {
+            game.settings.register(MODULE_NAME, option, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: true,
+                requiresReload: true
+            });
         });
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
