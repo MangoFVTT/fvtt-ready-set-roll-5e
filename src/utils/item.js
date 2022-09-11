@@ -6,7 +6,7 @@ import { RollUtility, ROLL_TYPE } from "./roll.js";
 
 /**
  * Enumerable of identifiers for different types of dnd5e items.
- * @enum {string}
+ * @enum {String}
  */
 export const ITEM_TYPE = {
     WEAPON: "weapon",
@@ -89,7 +89,7 @@ export class ItemUtility {
      * Retrieves a roll configuration to pass to the default Foundry VTT item.use().
      * This configuration largely handles what the item will consume, as specified in the roll configuration tab.
      * @param {Item} item The item from which to retrieve the roll configuration.
-     * @param {boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
+     * @param {Boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
      * @returns {object} A roll configuration in the format necessary for the dnd5e system.
      */
     static getRollConfigFromItem(item, isAltRoll = false) {
@@ -120,9 +120,9 @@ export class ItemUtility {
     /**
      * Gets a specific value for a set module flag from an item.
      * @param {Item} item The item from which to retrieve the flag value.
-     * @param {string} flag The identifier of the flag to retrieve.
-     * @param {boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
-     * @returns {boolean} Whether the flag is set to true or false.
+     * @param {String} flag The identifier of the flag to retrieve.
+     * @param {Boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
+     * @returns {Boolean} Whether the flag is set to true or false.
      */
     static getFlagValueFromItem(item, flag, isAltRoll = false) {
         if (item?.flags[MODULE_SHORT][flag]) {

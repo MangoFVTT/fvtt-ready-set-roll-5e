@@ -1,22 +1,20 @@
 import { CoreUtility } from "../utils/core.js";
-import { HOOK_CHAT_MESSAGE, HOOK_PROCESSED_ROLL, HOOK_RENDER } from "../utils/hooks.js";
+import { HOOKS_MODULE } from "../utils/hooks.js";
 import { ITEM_TYPE } from "../utils/item.js";
+import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { ROLL_TYPE } from "../utils/roll.js";
+import { MODULE_SHORT } from "./const.js";
 
 /**
  * Default quick roll parameters to fill in the parameter list that is passed on to field generation and rendering.
  */
 let defaultParams = {
-	label: "",
 	forceCrit: false,
 	forceFumble: false,
     forceMultiRoll: false,
-	preset: null,
-	properties: true,
 	hasAdvantage: false,
-	hasDisadvantage: false,
-	infoOnly: false,
+	hasDisadvantage: false
 };
 
 /**
@@ -27,7 +25,7 @@ export class QuickRoll {
      * Data id that is auto-incremented. IDs need to be unique for each entry within a card.
      * @private
      */
-    _currentId = -1;
+    _currentId;
 
     constructor(origin, params, fields) {
 		if (origin) {
@@ -42,12 +40,13 @@ export class QuickRoll {
 			}
 		}
 
+		this._currentId = -1;
+
 		// Merges default parameter array with provided parameters, to have a complete list of parameters.
 		this.params = foundry.utils.mergeObject(foundry.utils.duplicate(defaultParams), params || {});		
 
 		this.fields = fields ?? []; // Where requested roll fields are stored, in the order they should be rendered.
 		this.templates = []; // Data results from fields, rendered into HTML templates.
-        this.properties = []; // Properties for the roll, shown in the card footer.
 
 		this.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
 		this.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
@@ -92,10 +91,48 @@ export class QuickRoll {
 	}
 
 	/**
+	 * Gets if the current user has advanced permissions over the chat card.
+	 * @returns {Boolean} True if the user has advanced permissions, false otherwise.
+	 */
+	 get hasPermission() {
+		const message = game.messages.get(this.messageId);
+		return game.user.isGM || message?.isAuthor;
+	}
+
+	/**
+	 * Creates a QuickRoll instance from data stored within chat card flags.
+	 * Used when needing to recreate chat card module data for existing chat messages.
+	 * @param {ChatMessage} message The chat card message data to retrieve a roll instance from.
+	 * @returns {QuickRoll} A quick roll instance derived from stored message data.
+	 */
+	static fromMessage(message) {
+		const data = message.flags[`${MODULE_SHORT}`];
+		const roll = new QuickRoll(null, data?.params ?? {}, data?.fields ?? []);
+
+		roll.messageId = message.id
+
+		roll.isCrit = data?.isCrit ?? false;
+		roll.params = data?.params ?? {};
+
+		if (data?.actorId) {
+			roll.actor = game.actors.get(data.actorId);
+		}
+
+		if (data?.itemId) {
+			const storedData = message.getFlag("dnd5e", "itemData");
+			const Item5e = game.dnd5e.documents.Item5e;
+
+			roll.item = storedData && roll.actor ? Item5e.create(storedData) : roll.actor?.items.get(data.itemId);
+		}
+		
+		return roll;
+	}
+
+	/**
 	 * Creates and sends a chat message to all players (based on whisper config).
 	 * @param {object} param0 Additional message options.
-	 * @param {string} param0.rollMode The message roll mode (private/public/blind/etc).
-	 * @param {string} param0.createMessage Immediately send the message to chat or only return data.
+	 * @param {String} param0.rollMode The message roll mode (private/public/blind/etc).
+	 * @param {String} param0.createMessage Immediately send the message to chat or only return data.
 	 * @returns {Promise<ChatMessage>} The created chat message data.
 	 */
     async toMessage({ rollMode = null, createMessage = true } = {}) {
@@ -113,7 +150,7 @@ export class QuickRoll {
 			...CoreUtility.getWhisperData(rollMode),
 		}
 
-		await Hooks.callAll(HOOK_CHAT_MESSAGE, this, chatData);
+		await Hooks.callAll(HOOKS_MODULE.CHAT_MSG, this, chatData);
 
 		// Send the chat message
 		if (createMessage) {
@@ -138,6 +175,7 @@ export class QuickRoll {
                     item: this.item,
                     actor: this.actor,
                     isCrit: this.isCrit,
+					isFumble: this.isFumble,
                     isMultiRoll: this.isMultiRoll
                 };
 
@@ -145,11 +183,11 @@ export class QuickRoll {
                 this.templates.push(render);
             }
 
-			await Hooks.callAll(HOOK_PROCESSED_ROLL, this);
+			await Hooks.callAll(HOOKS_MODULE.PROCESSED_ROLL, this);
             this.processed = true;
         }
 
-		await Hooks.callAll(HOOK_RENDER, this);
+		await Hooks.callAll(HOOKS_MODULE.RENDER, this);
 
 		return RenderUtility.renderFullCard({
 			item: this.item,
@@ -166,26 +204,14 @@ export class QuickRoll {
 	 * @private
 	 */
 	_getFlags() {
-		// Transform rolls in fields into formulas when saving into flags
-		const fields = this.fields.map((field) => {
-			const newField = deepClone(field);
-			if (field[1] && 'formula' in field[1] && field[1].formula?.formula) {
-				newField[1].formula = field[1].formula.formula;
-			}
-			return newField;
-		});
-
 		const flags = {
 			rsr5e: {
 				version: CoreUtility.getVersion(),
 				actorId: this.actorId,
 				itemId: this.itemId,
 				tokenId: this.tokenId,
-				isCrit: this.isCrit,
-				isFumble: this.isFumble,
-				properties: this.properties,
 				params: this.params,
-				fields
+				fields: this.fields
 			}
 		};		
 
@@ -197,7 +223,7 @@ export class QuickRoll {
 			flags["dnd5e.roll.itemId"] = this.itemId;
 		}
 
-		// If the item was destroyed in the process of displaying its card embed the item data in the chat message.
+		// If the item was destroyed in the process of displaying its card, embed the item data in the chat message.
 		if (this.item?.type === ITEM_TYPE.CONSUMABLE && !this.actor?.items?.has(this.itemId)) {
 			flags["dnd5e.itemData"] = this.item;
 		}

@@ -213,8 +213,28 @@
 	font-size: 14px;
 }
 
-.icon.heart-plus {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/heart-plus.svg");
+.icon.overlay-healing {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-healing.svg");
+}
+
+.icon.overlay-healing-temp {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-healing-temp.svg");
+}
+
+.icon.overlay-damage-full {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-full.svg");
+}
+
+.icon.overlay-damage-half {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-half.svg");
+}
+
+.icon.overlay-damage-quarter {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-quarter.svg");
+}
+
+.icon.overlay-damage-double {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-double.svg");
 }
 
 .die-result-overlay-br button i {

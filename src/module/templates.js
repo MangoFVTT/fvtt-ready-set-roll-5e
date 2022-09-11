@@ -11,5 +11,6 @@ export const TEMPLATE = {
     DAMAGE: "rsr-damage-roll.html",
     SAVE_BUTTON: "rsr-save-button.html",
     OPTIONS: "rsr-item-options.html",
-    BLANK: "rsr-blank.html"
+    BLANK: "rsr-blank.html",
+    OVERLAY_DAMAGE: "rsr-overlay-damage.html"
 }
