@@ -114,9 +114,15 @@
                 "damageQuarter": "Click to apply quarter damage to selected token(s).",
                 "damageDouble": "Click to apply double damage to selected token(s).",
                 "healing": "Click to apply healing to selected token(s).",
+                "healingTemp": "Click to apply temporary hitpoints to selected token(s).",
                 "rollCrit": "Click to roll critical damage.",
                 "rollAdvantage": "Click to roll with advantage.",
                 "rollDisadvantage": "Click to roll with disadvantage."
+            },
+            "critPrompt": {                
+                "title": "Apply Crit Damage?",
+		        "yes": "Yes",
+		        "no": "No"
             }
         }
     }

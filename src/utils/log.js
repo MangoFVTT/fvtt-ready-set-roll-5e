@@ -6,7 +6,7 @@ import { MODULE_DEBUG_TAG } from "../module/const.js";
 export class LogUtility {
     /**
      * Sends an info log to the console.
-     * @param {string} logString The string to log as an info. 
+     * @param {String} logString The string to log as an info. 
      */
     static log(logString) {
         console.log(..._processLog(logString));
@@ -14,7 +14,7 @@ export class LogUtility {
 
     /**
      * Sends an error log to the console and displays an error UI notification.
-     * @param {string} logString The string to log as an error. 
+     * @param {String} logString The string to log as an error. 
      */
     static logError(logString, options = {}) {
         if (options.ui ?? true) ui.notifications.error(logString, { console: false });
@@ -23,7 +23,7 @@ export class LogUtility {
 
     /**
      * Sends a warning log to the console and displays a warning UI notification.
-     * @param {string} logString The string to log as a warning. 
+     * @param {String} logString The string to log as a warning. 
      */
     static logWarning(logString, options = {}) {
         if (options.ui ?? true) ui.notifications.warn(logString, { console: false });
@@ -33,7 +33,7 @@ export class LogUtility {
 
 /**
  * Attaches a debug tag to a string to prep it for console logging.
- * @param {string} logString The string to attach as a debug tag to.
+ * @param {String} logString The string to attach as a debug tag to.
  * @returns A formatted log string with the module debug tag attached.
  * @private
  */

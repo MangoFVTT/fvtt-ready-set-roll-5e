@@ -1,8 +1,13 @@
 import { QuickCard } from "../module/quickcard.js";
 import { LogUtility } from "./log.js";
-import { RenderUtility } from "./render.js";
 
 export class ChatUtility {
+    /**
+     * Inflates a given chat message, adding runtime elements
+     * and events to it. Does nothing if the message is not the correct type.
+     * @param {ChatMessage} message
+     * @param {JQuery} html
+     */
     static bindChatCard(message, html) {
         if (!message || !html) {
             return null;

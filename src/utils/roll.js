@@ -8,7 +8,7 @@ import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
  * Enumerable of identifiers for different roll types that can be made.
- * @enum {string}
+ * @enum {String}
  */
 export const ROLL_TYPE = {
     SKILL: "skill",
@@ -23,7 +23,7 @@ export const ROLL_TYPE = {
 
 /**
  * Enumerable of identifiers for crit result types.
- * @enum {string}
+ * @enum {String}
  */
 export const CRIT_TYPE = {
     MIXED: "mixed",
@@ -40,8 +40,8 @@ export class RollUtility {
      * @param {Actor} caller The calling object of the wrapper.
      * @param {function} wrapper The roll wrapper to call.
      * @param {any} options Option data for the triggering event.
-     * @param {string} id The identifier of the roll (eg. ability name/skill name/etc).
-     * @param {boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
+     * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
+     * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<Roll>} The roll result of the wrapper.
      */
     static async rollActorWrapper(caller, wrapper, options, id, bypass = false) {
@@ -60,8 +60,8 @@ export class RollUtility {
      * @param {Item} caller The calling object of the wrapper.
      * @param {function} wrapper The roll wrapper to call.
      * @param {any} options Option data for the triggering event.
-     * @param {string} id The identifier of the roll (eg. ability name/skill name/etc).
-     * @param {boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
+     * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
+     * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<ChatData>} The roll result of the wrapper.
      */
     static async rollItemWrapper(caller, wrapper, options, bypass = false) {
@@ -101,7 +101,7 @@ export class RollUtility {
     /**
      * Rolls a skill check from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {string} skillId The id of the skill being rolled.
+     * @param {String} skillId The id of the skill being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
@@ -124,7 +124,7 @@ export class RollUtility {
     /**
      * Rolls an ability test from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {string} ability The id of the ability being rolled.
+     * @param {String} ability The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
@@ -145,7 +145,7 @@ export class RollUtility {
     /**
      * Rolls an ability save from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {string} ability The id of the ability being rolled.
+     * @param {String} ability The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
@@ -182,8 +182,8 @@ export class RollUtility {
     /**
      * Processes a set of dice results to check what type of critical was rolled (for showing colour in chat card).
      * @param {Die} die A die term to process into a crit type.
-     * @param {*} critThreshold The threshold above which a result is considered a crit.
-     * @param {*} fumbleThreshold The threshold below which a result is considered a crit.
+     * @param {Number} critThreshold The threshold above which a result is considered a crit.
+     * @param {Number} fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
     static getCritTypeForDie(die, critThreshold, fumbleThreshold) {
@@ -244,10 +244,10 @@ export class RollUtility {
 /**
  * Gets an actor-based quick roll (skill, ability, or save).
  * @param {Actor} actor The actor object from which the roll is being generated.
- * @param {string} title The label to show on the header of the chat card.
- * @param {string} roll The roll being quick rolled.
- * @param {string} rollType The type (as a string identifier) of the roll being quick rolled.
- * @param {boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
+ * @param {String} title The label to show on the header of the chat card.
+ * @param {String} roll The roll being quick rolled.
+ * @param {String} rollType The type (as a string identifier) of the roll being quick rolled.
+ * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
  * @returns {Promise<QuickRoll>} The created actor quick roll.
  */
 async function getActorRoll(actor, title, roll, rollType, createMessage = true) {

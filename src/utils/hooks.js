@@ -49,7 +49,11 @@ export class HooksUtility {
             SettingsUtility.registerSettings();
             PatchingUtility.patchActors();
             PatchingUtility.patchItems();
-            PatchingUtility.patchItemSheets();
+            PatchingUtility.patchItemSheets();            
+            
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
+                HooksUtility.registerChatHooks();
+            }
         });
 
         Hooks.on(HOOKS_CORE.READY, () => {
@@ -63,10 +67,6 @@ export class HooksUtility {
                 CONFIG.DND5E.healingTypes,
                 { recursive: false }
             );
-            
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
-                HooksUtility.registerChatHooks();
-            }
 
             if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
                 HooksUtility.registerSheetHooks();

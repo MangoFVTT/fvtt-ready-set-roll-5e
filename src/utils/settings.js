@@ -4,7 +4,7 @@ import { LogUtility } from "./log.js";
 
 /**
  * Enumerable of identifiers for setting names.
- * @enum {string}
+ * @enum {String}
  */
 export const SETTING_NAMES = {
     ROLL_MODIFIER_MODE: "rollModifierMode",

@@ -1,4 +1,4 @@
-import { MODULE_NAME } from "../module/const.js";
+import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
 import { LogUtility } from "./log.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
@@ -16,9 +16,9 @@ export class CoreUtility {
 
     /**
      * Shorthand for both game.i18n.format() and game.i18n.localize() depending on whether data is supplied or not.
-     * @param {string} key The key string to localize for.
+     * @param {String} key The key string to localize for.
      * @param {object?} data Optional data that if given will do a i18n.format() instead.
-     * @returns {string} A localized string (with formatting if needed).
+     * @returns {String} A localized string (with formatting if needed).
      */
     static localize(key, data = null) {
         if (data) {
@@ -49,7 +49,7 @@ export class CoreUtility {
     /**
      * Checks an event for alternate roll modifier key (if the relevant setting is enabled).
      * @param {object} event Event data to check.
-     * @returns {boolean} If the roll should be an alternate one. 
+     * @returns {Boolean} If the roll should be an alternate one. 
      */
     static eventToAltRoll(event = {}) {
         const altRollEnabled = SettingsUtility.getSettingValue(SETTING_NAMES.ALT_ROLL_ENABLED);

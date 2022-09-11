@@ -217,6 +217,10 @@
 	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-healing.svg");
 }
 
+.icon.overlay-healing-temp {
+	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-healing-temp.svg");
+}
+
 .icon.overlay-damage-full {
 	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-full.svg");
 }

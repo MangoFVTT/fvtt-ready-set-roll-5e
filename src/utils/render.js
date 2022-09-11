@@ -7,7 +7,7 @@ import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
  * A list of different field types that can be provided.
- * @enum {string}
+ * @enum {String}
  */
 export const FIELD_TYPE = {
     HEADER: 'header',
@@ -278,7 +278,7 @@ async function _renderDamageRoll(renderData = {}) {
 
 /**
  * Shortcut function to render a custom template from the templates folder.
- * @param {string} template Name (or sub path) of the template in the templates folder.
+ * @param {String} template Name (or sub path) of the template in the templates folder.
  * @param {Object} props The props data to render the template with.
  * @returns {Promise<string>} A rendered html template.
  * @private
