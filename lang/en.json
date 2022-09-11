@@ -15,6 +15,8 @@
             "enableDiceSounds.hint": "When outputting a quick roll, play the default system dice-rolling sound.",
             "enableOverlayButtons.name": "Enable Overlay Buttons",
             "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
+            "alwaysApplyCrit.name": "Always Apply Critical Damage",
+            "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
             "showSkillAbilities.name": "Show Ability Names for Skills",
