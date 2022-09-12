@@ -69,8 +69,9 @@ export class QuickCard {
 	}
 
     /**
-     * Adds overlay buttons to a chat card for applying damage/temphp or retroactive advantage/disadvantage/crit.
+     * Adds all overlay buttons to a chat card.
      * @param {JQuery} html The object to add overlay buttons to.
+     * @private
      */
     async _setupOverlayButtons(html) {
         await this._setupMultiRollOverlayButtons(html);
@@ -81,6 +82,11 @@ export class QuickCard {
 		html.hover(this._onHover.bind(this, html), this._onHoverEnd.bind(this, html));
     }
 
+    /**
+     * Adds overlay buttons to a chat card for retroactively making a roll into a multi roll.
+     * @param {JQuery} html The object to add overlay buttons to.
+     * @private
+     */
     async _setupMultiRollOverlayButtons(html) {
         const template = await RenderUtility.renderOverlayMultiRoll();
         const fields = this.roll?.fields ?? [];
@@ -98,6 +104,11 @@ export class QuickCard {
         });
     }
 
+    /**
+     * Adds overlay buttons to a chat card for applying rolled damage or healing to tokens.
+     * @param {JQuery} html The object to add overlay buttons to.
+     * @private
+     */
     async _setupDamageOverlayButtons(html) {
         const template = await RenderUtility.renderOverlayDamage();
         const elements = html.find('.dice-total .rsr-base-die, .dice-total .rsr-extra-die').parents('.dice-row').toArray();
@@ -116,6 +127,11 @@ export class QuickCard {
         });
     }
 
+    /**
+     * Processes and handles a retroactive advantage/disadvantage button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
     async _processRetroButtonEvent(event) {
         event.preventDefault();
         event.stopPropagation();
@@ -175,7 +191,7 @@ export class QuickCard {
      * @param {Number} damage The value of the base damage of a field.
      * @param {Number} crit The value of the crit damage of a field.
      * @param {Object} position A vector indicating the position of the originating event.
-     * @returns {Number} The resolved final damage value depending on the user's choices.
+     * @returns {Promise<Number>|Number} The resolved final damage value depending on the user's choices.
      * @private
      */
     async _resolveCritDamage(damage, crit, position) {

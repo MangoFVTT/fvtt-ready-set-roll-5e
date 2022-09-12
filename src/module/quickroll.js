@@ -156,7 +156,7 @@ export class QuickRoll {
 	}
 
 	/**
-	 * Creates and sends a chat message to all players (based on whisper config).
+	 * Creates and sends (if told to) a chat message to all players (based on whisper config).
 	 * @param {object} param0 Additional message options.
 	 * @param {String} param0.rollMode The message roll mode (private/public/blind/etc).
 	 * @param {String} param0.createMessage Immediately send the message to chat or only return data.
@@ -189,6 +189,10 @@ export class QuickRoll {
 		}
 	}
 
+	/**
+	 * Creates a message update package to update an existing chat card.
+	 * @returns {Promise<Object>} The created update package.
+	 */
 	async toMessageUpdate() {
 		const update = {
 			content: await this._render(),
@@ -199,6 +203,12 @@ export class QuickRoll {
 		return update;
 	}		
 
+	/**
+	 * Upgrades a specific roll in one of the roll fields to a multi roll if possible.
+	 * @param {Number} targetId The index of the roll field to upgrade. 
+	 * @param {ROLL_STATE} targetState The target state of the upgraded multi roll (advantage or disadvantage);
+	 * @returns 
+	 */
 	async upgradeToMultiRoll(targetId, targetState) {
 		const targetField = this.fields[targetId];
 
