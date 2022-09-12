@@ -152,7 +152,7 @@ function _renderSaveButton(renderData = {}) {
 }
 
 async function _renderMultiRoll(renderData = {}) {
-    const { id, roll, title } = renderData;
+    const { id, roll, title, rollType, rollState } = renderData;
     const entries = [];
 
     // Process bonuses beyond the base d20s into a single roll.
@@ -161,7 +161,6 @@ async function _renderMultiRoll(renderData = {}) {
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
     for (let i = 0; i < d20Rolls.results.length; i++) {
-        // Die terms must have active results or the base roll total of the generated roll is 0.
         let tmpResults = [];
         tmpResults.push(d20Rolls.results[i]);
 
@@ -169,12 +168,19 @@ async function _renderMultiRoll(renderData = {}) {
             i++;
             tmpResults.push(d20Rolls.results[i]);
         }
-
+        
+        // Die terms must have active results or the base roll total of the generated roll is 0.
+        // This does not apply to dice that have been rerolled (unless they are replaced by a fixer value eg. for reliable talent).
         tmpResults.forEach(r => {
-            r.active = !r.rerolled ?? true; 
+            r.active = !(r.rerolled && !r.count) ?? true; 
         });
 
-        const baseTerm = new Die({number: 1, faces: 20, results: tmpResults});
+        const baseTerm = new Die({
+            number: 1,
+            faces: 20,
+            results: tmpResults,
+            modifiers: d20Rolls.modifiers
+        });
         const baseRoll = Roll.fromTerms([baseTerm]);
 
         entries.push({
@@ -196,7 +202,9 @@ async function _renderMultiRoll(renderData = {}) {
         formula: roll.formula,
         entries,
         tooltips,
-        bonusTooltip
+        bonusTooltip,
+        rollType,
+        rollState,
     });
 }
 

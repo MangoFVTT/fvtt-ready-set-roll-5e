@@ -32,4 +32,8 @@ export class ChatUtility {
             return newCard;
         }
     }
+
+    static updateChatCard(message, content) {
+        
+    }
 }

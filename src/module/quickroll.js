@@ -3,7 +3,7 @@ import { HOOKS_MODULE } from "../utils/hooks.js";
 import { ITEM_TYPE } from "../utils/item.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
-import { ROLL_TYPE } from "../utils/roll.js";
+import { RollUtility, ROLL_STATE, ROLL_TYPE } from "../utils/roll.js";
 import { MODULE_SHORT } from "./const.js";
 
 /**
@@ -94,9 +94,25 @@ export class QuickRoll {
 	 * Gets if the current user has advanced permissions over the chat card.
 	 * @returns {Boolean} True if the user has advanced permissions, false otherwise.
 	 */
-	 get hasPermission() {
+	get hasPermission() {
 		const message = game.messages.get(this.messageId);
 		return game.user.isGM || message?.isAuthor;
+	}
+
+	get currentRollState() {
+		if (this.params?.hasAdvantage ?? false) {
+			return ROLL_STATE.ADV
+		}
+
+		if (this.params?.hasDisadvantage ?? false) {
+			return ROLL_STATE.DIS
+		}
+
+		if (this.params?.isMultiRoll ?? false) {
+			return ROLL_STATE.DUAL
+		}
+
+		return ROLL_STATE.SINGLE;
 	}
 
 	/**
@@ -107,7 +123,21 @@ export class QuickRoll {
 	 */
 	static fromMessage(message) {
 		const data = message.flags[`${MODULE_SHORT}`];
-		const roll = new QuickRoll(null, data?.params ?? {}, data?.fields ?? []);
+
+		// Rolls in fields are unpacked and must be recreated.
+		const fields = data?.fields ?? [];
+		fields.forEach(field => {
+			if (CONFIG[MODULE_SHORT].validMultiRollFields.includes(field[0])) {
+				field[1].roll = Roll.fromData(field[1].roll);
+			}
+
+			if (CONFIG[MODULE_SHORT].validDamageRollFields.includes(field[0])) {
+				field[1].baseRoll = field[1].baseRoll ? Roll.fromData(field[1].baseRoll) : null;
+				field[1].critRoll = field[1].critRoll ? Roll.fromData(field[1].critRoll) : null;
+			}
+		});
+
+		const roll = new QuickRoll(null, data?.params ?? {}, fields);
 
 		roll.messageId = message.id
 
@@ -159,6 +189,34 @@ export class QuickRoll {
 		}
 	}
 
+	async toMessageUpdate() {
+		const update = {
+			content: await this._render(),
+			...flattenObject({ flags: duplicate(this._getFlags()) }),
+			...CoreUtility.getRollSound()
+		};
+
+		return update;
+	}		
+
+	async upgradeToMultiRoll(targetId, targetState) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !targetState || !this.hasPermission || !targetField[1]?.roll) {
+			return false;
+		}
+
+		if (targetField[0] !== FIELD_TYPE.CHECK && targetField[0] !== FIELD_TYPE.ATTACK) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectFieldType`, { type: targetField[0] }));
+			return false;
+		}
+
+		targetField[1].roll = await RollUtility.upgradeRoll(targetField[1].roll, targetState, this.params);
+		this.isMultiRoll = true;
+
+		return true;
+	}
+
     /**
 	 * Renders HTML templates for the provided fields and combines them into a card.
 	 * @returns {Promise<string>} Combined HTML chat data for all the roll fields.
@@ -173,7 +231,8 @@ export class QuickRoll {
                     actor: this.actor,
                     isCrit: this.isCrit,
 					isFumble: this.isFumble,
-                    isMultiRoll: this.isMultiRoll
+                    isMultiRoll: this.isMultiRoll,
+					rollState: this.currentRollState
                 };
 
                 const render = await RenderUtility.renderFromField(field, metadata);

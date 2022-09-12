@@ -1,5 +1,6 @@
 import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
 import { LogUtility } from "./log.js";
+import { FIELD_TYPE } from "./render.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**

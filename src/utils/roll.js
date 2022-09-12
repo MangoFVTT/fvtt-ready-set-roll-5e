@@ -22,6 +22,16 @@ export const ROLL_TYPE = {
 }
 
 /**
+ * Enumerable of identifiers for roll states (advantage or disadvantage).
+ */
+export const ROLL_STATE = {
+    ADV: "kh",
+    DIS: "kl",
+    DUAL: "dual",
+    SINGLE: "single"
+}
+
+/**
  * Enumerable of identifiers for crit result types.
  * @enum {String}
  */
@@ -186,10 +196,10 @@ export class RollUtility {
      * @param {Number} fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
-    static getCritTypeForDie(die, critThreshold, fumbleThreshold) {
+    static getCritTypeForDie(die, options = {}) {
         if (!die) return null;
 
-        const { crit, fumble } = countCritsFumbles(die, critThreshold, fumbleThreshold)		
+        const { crit, fumble } = countCritsFumbles(die, options)		
 
         return getCritResult(crit, fumble);
     }
@@ -201,14 +211,14 @@ export class RollUtility {
      * @param {*} fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
-    static getCritTypeForRoll(roll, critThreshold, fumbleThreshold) {
+    static getCritTypeForRoll(roll, options = {}) {
         if (!roll) return null;
 
 		let totalCrit = 0;
 		let totalFumble = 0;
 
         for (const die of roll.dice) {			
-            const { crit, fumble } = countCritsFumbles(die, critThreshold, fumbleThreshold)
+            const { crit, fumble } = countCritsFumbles(die, options)
             totalCrit += crit;
             totalFumble += fumble;
 		}
@@ -223,33 +233,51 @@ export class RollUtility {
      * @returns {Promise<Roll>} The version of the roll with multi roll enforced if needed, or the original roll otherwise.
      */
     static async ensureMultiRoll(roll, params = {}) {
-        if (roll && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !(roll?.hasAdvantage || roll?.hasDisadvantage)) {
+        if (!roll) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
+            return null;
+        }
+
+        if ((SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) || params?.upgrade) && !(roll.hasAdvantage || roll.hasDisadvantage)) {
             params.isMultiRoll = true;
 
             const forcedDiceCount = params?.elvenAccuracy ? 3 : 2;
-            const d20Additional = await new Roll(`${forcedDiceCount - 1}d20`).evaluate({ async: true });
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
+            const d20Additional = await new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: true });
 
             const d20Forced = new Die({
                 number: forcedDiceCount,
                 faces: 20,
-                results: [...d20BaseTerm.results, ...d20Additional.dice[0].results]
+                results: [...d20BaseTerm.results, ...d20Additional.dice[0].results],
+                modifiers: d20BaseTerm.modifiers
             });
 
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
 
-        const critType = RollUtility.getCritTypeForDie(
-            roll.terms.find(d => d.faces === 20),
-            roll.options.critical,
-            roll.options.fumble
-        );
+        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), { ignoreDiscarded: true });
 
         params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
         params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
         params.isMultiRoll = params.isMultiRoll || roll.hasAdvantage || roll.hasDisadvantage;
 
         return roll;
+    }
+
+    static async upgradeRoll(roll, targetState, params = {}) {
+		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
+			return roll;
+		}
+
+        params.upgrade = true;
+        const upgradedRoll = await RollUtility.ensureMultiRoll(roll, params);
+        
+        const d20BaseTerm = upgradedRoll.terms.find(d => d.faces === 20);
+        d20BaseTerm.keep(targetState);
+        d20BaseTerm.modifiers.push(targetState);
+
+        return upgradedRoll;
     }
 }
 
@@ -351,20 +379,25 @@ function getCritResult(crit, fumble)
     }
 }
 
-function countCritsFumbles(die, critThreshold, fumbleThreshold)
+function countCritsFumbles(die, options)
 {
     let crit = 0;
     let fumble = 0;
 
-    if (die.faces > 1) {
+    if (die && die.faces > 1) {
+        let { critThreshold, fumbleThreshold, ignoreDiscarded } = options
+
+        critThreshold = critThreshold ?? die.options.critical ?? die.faces;
+        fumbleThreshold = fumbleThreshold ?? die.options.fumble ?? 1;
+
         for (const result of die.results) {
-            if (result.rerolled) {
+            if (result.rerolled || (result.discarded && ignoreDiscarded)) {
                 continue;
             }
 
-            if (result.result >= (critThreshold || die.faces)) {
+            if (result.result >= critThreshold) {
                 crit += 1;
-            } else if (result.result <= (fumbleThreshold || 1)) {
+            } else if (result.result <= fumbleThreshold) {
                 fumble += 1;
             }
         }

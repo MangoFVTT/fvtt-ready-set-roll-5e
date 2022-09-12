@@ -469,7 +469,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.CHECK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll),
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ITEM
             }
         ]);
@@ -493,7 +493,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll),
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
                 title: `Ability Check - ${CONFIG.DND5E.abilities[item.hasAbilityCheck]}`
             }
