@@ -52,6 +52,19 @@ The following modules have been verified as compatible from the specified module
 
 ![rollconfig](https://user-images.githubusercontent.com/110994627/188637202-f0e4ba7b-7790-4c97-9be6-bc64f4be7015.png)
 
+### Retroactive Roll Editing
+- If enabled via the module settings, quick rolls can be edited post creation, allowing for retroactively rolling advantage, disadvantage, or critical damage for a roll after it has already been created.
+- Changes to the roll will automatically live edit the quick roll's chat card, displaying the new data alongside the already existing roll.
+
+![retroactiveoverlay](https://user-images.githubusercontent.com/110994627/189863316-90a483e8-b35b-4bc5-905a-ca7d0e2ea80c.gif)
+
+### Apply Individual Damage
+- If enabled via the module settings, each damage field in a quick roll chat card can apply damage or healing to selected tokens individually via overlay buttons. This extends core system behaviour (applying damage via context menus) to allow for the application of each damage field individually instead of as a single whole.
+- Damage fields can be applied in a specific manner (damage or healing) regardless of the actual damage type. This is intended to allow Players or GMs to manually decide what to do with the damage field in the event of edge cases (such as a specific damage type healing instead of doing damage for a particular creature).
+- Applying critical damage to a token will display a prompt allowing for critical damage to be ignored if desired. This can be disabled via a setting to always apply critical damage.
+
+![damageoverlay](https://user-images.githubusercontent.com/110994627/189862751-41c7e9b3-33a1-49bf-a55a-32f6681954d3.gif)
+
 ### Damage Context
 - Damage fields can be given additional context strings to convey extra information about that particular damage group. This context will be then shown on the chat card, as either part of the overall damage description or a replacement to default damage titles/type strings.
 - Damage context can be configured via the module settings to be placed at various positions of the chat card, and even replace default damage title and type labels.
@@ -65,7 +78,7 @@ The following modules have been verified as compatible from the specified module
 - Macro support for more flexible quick rolling.
 
 ## Known Issues
-- [See Bug Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
+- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
