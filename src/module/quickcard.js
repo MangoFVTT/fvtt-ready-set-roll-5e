@@ -154,11 +154,22 @@ export class QuickCard {
         }
     }
 
+    /**
+     * Processes and handles a retroactive crit button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
     async _processCritButtonEvent(event) {
         event.preventDefault();
         event.stopPropagation();
         
+        const button = event.currentTarget;
+        const id = $(button).parents(".rsr-dual").attr('data-id');
 
+        if (await this.roll.upgradeToCrit(id)) {
+            const update = await this.roll.toMessageUpdate();
+            this.message.update(update, { diff: true });
+        }
     }
 
     /**

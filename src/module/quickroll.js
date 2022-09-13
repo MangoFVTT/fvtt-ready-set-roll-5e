@@ -225,6 +225,34 @@ export class QuickRoll {
 		return true;
 	}
 
+	/**
+	 * Upgrades a specific damage roll in one of the damage fields to a crit if possible.
+	 * @param {Number} targetId The index of the damage field to upgrade.
+	 * @returns 
+	 */
+	async upgradeToCrit(targetId) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !this.item || !this.hasPermission || !targetField[1]?.baseRoll || targetField[1]?.critRoll) {
+			return false;
+		}
+
+		if (targetField[0] !== FIELD_TYPE.DAMAGE) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectFieldType`, { type: targetField[0] }));
+			return false;
+		}
+
+		const options = {
+			multiplyNumeric: game.settings.get("dnd5e", "criticalDamageModifiers"),
+			powerfulCritical: game.settings.get("dnd5e", "criticalDamageMaxDice"),
+			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0
+		}
+
+		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, targetId, options);
+
+		return true;
+	}
+
     /**
 	 * Renders HTML templates for the provided fields and combines them into a card.
 	 * @returns {Promise<string>} Combined HTML chat data for all the roll fields.
