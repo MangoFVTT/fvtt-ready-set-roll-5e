@@ -54,7 +54,7 @@ export class PatchingUtility {
 /**
  * Patch function for rolling an Actor skill.
  * @param {function} wrapper The original wrapper for the function.
- * @param {string} skillId The id of the skill being rolled.
+ * @param {String} skillId The id of the skill being rolled.
  * @param {*} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor skill.
  * @private
@@ -68,7 +68,7 @@ async function _actorRollSkill(wrapper, skillId, options) {
 /**
  * Patch function for rolling an Actor ability test.
  * @param {function} wrapper The original wrapper for the function.
- * @param {string} skillId The id of the ability being rolled.
+ * @param {String} skillId The id of the ability being rolled.
  * @param {*} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability test.
  * @private
@@ -82,7 +82,7 @@ async function _actorRollAbilityTest(wrapper, ability, options) {
 /**
  * Patch function for rolling an Actor ability save.
  * @param {function} wrapper The original wrapper for the function.
- * @param {string} skillId The id of the ability being rolled.
+ * @param {String} skillId The id of the ability being rolled.
  * @param {*} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability save.
  * @private
@@ -113,7 +113,7 @@ async function _itemUse(wrapper, options) {
  * @param {Actor} caller The calling object of the wrapper.
  * @param {function} wrapper The original wrapper to process.
  * @param {*} options Options for processing the wrapper.
- * @param {string} id The associated id of the Actor roll (eg. skill id).
+ * @param {String} id The associated id of the Actor roll (eg. skill id).
  * @returns {Promise<Roll>} The processed roll data from the wrapper.
  * @private
  */
@@ -150,7 +150,7 @@ async function _itemProcessWrapper(caller, wrapper, options) {
  * Override function that ensures tab height is automatically scaled when changing tabs.
  * @param {*} event The triggering event.
  * @param {Tabs} tabs The list of navigation tabs in the sheet.
- * @param {string} active The currently active tab.
+ * @param {String} active The currently active tab.
  * @private
  */
 function _onChangeTab(event, tabs, active) {

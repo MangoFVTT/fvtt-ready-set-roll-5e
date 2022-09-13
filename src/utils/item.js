@@ -2,11 +2,11 @@ import { MODULE_SHORT } from "../module/const.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
-import { RollUtility, ROLL_TYPE } from "./roll.js";
+import { CRIT_TYPE, RollUtility, ROLL_TYPE } from "./roll.js";
 
 /**
  * Enumerable of identifiers for different types of dnd5e items.
- * @enum {string}
+ * @enum {String}
  */
 export const ITEM_TYPE = {
     WEAPON: "weapon",
@@ -30,7 +30,7 @@ export class ItemUtility {
      * Will only generate fields that are available and enabled via the roll configuraton flags.
      * @param {Item} item The item from which to retrieve the roll fields. 
      * @param {object} params Addtional parameters for the item roll.
-     * @returns {Array} A list of fields as specified by the roll configuration.
+     * @returns {Promies<Array>} A list of fields as specified by the roll configuration.
      */
     static async getFieldsFromItem(item, params) {
         ItemUtility.ensureFlagsOnitem(item);
@@ -89,7 +89,7 @@ export class ItemUtility {
      * Retrieves a roll configuration to pass to the default Foundry VTT item.use().
      * This configuration largely handles what the item will consume, as specified in the roll configuration tab.
      * @param {Item} item The item from which to retrieve the roll configuration.
-     * @param {boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
+     * @param {Boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
      * @returns {object} A roll configuration in the format necessary for the dnd5e system.
      */
     static getRollConfigFromItem(item, isAltRoll = false) {
@@ -120,9 +120,9 @@ export class ItemUtility {
     /**
      * Gets a specific value for a set module flag from an item.
      * @param {Item} item The item from which to retrieve the flag value.
-     * @param {string} flag The identifier of the flag to retrieve.
-     * @param {boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
-     * @returns {boolean} Whether the flag is set to true or false.
+     * @param {String} flag The identifier of the flag to retrieve.
+     * @param {Boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
+     * @returns {Boolean} Whether the flag is set to true or false.
      */
     static getFlagValueFromItem(item, flag, isAltRoll = false) {
         if (item?.flags[MODULE_SHORT][flag]) {
@@ -319,16 +319,12 @@ async function _addFieldAttack(fields, item, params) {
             ammoConsumeBypass = true;
         }
 
-        const roll = await item.rollAttack({
+        let roll = await item.rollAttack({
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
             disadvantage: params?.advMode < 0 ?? false
         });
-
-        if (params) {
-            params.isCrit = params.isCrit || roll.isCritical;
-        }
 
         // Reset ammo type to avoid later issues.
         if (ammoConsumeBypass) {
@@ -388,32 +384,12 @@ async function _addFieldDamage(fields, item, params) {
             damageTermGroups[0].terms.push(...roll.terms);
         }
 
-        damageTermGroups.forEach(async (group, i) => {
+        for (const [i, group] of damageTermGroups.entries()) {
             const baseRoll = Roll.fromTerms(group.terms);
-
+            
             let critRoll = null;
             if (params?.isCrit) {
-                const critTerms = roll.options.multiplyNumeric ? group.terms : group.terms.filter(t => !(t instanceof NumericTerm));
-                const firstDie = critTerms.find(t => t instanceof Die);
-                const index = critTerms.indexOf(firstDie);
-
-                if (i === 0 && firstDie) {
-                    critTerms.splice(index, 1, new Die({
-                        number: firstDie.number + (roll.options.criticalBonusDice ?? 0),
-                        faces: firstDie.faces,
-                        results: firstDie.results
-                    }));
-                }
-
-                // Remove trailing operators to avoid errors.
-                while (critTerms.at(-1) instanceof OperatorTerm) {
-                    critTerms.pop();
-                }
-
-                critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
-                    maximize: roll.options.powerfulCritical,
-                    async: true
-                });
+                critRoll = await RollUtility.getCritRoll(baseRoll, i, roll.options, params);
             }
 
             fields.push([
@@ -426,8 +402,7 @@ async function _addFieldDamage(fields, item, params) {
                     versatile: i !== 0 ? false : params?.versatile ?? false
                 }
             ]);
-
-        });
+        }
     }
 }
 
@@ -473,7 +448,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.CHECK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll),
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ITEM
             }
         ]);
@@ -497,7 +472,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll),
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
                 title: `Ability Check - ${CONFIG.DND5E.abilities[item.hasAbilityCheck]}`
             }

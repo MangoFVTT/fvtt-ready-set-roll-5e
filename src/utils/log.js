@@ -6,7 +6,7 @@ import { MODULE_DEBUG_TAG } from "../module/const.js";
 export class LogUtility {
     /**
      * Sends an info log to the console.
-     * @param {string} logString The string to log as an info. 
+     * @param {String} logString The string to log as an info. 
      */
     static log(logString) {
         console.log(..._processLog(logString));
@@ -14,40 +14,26 @@ export class LogUtility {
 
     /**
      * Sends an error log to the console and displays an error UI notification.
-     * @param {string} logString The string to log as an error. 
+     * @param {String} logString The string to log as an error. 
      */
-    static logError(logString) {
-        ui.notifications.error(logString);
-    }
-
-    /**
-     * Sends an error log only to the console (for debug purposes).
-     * @param {string} logString The string to log as a debug error.
-     */
-    static logDebugError(logString) {
-        console.error(..._processLog(logString));
+    static logError(logString, options = {}) {
+        if (options.ui ?? true) ui.notifications.error(logString, { console: false });
+        if (options.console ?? true) console.error(..._processLog(logString));
     }
 
     /**
      * Sends a warning log to the console and displays a warning UI notification.
-     * @param {string} logString The string to log as a warning. 
+     * @param {String} logString The string to log as a warning. 
      */
-    static logWarning(logString) {
-        ui.notifications.warn(logString);
-    }
-
-    /**
-     * Sends a warning log only to the console (for debug purposes).
-     * @param {string} logString The string to log as a debug warning. 
-     */
-    static logDebugWarning(logString) {        
-        console.warn(..._processLog(logString));
+    static logWarning(logString, options = {}) {
+        if (options.ui ?? true) ui.notifications.warn(logString, { console: false });
+        if (options.console ?? true) console.warn(..._processLog(logString));
     }
 }
 
 /**
  * Attaches a debug tag to a string to prep it for console logging.
- * @param {string} logString The string to attach as a debug tag to.
+ * @param {String} logString The string to attach as a debug tag to.
  * @returns A formatted log string with the module debug tag attached.
  * @private
  */

@@ -13,6 +13,10 @@
             "enableD20Icons.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
             "enableDiceSounds.name": "Enable Dice Sounds for Quick Rolls",
             "enableDiceSounds.hint": "When outputting a quick roll, play the default system dice-rolling sound.",
+            "enableOverlayButtons.name": "Enable Overlay Buttons",
+            "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
+            "alwaysApplyCrit.name": "Always Apply Critical Damage",
+            "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
             "showSkillAbilities.name": "Show Ability Names for Skills",
@@ -42,7 +46,10 @@
                 "libWrapperMinVersion": "This module requires libWrapper version {version} or newer.",
                 "labelNotInDictionary": "{type} '{label}' does not exist. Valid values can be found in {dictionary}.",
                 "objectNotExpectedType": "Data object did not match the expected type. Expected type '{type}'.",
-                "incorrectRollType": "Cannot roll an {function} roll for roll type '{type}'."
+                "incorrectRollType": "Cannot roll an {function} roll for roll type '{type}'.",
+                "incorrectFieldType": "Cannot upgrade a roll of type {type} to a multi roll.",
+                "incorrectTargetState": "Cannot ugprade a roll to target state {state} because it is not a valid state (advantage or disadvantage).",
+                "rollIsNullOrUndefined": "The given roll is null or undefined."
             },
             "warning": {
                 "emptyDamageField": "One or more damage fields on this item are empty! To roll damage, ensure all damage fields are filled."
@@ -105,7 +112,23 @@
             "damage": "Damage",
             "healing": "Healing",
             "crit": "Crit",
-            "other": "Other"
+            "other": "Other",
+            "buttons": {
+                "damageFull": "Click to apply full damage to selected token(s).",
+                "damageHalf": "Click to apply half damage to selected token(s).",
+                "damageQuarter": "Click to apply quarter damage to selected token(s).",
+                "damageDouble": "Click to apply double damage to selected token(s).",
+                "healing": "Click to apply healing to selected token(s).",
+                "healingTemp": "Click to apply temporary hitpoints to selected token(s).",
+                "rollCrit": "Click to roll critical damage.",
+                "rollAdvantage": "Click to roll with advantage.",
+                "rollDisadvantage": "Click to roll with disadvantage."
+            },
+            "critPrompt": {                
+                "title": "Apply Crit Damage?",
+		        "yes": "Yes",
+		        "no": "No"
+            }
         }
     }
 }
