@@ -287,32 +287,35 @@ export class RollUtility {
         return roll;
     }
 
-    static async getCritRoll(baseRoll, groupIndex, options = {}, params = {}) {
-        if (params?.isCrit) {
-            const critTerms = options.multiplyNumeric ? baseRoll.terms : baseRoll.terms.filter(t => !(t instanceof NumericTerm));
-            const firstDie = critTerms.find(t => t instanceof Die);
-            const index = critTerms.indexOf(firstDie);
+    /**
+     * Generates a critical roll from a given base roll.
+     * @param {Roll} baseRoll The base roll to roll a crit for.
+     * @param {Number} groupIndex The index of the damage group. Some crit options only apply to the first damage group.
+     * @param {Object} options Additional options for rolling critical damage.
+     * @returns {Promise<Roll>} The critical roll for the given base.
+     */
+    static async getCritRoll(baseRoll, groupIndex, options = {}) {
+        const critTerms = options.multiplyNumeric ? baseRoll.terms : baseRoll.terms.filter(t => !(t instanceof NumericTerm));
+        const firstDie = critTerms.find(t => t instanceof Die);
+        const index = critTerms.indexOf(firstDie);
 
-            if (groupIndex === 0 && firstDie) {
-                critTerms.splice(index, 1, new Die({
-                    number: firstDie.number + (options.criticalBonusDice ?? 0),
-                    faces: firstDie.faces,
-                    results: firstDie.results
-                }));
-            }
-
-            // Remove trailing operators to avoid errors.
-            while (critTerms.at(-1) instanceof OperatorTerm) {
-                critTerms.pop();
-            }
-
-            return await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
-                maximize: options.powerfulCritical,
-                async: true
-            });
+        if (groupIndex === 0 && firstDie) {
+            critTerms.splice(index, 1, new Die({
+                number: firstDie.number + (options.criticalBonusDice ?? 0),
+                faces: firstDie.faces,
+                results: firstDie.results
+            }));
         }
 
-        return null;
+        // Remove trailing operators to avoid errors.
+        while (critTerms.at(-1) instanceof OperatorTerm) {
+            critTerms.pop();
+        }
+
+        return await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
+            maximize: options.powerfulCritical,
+            async: true
+        });
     }
 }
 

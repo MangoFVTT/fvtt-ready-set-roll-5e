@@ -386,7 +386,11 @@ async function _addFieldDamage(fields, item, params) {
 
         for (const [i, group] of damageTermGroups.entries()) {
             const baseRoll = Roll.fromTerms(group.terms);
-            const critRoll = await RollUtility.getCritRoll(baseRoll, i, roll.options, params);
+            
+            let critRoll = null;
+            if (params?.isCrit) {
+                critRoll = await RollUtility.getCritRoll(baseRoll, i, roll.options, params);
+            }
 
             fields.push([
                 FIELD_TYPE.DAMAGE,
