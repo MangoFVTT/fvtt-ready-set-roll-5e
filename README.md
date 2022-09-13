@@ -45,7 +45,6 @@ The following modules have been verified as compatible from the specified module
 
 ![alwayson](https://user-images.githubusercontent.com/110994627/189175659-22c15f1f-f597-430e-bc22-dab3606c1b0f.png)
 
-
 ### Roll Configuration & Alt Rolls
 - Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
 - Item configuration extends system support for thrown items, consumables, ammunition, and items with otherwise limited quantities.
@@ -60,12 +59,13 @@ The following modules have been verified as compatible from the specified module
 ![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
 ## Planned Features
-- Individual damage overlay buttons to apply the damage of a single field. In the meantime, you can still apply the total damage of a roll to a token like you would in the core system.
-- Retroactive roll editing, allowing for rolls to be updated with Advantage/Disadvantage/Critical Damage.
-- Macro support for more flexible quick rolling.
+- Ability to manually roll damage via a chat card button for quick rolls ([Issue #33](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/33))
+- Sheet roll buttons ([Issue #34](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/34))
 - Compatibility with other modules.
+- Macro support for more flexible quick rolling.
 
 ## Known Issues
+- [See Bug Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
