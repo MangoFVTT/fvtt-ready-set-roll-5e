@@ -1,6 +1,6 @@
 import { CoreUtility } from "../utils/core.js";
 import { LogUtility } from "../utils/log.js";
-import { RenderUtility } from "../utils/render.js";
+import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
 import { QuickRoll } from "./quickroll.js";
@@ -45,14 +45,18 @@ export class QuickCard {
      * @private
      */
     _onHover(html) {
-		const hasPermission = this.roll.hasPermission;
+		const hasPermission = this.roll?.hasPermission ?? false;
+        const hasRolledCrit = this.roll?.hasRolledCrit ?? false;
+        const isMultiRoll = this.roll?.params?.isMultiRoll ?? true;
+
 		html.find(".die-result-overlay-br").show();
 
 		// Apply Damage / Augment Crit
 		const controlled = canvas?.tokens?.controlled?.length > 0;
-		html.find('.multiroll-overlay-br').toggle(hasPermission);
-		html.find('.crit-button').toggle(hasPermission);
+		html.find('.multiroll-overlay-br').toggle(hasPermission && !isMultiRoll);
+		html.find('.crit-button').toggle(hasPermission && !hasRolledCrit);
 		html.find('.apply-damage-buttons').toggle(controlled);
+		html.find('.apply-temphp-buttons').toggle(controlled);
 	}
 
     /**
@@ -65,10 +69,47 @@ export class QuickCard {
 	}
 
     /**
-     * Adds overlay buttons to a chat card for applying damage/temphp or retroactive advantage/disadvantage/crit.
+     * Adds all overlay buttons to a chat card.
      * @param {JQuery} html The object to add overlay buttons to.
+     * @private
      */
     async _setupOverlayButtons(html) {
+        await this._setupMultiRollOverlayButtons(html);
+        await this._setupDamageOverlayButtons(html);
+
+        // Enable Hover Events (to show/hide the elements).
+		this._onHoverEnd(html);
+		html.hover(this._onHover.bind(this, html), this._onHoverEnd.bind(this, html));
+    }
+
+    /**
+     * Adds overlay buttons to a chat card for retroactively making a roll into a multi roll.
+     * @param {JQuery} html The object to add overlay buttons to.
+     * @private
+     */
+    async _setupMultiRollOverlayButtons(html) {
+        const template = await RenderUtility.renderOverlayMultiRoll();
+        const fields = this.roll?.fields ?? [];
+
+        fields.forEach((field, i) => {
+            if (field[0] === FIELD_TYPE.CHECK || field[0] === FIELD_TYPE.ATTACK) {
+                const element = html.find(`.rsr-dual[data-id=${i}] .dice-row.rsr-totals`);
+                element.append($(template));
+            }
+        });        
+
+        // Handle clicking the multi-roll overlay buttons
+        html.find(".multiroll-overlay-br button").click(async evt => {
+            await this._processRetroButtonEvent(evt);
+        });
+    }
+
+    /**
+     * Adds overlay buttons to a chat card for rolling crit damage, or applying rolled damage/healing to tokens.
+     * @param {JQuery} html The object to add overlay buttons to.
+     * @private
+     */
+    async _setupDamageOverlayButtons(html) {
         const template = await RenderUtility.renderOverlayDamage();
         const elements = html.find('.dice-total .rsr-base-die, .dice-total .rsr-extra-die').parents('.dice-row').toArray();
 
@@ -79,15 +120,56 @@ export class QuickCard {
 
         // Handle applying damage/healing via overlay button click events.
 		html.find('.apply-damage-buttons button').click(async evt => {
-			await this._processApplyEvent(evt, false);
+			await this._processApplyButtonEvent(evt, false);
         });
         html.find('.apply-temphp-buttons button').click(async evt => {
-			await this._processApplyEvent(evt, true);
+			await this._processApplyButtonEvent(evt, true);
         });
 
-        // Enable Hover Events (to show/hide the elements).
-		this._onHoverEnd(html);
-		html.hover(this._onHover.bind(this, html), this._onHoverEnd.bind(this, html));
+        // Handle rolling crit damage
+        html.find('.crit-button button').click(async evt => {
+			await this._processCritButtonEvent(evt);
+        });
+    }
+
+    /**
+     * Processes and handles a retroactive advantage/disadvantage button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
+    async _processRetroButtonEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const button = event.currentTarget;
+        const id = $(button).parents(".rsr-dual").attr('data-id');
+        const action = button.dataset.action;
+
+        if (action === "retroroll") {
+            const state = button.dataset.state;
+            if (await this.roll.upgradeToMultiRoll(id, state)) {
+                const update = await this.roll.toMessageUpdate();
+                this.message.update(update, { diff: true });
+            }
+        }
+    }
+
+    /**
+     * Processes and handles a retroactive crit button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
+    async _processCritButtonEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const button = event.currentTarget;
+        const id = $(button).parents(".rsr-dual").attr('data-id');
+
+        if (await this.roll.upgradeToCrit(id)) {
+            const update = await this.roll.toMessageUpdate();
+            this.message.update(update, { diff: true });
+        }
     }
 
     /**
@@ -96,7 +178,7 @@ export class QuickCard {
      * @param {Boolean} isTempHP Flag that indicates if the value should be applied as damage/healing, or as temporary hp.
      * @private
      */
-    async _processApplyEvent(event, isTempHP = false) {
+    async _processApplyButtonEvent(event, isTempHP = false) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -132,7 +214,7 @@ export class QuickCard {
      * @param {Number} damage The value of the base damage of a field.
      * @param {Number} crit The value of the crit damage of a field.
      * @param {Object} position A vector indicating the position of the originating event.
-     * @returns {Number} The resolved final damage value depending on the user's choices.
+     * @returns {Promise<Number>|Number} The resolved final damage value depending on the user's choices.
      * @private
      */
     async _resolveCritDamage(damage, crit, position) {

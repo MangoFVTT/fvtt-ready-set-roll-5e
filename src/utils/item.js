@@ -30,7 +30,7 @@ export class ItemUtility {
      * Will only generate fields that are available and enabled via the roll configuraton flags.
      * @param {Item} item The item from which to retrieve the roll fields. 
      * @param {object} params Addtional parameters for the item roll.
-     * @returns {Array} A list of fields as specified by the roll configuration.
+     * @returns {Promies<Array>} A list of fields as specified by the roll configuration.
      */
     static async getFieldsFromItem(item, params) {
         ItemUtility.ensureFlagsOnitem(item);
@@ -326,17 +326,6 @@ async function _addFieldAttack(fields, item, params) {
             disadvantage: params?.advMode < 0 ?? false
         });
 
-        roll = await RollUtility.ensureMultiRoll(roll, params);
-
-        if (params) {
-            const critType = RollUtility.getCritTypeForDie(
-                roll.terms.find(d => d.faces === 20),
-                roll.options.critical,
-                roll.options.fumble
-            );
-            params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
-        }
-
         // Reset ammo type to avoid later issues.
         if (ammoConsumeBypass) {
             item.system.consume.type = "ammo";
@@ -348,7 +337,7 @@ async function _addFieldAttack(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll,
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
                 consume: _getConsumeTargetFromItem(item)
             }
@@ -395,32 +384,12 @@ async function _addFieldDamage(fields, item, params) {
             damageTermGroups[0].terms.push(...roll.terms);
         }
 
-        damageTermGroups.forEach(async (group, i) => {
+        for (const [i, group] of damageTermGroups.entries()) {
             const baseRoll = Roll.fromTerms(group.terms);
-
+            
             let critRoll = null;
             if (params?.isCrit) {
-                const critTerms = roll.options.multiplyNumeric ? group.terms : group.terms.filter(t => !(t instanceof NumericTerm));
-                const firstDie = critTerms.find(t => t instanceof Die);
-                const index = critTerms.indexOf(firstDie);
-
-                if (i === 0 && firstDie) {
-                    critTerms.splice(index, 1, new Die({
-                        number: firstDie.number + (roll.options.criticalBonusDice ?? 0),
-                        faces: firstDie.faces,
-                        results: firstDie.results
-                    }));
-                }
-
-                // Remove trailing operators to avoid errors.
-                while (critTerms.at(-1) instanceof OperatorTerm) {
-                    critTerms.pop();
-                }
-
-                critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
-                    maximize: roll.options.powerfulCritical,
-                    async: true
-                });
+                critRoll = await RollUtility.getCritRoll(baseRoll, i, roll.options, params);
             }
 
             fields.push([
@@ -433,8 +402,7 @@ async function _addFieldDamage(fields, item, params) {
                     versatile: i !== 0 ? false : params?.versatile ?? false
                 }
             ]);
-
-        });
+        }
     }
 }
 
@@ -480,7 +448,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.CHECK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll),
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ITEM
             }
         ]);
@@ -504,7 +472,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
         fields.push([
             FIELD_TYPE.ATTACK,
             {
-                roll: await RollUtility.ensureMultiRoll(roll),
+                roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
                 title: `Ability Check - ${CONFIG.DND5E.abilities[item.hasAbilityCheck]}`
             }

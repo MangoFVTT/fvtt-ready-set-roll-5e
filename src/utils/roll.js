@@ -22,6 +22,16 @@ export const ROLL_TYPE = {
 }
 
 /**
+ * Enumerable of identifiers for roll states (advantage or disadvantage).
+ */
+export const ROLL_STATE = {
+    ADV: "kh",
+    DIS: "kl",
+    DUAL: "dual",
+    SINGLE: "single"
+}
+
+/**
  * Enumerable of identifiers for crit result types.
  * @enum {String}
  */
@@ -118,7 +128,7 @@ export class RollUtility {
         let title = CoreUtility.localize(skill.label);
         title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[skill.ability]})` : "";
 
-        return await getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
     }    
 
     /**
@@ -139,7 +149,7 @@ export class RollUtility {
 
         const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
-        return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
     }
 
     /**
@@ -160,7 +170,7 @@ export class RollUtility {
 
         const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
-        return await getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
     }
 
     /**
@@ -171,12 +181,12 @@ export class RollUtility {
      */
     static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
-
-        params = params ?? {};
+        
+        params = CoreUtility.ensureParams(params);
         params.slotLevel = item.system.level;
         item.system.level = params.spellLevel ?? item.system.level;
 
-        return await getItemRoll(item, params, ROLL_TYPE.ITEM)
+        return await _getItemRoll(item, params, ROLL_TYPE.ITEM)
     }
 
     /**
@@ -186,12 +196,12 @@ export class RollUtility {
      * @param {Number} fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
-    static getCritTypeForDie(die, critThreshold, fumbleThreshold) {
+    static getCritTypeForDie(die, options = {}) {
         if (!die) return null;
 
-        const { crit, fumble } = countCritsFumbles(die, critThreshold, fumbleThreshold)		
+        const { crit, fumble } = _countCritsFumbles(die, options)		
 
-        return getCritResult(crit, fumble);
+        return _getCritResult(crit, fumble);
     }
 
     /**
@@ -201,43 +211,111 @@ export class RollUtility {
      * @param {*} fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
-    static getCritTypeForRoll(roll, critThreshold, fumbleThreshold) {
+    static getCritTypeForRoll(roll, options = {}) {
         if (!roll) return null;
 
 		let totalCrit = 0;
 		let totalFumble = 0;
 
         for (const die of roll.dice) {			
-            const { crit, fumble } = countCritsFumbles(die, critThreshold, fumbleThreshold)
+            const { crit, fumble } = _countCritsFumbles(die, options)
             totalCrit += crit;
             totalFumble += fumble;
 		}
 
-        return getCritResult(totalCrit, totalFumble);
+        return _getCritResult(totalCrit, totalFumble);
+    }
+
+    /**
+     * Upgrades a roll into a multi roll with the given target state (advantage/disadvantage).
+     * @param {Roll} roll The roll to upgrade.
+     * @param {ROLL_STATE} targetState The target state of the roll.
+     * @param {Object} params Additional parameters to consider when upgrading.
+     * @returns {Promise<Roll>} The upgraded multi roll from the provided roll.
+     */
+    static async upgradeRoll(roll, targetState, params = {}) {
+		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
+			return roll;
+		}
+
+        params.forceMultiRoll = true;
+        const upgradedRoll = await RollUtility.ensureMultiRoll(roll, params);
+        
+        const d20BaseTerm = upgradedRoll.terms.find(d => d.faces === 20);
+        d20BaseTerm.keep(targetState);
+        d20BaseTerm.modifiers.push(targetState);
+
+        return upgradedRoll;
     }
 
     /**
      * Checks if the roll needs to be forced to multi roll and returns the updated roll if needed.
      * @param {Roll} roll The roll to check.
-     * @param {object} params Additional parameters to consider when enforcing.
+     * @param {Object} params Additional parameters to consider when enforcing, also stores crit type separately to the roll due to incorrect logic in core dnd5e.
      * @returns {Promise<Roll>} The version of the roll with multi roll enforced if needed, or the original roll otherwise.
      */
     static async ensureMultiRoll(roll, params = {}) {
-        if (roll && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !(roll?.hasAdvantage || roll?.hasDisadvantage)) {
+        if (!roll) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
+            return null;
+        }
+
+        if ((SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) || params?.forceMultiRoll) && !(roll.hasAdvantage || roll.hasDisadvantage)) {
+            params.isMultiRoll = true;
+
             const forcedDiceCount = params?.elvenAccuracy ? 3 : 2;
-            const d20Additional = await new Roll(`${forcedDiceCount - 1}d20`).evaluate({ async: true });
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
+            const d20Additional = await new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: true });
 
             const d20Forced = new Die({
                 number: forcedDiceCount,
                 faces: 20,
-                results: [...d20BaseTerm.results, ...d20Additional.dice[0].results]
+                results: [...d20BaseTerm.results, ...d20Additional.dice[0].results],
+                modifiers: d20BaseTerm.modifiers
             });
 
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
 
+        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), { ignoreDiscarded: true });
+
+        params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
+        params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
+        params.isMultiRoll = params.isMultiRoll || roll.hasAdvantage || roll.hasDisadvantage;
+
         return roll;
+    }
+
+    /**
+     * Generates a critical roll from a given base roll.
+     * @param {Roll} baseRoll The base roll to roll a crit for.
+     * @param {Number} groupIndex The index of the damage group. Some crit options only apply to the first damage group.
+     * @param {Object} options Additional options for rolling critical damage.
+     * @returns {Promise<Roll>} The critical roll for the given base.
+     */
+    static async getCritRoll(baseRoll, groupIndex, options = {}) {
+        const critTerms = options.multiplyNumeric ? baseRoll.terms : baseRoll.terms.filter(t => !(t instanceof NumericTerm));
+        const firstDie = critTerms.find(t => t instanceof Die);
+        const index = critTerms.indexOf(firstDie);
+
+        if (groupIndex === 0 && firstDie) {
+            critTerms.splice(index, 1, new Die({
+                number: firstDie.number + (options.criticalBonusDice ?? 0),
+                faces: firstDie.faces,
+                results: firstDie.results
+            }));
+        }
+
+        // Remove trailing operators to avoid errors.
+        while (critTerms.at(-1) instanceof OperatorTerm) {
+            critTerms.pop();
+        }
+
+        return await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
+            maximize: options.powerfulCritical,
+            async: true
+        });
     }
 }
 
@@ -249,8 +327,9 @@ export class RollUtility {
  * @param {String} rollType The type (as a string identifier) of the roll being quick rolled.
  * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
  * @returns {Promise<QuickRoll>} The created actor quick roll.
+ * @private
  */
-async function getActorRoll(actor, title, roll, rollType, createMessage = true) {
+async function _getActorRoll(actor, title, roll, rollType, createMessage = true) {
     if (!actor instanceof Actor) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Actor" }));
         return null;
@@ -261,18 +340,22 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
         return null;
     }
 
+    const params = CoreUtility.ensureParams();
+    const ensuredRoll = await RollUtility.ensureMultiRoll(roll, params);
+
+    const hasAdvantage = roll.hasAdvantage;
+    const hasDisadvantage = roll.hasDisadvantage;
+    const isCrit = params?.isCrit ?? false;
+    const isFumble = params?.isFumble ?? false;
+    const isMultiRoll = params?.isMultiRoll ?? false;
+
     const quickroll = new QuickRoll(
         actor,
-        { 
-            hasAdvantage: roll.hasAdvantage,
-            hasDisadvantage: roll.hasDisadvantage,
-            isCrit: roll.isCritical,
-            isFumble: roll.isFumble
-        },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
         [
             [FIELD_TYPE.HEADER, { title }],
             [FIELD_TYPE.BLANK, { display: false }],
-            [FIELD_TYPE.CHECK, { roll: await RollUtility.ensureMultiRoll(roll), rollType }]
+            [FIELD_TYPE.CHECK, { roll: ensuredRoll, rollType }]
         ]
     );
 
@@ -287,8 +370,9 @@ async function getActorRoll(actor, title, roll, rollType, createMessage = true) 
  * @param {*} rollType The type (as a string identifier) of the roll being quick rolled.
  * @param {boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
  * @returns {Promise<QuickRoll>} The created item quick roll.
+ * @private
  */
-async function getItemRoll(item, params, rollType, createMessage = true) {
+async function _getItemRoll(item, params, rollType, createMessage = true) {
     if (!item instanceof Item) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Item" }));
         return null;
@@ -299,15 +383,20 @@ async function getItemRoll(item, params, rollType, createMessage = true) {
         return null;
     }
 
+    const itemFields = await ItemUtility.getFieldsFromItem(item, params);
+
+    const hasAdvantage = params?.advMode > 0 ?? false;
+    const hasDisadvantage = params?.advMode < 0 ?? false;
+    const isCrit = params?.isCrit ?? false;
+    const isFumble = params?.isFumble ?? false;
+    const isMultiRoll = params?.isMultiRoll ?? false;
+
     const quickroll = new QuickRoll(
         item,
-        { 
-            hasAdvantage: params?.advMode > 0 ?? false,
-            hasDisadvantage: params?.advMode < 0 ?? false
-        },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
         [
             [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
-            ...await ItemUtility.getFieldsFromItem(item, params)
+            ...itemFields
         ]
     );
 
@@ -315,7 +404,7 @@ async function getItemRoll(item, params, rollType, createMessage = true) {
     return quickroll;
 }
 
-function getCritResult(crit, fumble)
+function _getCritResult(crit, fumble)
 {
     if (crit > 0 && fumble > 0) {
         return CRIT_TYPE.MIXED;
@@ -330,20 +419,25 @@ function getCritResult(crit, fumble)
     }
 }
 
-function countCritsFumbles(die, critThreshold, fumbleThreshold)
+function _countCritsFumbles(die, options)
 {
     let crit = 0;
     let fumble = 0;
 
-    if (die.faces > 1) {
+    if (die && die.faces > 1) {
+        let { critThreshold, fumbleThreshold, ignoreDiscarded } = options
+
+        critThreshold = critThreshold ?? die.options.critical ?? die.faces;
+        fumbleThreshold = fumbleThreshold ?? die.options.fumble ?? 1;
+
         for (const result of die.results) {
-            if (result.rerolled) {
+            if (result.rerolled || (result.discarded && ignoreDiscarded)) {
                 continue;
             }
 
-            if (result.result >= (critThreshold || die.faces)) {
+            if (result.result >= critThreshold) {
                 crit += 1;
-            } else if (result.result <= (fumbleThreshold || 1)) {
+            } else if (result.result <= fumbleThreshold) {
                 fumble += 1;
             }
         }

@@ -3,19 +3,8 @@ import { HOOKS_MODULE } from "../utils/hooks.js";
 import { ITEM_TYPE } from "../utils/item.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
-import { ROLL_TYPE } from "../utils/roll.js";
+import { RollUtility, ROLL_STATE, ROLL_TYPE } from "../utils/roll.js";
 import { MODULE_SHORT } from "./const.js";
-
-/**
- * Default quick roll parameters to fill in the parameter list that is passed on to field generation and rendering.
- */
-let defaultParams = {
-	forceCrit: false,
-	forceFumble: false,
-    forceMultiRoll: false,
-	hasAdvantage: false,
-	hasDisadvantage: false
-};
 
 /**
  * Class that parses a base system roll into a module roll, with functionality for rendering to chat using custom module templates.
@@ -43,14 +32,14 @@ export class QuickRoll {
 		this._currentId = -1;
 
 		// Merges default parameter array with provided parameters, to have a complete list of parameters.
-		this.params = foundry.utils.mergeObject(foundry.utils.duplicate(defaultParams), params || {});		
+		this.params = params ?? {};
+
+		this.params.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
+		this.params.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
+        this.params.isMultiRoll = this.params.forceMultiRoll || (this.params.isMultiRoll ?? false);
 
 		this.fields = fields ?? []; // Where requested roll fields are stored, in the order they should be rendered.
 		this.templates = []; // Data results from fields, rendered into HTML templates.
-
-		this.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
-		this.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
-        this.isMultiRoll = this.params.forceMultiRoll || this.params.hasAdvantage || this.params.hasDisadvantage
 
 		this.processed = false;
 	}
@@ -94,9 +83,34 @@ export class QuickRoll {
 	 * Gets if the current user has advanced permissions over the chat card.
 	 * @returns {Boolean} True if the user has advanced permissions, false otherwise.
 	 */
-	 get hasPermission() {
+	get hasPermission() {
 		const message = game.messages.get(this.messageId);
 		return game.user.isGM || message?.isAuthor;
+	}
+
+	get hasRolledCrit() {
+		const damageFields = this.fields.filter(field => field[0] === FIELD_TYPE.DAMAGE);
+		return damageFields.every(field => field[1]?.critRoll);
+	}
+
+	/**
+	 * Returns the current roll state of the quick roll.
+	 * @returns {ROLL_STATE} The current roll state value.
+	 */
+	get currentRollState() {
+		if (this.params?.hasAdvantage ?? false) {
+			return ROLL_STATE.ADV
+		}
+
+		if (this.params?.hasDisadvantage ?? false) {
+			return ROLL_STATE.DIS
+		}
+
+		if (this.params?.isMultiRoll ?? false) {
+			return ROLL_STATE.DUAL
+		}
+
+		return ROLL_STATE.SINGLE;
 	}
 
 	/**
@@ -107,12 +121,23 @@ export class QuickRoll {
 	 */
 	static fromMessage(message) {
 		const data = message.flags[`${MODULE_SHORT}`];
-		const roll = new QuickRoll(null, data?.params ?? {}, data?.fields ?? []);
+
+		// Rolls in fields are unpacked and must be recreated.
+		const fields = data?.fields ?? [];
+		fields.forEach(field => {
+			if (CONFIG[MODULE_SHORT].validMultiRollFields.includes(field[0])) {
+				field[1].roll = Roll.fromData(field[1].roll);
+			}
+
+			if (CONFIG[MODULE_SHORT].validDamageRollFields.includes(field[0])) {
+				field[1].baseRoll = field[1].baseRoll ? Roll.fromData(field[1].baseRoll) : null;
+				field[1].critRoll = field[1].critRoll ? Roll.fromData(field[1].critRoll) : null;
+			}
+		});
+
+		const roll = new QuickRoll(null, data?.params ?? {}, fields);
 
 		roll.messageId = message.id
-
-		roll.isCrit = data?.isCrit ?? false;
-		roll.params = data?.params ?? {};
 
 		if (data?.actorId) {
 			roll.actor = game.actors.get(data.actorId);
@@ -129,7 +154,7 @@ export class QuickRoll {
 	}
 
 	/**
-	 * Creates and sends a chat message to all players (based on whisper config).
+	 * Creates and sends (if told to) a chat message to all players (based on whisper config).
 	 * @param {object} param0 Additional message options.
 	 * @param {String} param0.rollMode The message roll mode (private/public/blind/etc).
 	 * @param {String} param0.createMessage Immediately send the message to chat or only return data.
@@ -162,6 +187,72 @@ export class QuickRoll {
 		}
 	}
 
+	/**
+	 * Creates a message update package to update an existing chat card.
+	 * @returns {Promise<Object>} The created update package.
+	 */
+	async toMessageUpdate() {
+		const update = {
+			content: await this._render(),
+			...flattenObject({ flags: duplicate(this._getFlags()) }),
+			...CoreUtility.getRollSound()
+		};
+
+		return update;
+	}		
+
+	/**
+	 * Upgrades a specific roll in one of the roll fields to a multi roll if possible.
+	 * @param {Number} targetId The index of the roll field to upgrade. 
+	 * @param {ROLL_STATE} targetState The target state of the upgraded multi roll (advantage or disadvantage);
+	 * @returns 
+	 */
+	async upgradeToMultiRoll(targetId, targetState) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !targetState || !this.hasPermission || !targetField[1]?.roll) {
+			return false;
+		}
+
+		if (targetField[0] !== FIELD_TYPE.CHECK && targetField[0] !== FIELD_TYPE.ATTACK) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectFieldType`, { type: targetField[0] }));
+			return false;
+		}
+
+		targetField[1].roll = await RollUtility.upgradeRoll(targetField[1].roll, targetState, this.params);
+		this.params.isMultiRoll = true;
+
+		return true;
+	}
+
+	/**
+	 * Upgrades a specific damage roll in one of the damage fields to a crit if possible.
+	 * @param {Number} targetId The index of the damage field to upgrade.
+	 * @returns 
+	 */
+	async upgradeToCrit(targetId) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !this.item || !this.hasPermission || !targetField[1]?.baseRoll || targetField[1]?.critRoll) {
+			return false;
+		}
+
+		if (targetField[0] !== FIELD_TYPE.DAMAGE) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectFieldType`, { type: targetField[0] }));
+			return false;
+		}
+
+		const options = {
+			multiplyNumeric: game.settings.get("dnd5e", "criticalDamageModifiers"),
+			powerfulCritical: game.settings.get("dnd5e", "criticalDamageMaxDice"),
+			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0
+		}
+
+		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, targetId, options);
+
+		return true;
+	}
+
     /**
 	 * Renders HTML templates for the provided fields and combines them into a card.
 	 * @returns {Promise<string>} Combined HTML chat data for all the roll fields.
@@ -171,12 +262,13 @@ export class QuickRoll {
         if (!this.processed) {
             for (const field of this.fields) {
                 const metadata = {
-                    id: this._currentId++,
+                    id: ++this._currentId,
                     item: this.item,
                     actor: this.actor,
-                    isCrit: this.isCrit,
-					isFumble: this.isFumble,
-                    isMultiRoll: this.isMultiRoll
+                    isCrit: this.params.isCrit,
+					isFumble: this.params.isFumble,
+                    isMultiRoll: this.params.isMultiRoll,
+					rollState: this.currentRollState
                 };
 
                 const render = await RenderUtility.renderFromField(field, metadata);

@@ -1,4 +1,5 @@
 import { ITEM_TYPE } from "../utils/item.js";
+import { FIELD_TYPE } from "../utils/render.js";
 import { MODULE_SHORT } from "./const.js";
 
 /**
@@ -14,6 +15,20 @@ CONFIG[MODULE_SHORT] = {
         ITEM_TYPE.TOOL,
         ITEM_TYPE.CONSUMABLE
     ],
+    validMultiRollFields: [
+        FIELD_TYPE.ATTACK,
+        FIELD_TYPE.CHECK
+    ],
+    validDamageRollFields: [
+        FIELD_TYPE.DAMAGE
+    ],
+    defaultQuickRollParams: {
+        forceCrit: false,
+        forceFumble: false,
+        forceMultiRoll: false,
+        hasAdvantage: false,
+        hasDisadvantage: false
+    },
     flags: {
         weapon: {
 			quickDesc: { type: "Boolean", value: false, altValue: false },

@@ -1,5 +1,6 @@
 import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
 import { LogUtility } from "./log.js";
+import { FIELD_TYPE } from "./render.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
@@ -149,5 +150,15 @@ export class CoreUtility {
 				return tokenImage || actorImage;
 		}
 	}
+
+    static ensureParams(params) {
+        params = foundry.utils.mergeObject(foundry.utils.duplicate(CONFIG[MODULE_SHORT].defaultQuickRollParams), params || {});
+
+        params.isCrit = params.forceCrit || (params.isCrit ?? false);
+		params.isFumble = params.forceFumble || (params.isFumble ?? false);
+        params.isMultiRoll = params.forceMultiRoll || (params.isMultiRoll ?? false);
+
+        return params;
+    }
 }
 

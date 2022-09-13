@@ -26,9 +26,9 @@ export const FIELD_TYPE = {
 export class RenderUtility {
     /**
      * Handles individual field types and renders the appropriate template.
-     * @param {object} field Data and type for the requested field.
-     * @param {object} metadata Additional metadata for rendering.
-     * @returns {Promise<string>|string} The rendered html data for the field. 
+     * @param {Object} field Data and type for the requested field.
+     * @param {Object} metadata Additional metadata for rendering.
+     * @returns {Promise<String>|String} The rendered html data for the field. 
      */
     static async renderFromField(field, metadata) {
         let [fieldType, fieldData] = field;
@@ -57,7 +57,7 @@ export class RenderUtility {
     /**
      * Renders a full module chat card with all the fields provided as props.
      * @param {object} props The necessary render props for the template.
-     * @returns {Promise<string>} The rendered html data for the chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
      */
     static renderFullCard(props) {
         return _renderModuleTemplate(TEMPLATE.FULL_CARD, props);
@@ -66,14 +66,26 @@ export class RenderUtility {
     /**
      * Renders a user interface for creating roll configurations, which is added to the item sheet.
      * @param {object} props The necessary render props for the template.
-     * @returns {Promise<string>} The rendered html data for the chat card.
+     * @returns {Promise<String>} The rendered html data for the item sheet.
      */
     static renderItemOptions(props) {
         return _renderModuleTemplate(TEMPLATE.OPTIONS, props);
     }
 
+    /**
+     * Renders overlay buttons for applying damage from a chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
+     */
     static renderOverlayDamage() {
         return _renderModuleTemplate(TEMPLATE.OVERLAY_DAMAGE, {});
+    }    
+
+     /**
+     * Renders overlay buttons for retroactively applying advantage/disadvantage/crit to a chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
+     */
+    static renderOverlayMultiRoll() {
+        return _renderModuleTemplate(TEMPLATE.OVERLAY_MULTIROLL, {});
     }
 }
 
@@ -140,7 +152,7 @@ function _renderSaveButton(renderData = {}) {
 }
 
 async function _renderMultiRoll(renderData = {}) {
-    const { id, roll, title } = renderData;
+    const { id, roll, title, rollType, rollState } = renderData;
     const entries = [];
 
     // Process bonuses beyond the base d20s into a single roll.
@@ -149,7 +161,6 @@ async function _renderMultiRoll(renderData = {}) {
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
     for (let i = 0; i < d20Rolls.results.length; i++) {
-        // Die terms must have active results or the base roll total of the generated roll is 0.
         let tmpResults = [];
         tmpResults.push(d20Rolls.results[i]);
 
@@ -157,19 +168,25 @@ async function _renderMultiRoll(renderData = {}) {
             i++;
             tmpResults.push(d20Rolls.results[i]);
         }
-
+        
+        // Die terms must have active results or the base roll total of the generated roll is 0.
+        // This does not apply to dice that have been rerolled (unless they are replaced by a fixer value eg. for reliable talent).
         tmpResults.forEach(r => {
-            r.active = !r.rerolled ?? true; 
+            r.active = !(r.rerolled && !r.count) ?? true; 
         });
 
-        const baseTerm = new Die({number: 1, faces: 20, results: tmpResults});
+        const baseTerm = new Die({
+            number: 1,
+            faces: 20,
+            results: tmpResults,
+            modifiers: d20Rolls.modifiers
+        });
         const baseRoll = Roll.fromTerms([baseTerm]);
 
         entries.push({
 			roll: baseRoll,
 			total: baseRoll.total + (bonusRoll?.total ?? 0),
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
-			isCrit: roll.isCritical,
 			critType: RollUtility.getCritTypeForDie(baseTerm),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
 		});
@@ -185,7 +202,9 @@ async function _renderMultiRoll(renderData = {}) {
         formula: roll.formula,
         entries,
         tooltips,
-        bonusTooltip
+        bonusTooltip,
+        rollType,
+        rollState,
     });
 }
 
