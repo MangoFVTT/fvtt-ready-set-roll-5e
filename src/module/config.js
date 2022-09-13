@@ -22,6 +22,13 @@ CONFIG[MODULE_SHORT] = {
     validDamageRollFields: [
         FIELD_TYPE.DAMAGE
     ],
+    defaultQuickRollParams: {
+        forceCrit: false,
+        forceFumble: false,
+        forceMultiRoll: false,
+        hasAdvantage: false,
+        hasDisadvantage: false
+    },
     flags: {
         weapon: {
 			quickDesc: { type: "Boolean", value: false, altValue: false },

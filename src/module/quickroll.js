@@ -7,17 +7,6 @@ import { RollUtility, ROLL_STATE, ROLL_TYPE } from "../utils/roll.js";
 import { MODULE_SHORT } from "./const.js";
 
 /**
- * Default quick roll parameters to fill in the parameter list that is passed on to field generation and rendering.
- */
-let defaultParams = {
-	forceCrit: false,
-	forceFumble: false,
-    forceMultiRoll: false,
-	hasAdvantage: false,
-	hasDisadvantage: false
-};
-
-/**
  * Class that parses a base system roll into a module roll, with functionality for rendering to chat using custom module templates.
  */
 export class QuickRoll {
@@ -43,14 +32,14 @@ export class QuickRoll {
 		this._currentId = -1;
 
 		// Merges default parameter array with provided parameters, to have a complete list of parameters.
-		this.params = foundry.utils.mergeObject(foundry.utils.duplicate(defaultParams), params || {});		
+		this.params = params ?? {};
+
+		this.params.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
+		this.params.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
+        this.params.isMultiRoll = this.params.forceMultiRoll || (this.params.isMultiRoll ?? false);
 
 		this.fields = fields ?? []; // Where requested roll fields are stored, in the order they should be rendered.
 		this.templates = []; // Data results from fields, rendered into HTML templates.
-
-		this.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
-		this.isFumble = this.params.forceFumble || (this.params.isFumble ?? false);
-        this.isMultiRoll = this.params.forceMultiRoll || (this.params.isMultiRoll ?? false);
 
 		this.processed = false;
 	}
@@ -99,6 +88,15 @@ export class QuickRoll {
 		return game.user.isGM || message?.isAuthor;
 	}
 
+	get hasRolledCrit() {
+		const damageFields = this.fields.filter(field => field[0] === FIELD_TYPE.DAMAGE);
+		return damageFields.every(field => field[1]?.critRoll);
+	}
+
+	/**
+	 * Returns the current roll state of the quick roll.
+	 * @returns {ROLL_STATE} The current roll state value.
+	 */
 	get currentRollState() {
 		if (this.params?.hasAdvantage ?? false) {
 			return ROLL_STATE.ADV
@@ -222,7 +220,7 @@ export class QuickRoll {
 		}
 
 		targetField[1].roll = await RollUtility.upgradeRoll(targetField[1].roll, targetState, this.params);
-		this.isMultiRoll = true;
+		this.params.isMultiRoll = true;
 
 		return true;
 	}
@@ -239,9 +237,9 @@ export class QuickRoll {
                     id: ++this._currentId,
                     item: this.item,
                     actor: this.actor,
-                    isCrit: this.isCrit,
-					isFumble: this.isFumble,
-                    isMultiRoll: this.isMultiRoll,
+                    isCrit: this.params.isCrit,
+					isFumble: this.params.isFumble,
+                    isMultiRoll: this.params.isMultiRoll,
 					rollState: this.currentRollState
                 };
 

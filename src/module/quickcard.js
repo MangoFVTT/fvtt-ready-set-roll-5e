@@ -46,15 +46,15 @@ export class QuickCard {
      */
     _onHover(html) {
 		const hasPermission = this.roll?.hasPermission ?? false;
-        const isCrit = this.roll?.isCrit ?? true;
-        const isMultiRoll = this.roll?.isMultiRoll ?? true;
+        const hasRolledCrit = this.roll?.hasRolledCrit ?? false;
+        const isMultiRoll = this.roll?.params?.isMultiRoll ?? true;
 
 		html.find(".die-result-overlay-br").show();
 
 		// Apply Damage / Augment Crit
 		const controlled = canvas?.tokens?.controlled?.length > 0;
 		html.find('.multiroll-overlay-br').toggle(hasPermission && !isMultiRoll);
-		html.find('.crit-button').toggle(hasPermission && !isCrit);
+		html.find('.crit-button').toggle(hasPermission && !hasRolledCrit);
 		html.find('.apply-damage-buttons').toggle(controlled);
 		html.find('.apply-temphp-buttons').toggle(controlled);
 	}
@@ -105,7 +105,7 @@ export class QuickCard {
     }
 
     /**
-     * Adds overlay buttons to a chat card for applying rolled damage or healing to tokens.
+     * Adds overlay buttons to a chat card for rolling crit damage, or applying rolled damage/healing to tokens.
      * @param {JQuery} html The object to add overlay buttons to.
      * @private
      */
@@ -124,6 +124,11 @@ export class QuickCard {
         });
         html.find('.apply-temphp-buttons button').click(async evt => {
 			await this._processApplyButtonEvent(evt, true);
+        });
+
+        // Handle rolling crit damage
+        html.find('.crit-button button').click(async evt => {
+			await this._processCritButtonEvent(evt);
         });
     }
 
@@ -147,6 +152,13 @@ export class QuickCard {
                 this.message.update(update, { diff: true });
             }
         }
+    }
+
+    async _processCritButtonEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+
     }
 
     /**
