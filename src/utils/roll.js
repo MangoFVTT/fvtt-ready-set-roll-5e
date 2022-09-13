@@ -287,8 +287,32 @@ export class RollUtility {
         return roll;
     }
 
-    static async ensureCrit() {
+    static async getCritRoll(baseRoll, groupIndex, options = {}, params = {}) {
+        if (params?.isCrit) {
+            const critTerms = options.multiplyNumeric ? baseRoll.terms : baseRoll.terms.filter(t => !(t instanceof NumericTerm));
+            const firstDie = critTerms.find(t => t instanceof Die);
+            const index = critTerms.indexOf(firstDie);
 
+            if (groupIndex === 0 && firstDie) {
+                critTerms.splice(index, 1, new Die({
+                    number: firstDie.number + (options.criticalBonusDice ?? 0),
+                    faces: firstDie.faces,
+                    results: firstDie.results
+                }));
+            }
+
+            // Remove trailing operators to avoid errors.
+            while (critTerms.at(-1) instanceof OperatorTerm) {
+                critTerms.pop();
+            }
+
+            return await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
+                maximize: options.powerfulCritical,
+                async: true
+            });
+        }
+
+        return null;
     }
 }
 

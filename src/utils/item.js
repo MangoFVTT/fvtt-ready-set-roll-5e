@@ -384,33 +384,9 @@ async function _addFieldDamage(fields, item, params) {
             damageTermGroups[0].terms.push(...roll.terms);
         }
 
-        damageTermGroups.forEach(async (group, i) => {
+        for (const [i, group] of damageTermGroups.entries()) {
             const baseRoll = Roll.fromTerms(group.terms);
-
-            let critRoll = null;
-            if (params?.isCrit) {
-                const critTerms = roll.options.multiplyNumeric ? group.terms : group.terms.filter(t => !(t instanceof NumericTerm));
-                const firstDie = critTerms.find(t => t instanceof Die);
-                const index = critTerms.indexOf(firstDie);
-
-                if (i === 0 && firstDie) {
-                    critTerms.splice(index, 1, new Die({
-                        number: firstDie.number + (roll.options.criticalBonusDice ?? 0),
-                        faces: firstDie.faces,
-                        results: firstDie.results
-                    }));
-                }
-
-                // Remove trailing operators to avoid errors.
-                while (critTerms.at(-1) instanceof OperatorTerm) {
-                    critTerms.pop();
-                }
-
-                critRoll = await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
-                    maximize: roll.options.powerfulCritical,
-                    async: true
-                });
-            }
+            const critRoll = await RollUtility.getCritRoll(baseRoll, i, roll.options, params);
 
             fields.push([
                 FIELD_TYPE.DAMAGE,
@@ -422,8 +398,7 @@ async function _addFieldDamage(fields, item, params) {
                     versatile: i !== 0 ? false : params?.versatile ?? false
                 }
             ]);
-
-        });
+        }
     }
 }
 
