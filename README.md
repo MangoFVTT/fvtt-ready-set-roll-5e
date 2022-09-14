@@ -79,6 +79,7 @@ The following modules have been verified as compatible from the specified module
 
 ## Known Issues
 - [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
+- DAE bonuses to damage break damage rolling.
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
