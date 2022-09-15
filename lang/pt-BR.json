@@ -1,0 +1,134 @@
+{
+    "rsr5e": {
+        "settings": {
+            "enableAbilityQuickRoll.name": "Habilitar Rolagens Rápidas para Atributos",
+            "enableAbilityQuickRoll.hint": "Ao clicar em um teste de atributo ou salvaguarda, rolar diretamente para o chat em vez de usar a caixa de diálogo de rolagem padrão. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
+            "enableSkillQuickRoll.name": "Habilitar Rolagens Rápidas para Perícias",
+            "enableSkillQuickRoll.hint": "Ao clicar em um teste de perícia, automaticamente rola para o chat ao invés da mensagem normal. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
+            "enableItemQuickRoll.name": "Habilitar Rolagens Rápidas para Itens",
+            "enableItemQuickRoll.hint": "Ao clicar na imagem de um item (armas, magias, características e etc), automaticamente rola para o chat ao invés da mensagem normal. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
+            "enableAltQuickRoll.name": "Habilitar Rolagem Alternativa para Itens",
+            "enableAltQuickRoll.hint": "Ao pressionar Alt e clicar na imagem de um item, mostrar uma rolagem rápida diferente que pode ser configurada separadamente, substituindo a habilidade de ignorar rolagens rápidas para itens. Essa opção não tem efeito se rolagem rápida para itens estiver desabilitada.",
+            "enableD20Icons.name": "Mostrar Rolagens do D20 em Rolagens Rápidas",
+            "enableD20Icons.hint": "Ao emitir a mensagem de rolagem rápida, mostrar um ícone com o valor da rolagem natural ao lado do resultado total.",
+            "enableDiceSounds.name": "Habilitar Sons de Dados para Rolagens Rápidas",
+            "enableDiceSounds.hint": "Ao emitir a mensagem de rolagem rápida, reproduzir o som de dados padrão do sistema.",
+            "enableOverlayButtons.name": "Habilitar Botões de Overlay",
+            "enableOverlayButtons.hint": "Ao emitir a mensagem de rolagem rápida, habilitar botões de overlay (passando o mouse por cima das rolagens) nas mensagens do chat que oferecerem funcionalidade adicional para a rolagem.",
+            "alwaysApplyCrit.name": "Sempre Aplicar Dano Crítico",
+            "alwaysApplyCrit.hint": "Usando os botões overlay de dano, sempre aplicar o dano crítico rolado (se houver). Se desativado, ao usar o botão de overlay para dano crítico será exibido um prompt permitindo que o usuário escolha.",
+            "alwaysRollMulti.name": "Sempre Rolar Múltiplos Dados",
+            "alwaysRollMulti.hint": "Ao emitir a mensagem de rolagem rápida, sempre rolar dois dados (ou três para Precisão Élfica) até quando vantagem/desvantagem não se aplica.",
+            "showSkillAbilities.name": "Mostrar Nome do Atributo para Perícias",
+            "showSkillAbilities.hint": "Ao emitir a mensagem de rolagem rápida para perícias, mostrar o nome do atributo usado ao lado do nome da perícia.",
+            "rollModifierMode.name": "Teclas Mod. de Rolagem",
+            "rollModifierMode.hint": "Determina quais teclas serão usadas para modificar as rolagens rápidas com vantagem ou desvantagem. Não tem efeito se Rolagens Rápidas estiverem desabilitadas.",
+            "defaultRollArt.name": "Imagem Usada para Rolagem Rápida",
+            "defaultRollArt.hint": "Determina qual arte será usada por padrão para testes de atributo e salvaguardas para um ator. Se a opção seleciona não estiver disponível, a outra imagem será usada em seu lugar.",
+            "placementRollTitle.name": "Mostrar Rótulos da Rolagem",
+            "placementRollTitle.hint": "Determina se e onde o título da rolagem que não seja de dano, como \"Ataque\", aparecerá.",
+            "placementDamageTitle.name": "Mostrar Rótulos de Dano",
+            "placementDamageTitle.hint": "Determina se e onde o título da rolagem de dano, como \"Dano\", aparecerá.",
+            "placementDamageContext.name": "Mostrar Rótulos de Contexto",
+            "placementDamageContext.hint": "Determina se e onde o rótulo de contexto de uma rolagem de dano aparecerá.",
+            "placementDamageType.name": "Mostrar Rótulo de Tipo de Dano",
+            "placementDamageType.hint": "Determina onde o rótulo de tipo de dano será colocado, relativo à rolagem de dano.",
+            "contextReplacesTitle.name": "Substituir Rótulo do Título por Contexto",
+            "contextReplacesTitle.hint": "Se um rótulo de contexto estiver no mesmo lugar que o rótulo do título de uma rolagem de dano, como \"Dano\" ou \"Cura\", ele o substituirá.",
+            "contextReplacesDamage.name": "Substituir Tipo de Dano por Contexto",
+            "contextReplacesDamage.hint": "Se um rótulo de contexto estiver no mesmo lugar que um rótulo de tipo de dano, ele o substituirá.",
+            "hideSaveDC.name": "Esconder NDs de Salvaguardas",
+            "hideSaveDC.hint": "Determina se o ND será oculto nos botões de Salvaguarda para rolagens rápidas.",
+            "hideSaveDC.replacement": "??"
+        },
+        "messages": {
+            "error": {
+                "libWrapperMinVersion": "Este módulo requer a versão {version} do libWrapper ou mais recente.",
+                "labelNotInDictionary": "{type} '{label}' não existe. Os valores válidos podem ser encontrados em {dictionary}.",
+                "objectNotExpectedType": "O objeto de dados não corresponde ao tipo esperado. Tipo esperado '{type}'.",
+                "incorrectRollType": "Não é possível rolar uma rolagem de {function} para o tipo de rolagem '{type}'.",
+                "incorrectFieldType": "Não é possível aprimorar uma rolagem do tipo {type} para uma rolagem múltipla.",
+                "incorrectTargetState": "Não é possível aprimorar uma rolagem para o estado alvo {state} porque não é um estado válido (vantagem ou desvantagem).",
+                "rollIsNullOrUndefined": "O rolo dado é nulo ou indefinido."
+            },
+            "warning": {
+                "emptyDamageField": "Um ou mais campos de dano neste item estão vazios! Para rolar dano, certifique-se de que todos os campos de dano estejam preenchidos."
+            }
+        },
+        "choices": {
+            "rollModifierMode": {
+                "shiftAdv": "Shift ➔ Vantagem, Ctrl/Cmd ➔ Desvantagem",
+                "ctrlAdv": "Ctrl/Cmd ➔ Vantagem, Shift ➔ Desvantagem"
+            },
+            "placement": {
+                "0": "Não Mostrar",
+                "1": "Acima",
+                "2": "Abaixo e Dentro",
+                "3": "Abaixo e Fora"
+            },
+            "hideSaveDC": {
+                "0": "Nunca",
+                "1": "Somente NPJs",
+                "2": "Sempre"
+            }
+        },
+        "sheet": {
+            "tab": {
+                "title": "Rolagem Rápida",
+                "section": {
+                    "defaultRoll": "Opções de Rolagem Padrão",
+                    "alternateRoll": "Opções de Rolagem Alternativa"
+                },
+                "subsection": {
+                    "main": "Conteúdo Principal",
+                    "damage": "Rolagens de Dano",
+                    "consume": "Consumíveis"
+                },
+                "options": {
+                    "description": "Descrição",
+                    "flavor": "Texto Ilustrativo",
+                    "footer": "Propriedades",
+                    "attack": "Ataque",
+                    "template": "Posicionar Modelo de Medição",
+                    "save": "ND da Salvaguarda",
+                    "other": "Outro",
+                    "check": "Teste",
+                    "quantity": "Quantidade",
+                    "uses": "Usos",
+                    "resource": "Recurso",
+                    "recharge": "Recarga"
+                }
+            },
+            "placeholder": {
+                "context": "Contexto",
+                "label": "Rótulo"
+            }
+        },
+        "chat": {
+            "attack": "Ataque",
+            "check": "Teste",
+            "save": "Salvaguarda",
+            "saveDC": "Salvaguarda vs ND",
+            "damage": "Dano",
+            "healing": "Cura",
+            "crit": "Crít.",
+            "other": "Outro",
+            "buttons": {
+                "damageFull": "Clique para aplicar dano total ao(s) token(s) selecionado(s).",
+                "damageHalf": "Clique para aplicar metade do dano ao(s) token(s) selecionado(s).",
+                "damageQuarter": "Clique para aplicar 1/4 (um quarto) do dano ao(s) token(s) selecionados(s).",
+                "damageDouble": "Clique para aplicar dano dobrado ao(s) token(s) selecionado(s).",
+                "healing": "Clique para aplicar a cura completa ao(s) token(s) selecionado(s).",
+                "healingTemp": "Clique para aplicar pontos de vida temporários ao(s) token(s) selecionado(s).",
+                "rollCrit": "Clique para rolar dano crítico.",
+                "rollAdvantage": "Clique para rolar com vantagem.",
+                "rollDisadvantage": "Clique para rolar com desvantagem."
+            },
+            "critPrompt": {                
+                "title": "Aplicar Dano Crítico?",
+		        "yes": "Sim",
+		        "no": "Não"
+            }
+        }
+    }
+}
