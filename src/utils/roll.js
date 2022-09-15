@@ -295,7 +295,19 @@ export class RollUtility {
      * @returns {Promise<Roll>} The critical roll for the given base.
      */
     static async getCritRoll(baseRoll, groupIndex, options = {}) {
-        const critTerms = options.multiplyNumeric ? baseRoll.terms : baseRoll.terms.filter(t => !(t instanceof NumericTerm));
+        const baseTerms = foundry.utils.duplicate(baseRoll.terms);
+
+        const critTerms = [];
+        baseTerms.forEach(term => {
+            let critTerm = RollTerm.fromData(term);
+            
+            if (critTerm instanceof NumericTerm) {
+                critTerm = options.multiplyNumeric ? critTerm : new NumericTerm({ number: 0 }).evaluate({ async: false });
+            }
+
+            critTerms.push(critTerm);
+        });
+
         const firstDie = critTerms.find(t => t instanceof Die);
         const index = critTerms.indexOf(firstDie);
 
