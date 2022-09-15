@@ -63,8 +63,8 @@ export class HooksUtility {
         Hooks.on(HOOKS_MODULE.LOADED, () => {          
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
             CONFIG[MODULE_SHORT].combinedDamageTypes = foundry.utils.mergeObject(
-                CONFIG.DND5E.damageTypes,
-                CONFIG.DND5E.healingTypes,
+                foundry.utils.duplicate(CONFIG.DND5E.damageTypes),
+                foundry.utils.duplicate(CONFIG.DND5E.healingTypes),
                 { recursive: false }
             );
 
