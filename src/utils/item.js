@@ -381,6 +381,8 @@ async function _addFieldDamage(fields, item, params) {
         });
 
         if (roll.terms.length > 0) {
+            const plus = new OperatorTerm({ operator: "+" }).evaluate({ async: false });
+            damageTermGroups[0].terms.push(plus);
             damageTermGroups[0].terms.push(...roll.terms);
         }
 
