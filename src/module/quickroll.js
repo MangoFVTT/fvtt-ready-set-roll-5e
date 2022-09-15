@@ -339,12 +339,16 @@ export class QuickRoll {
         if (this.fields.length === 0) {
             return roll;
         }
-
-		// Concatenate damage rolls into a single roll (for apply damage context menu).
-        const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE).map(f => f[1]);
+		
+		// If we need to add damage that has no die rolls in it, we have to add a safety die with no value.
+		// Otherwise, when there is a d20 present, dnd5e will attempt to interpret all this as a d20 roll and error.
+		const safety = new Die({ number: 1, faces: 0 }).evaluate({ async: false });
 		const plus = new OperatorTerm({ operator: "+" }).evaluate({ async: false });
 		const terms = []
 
+		// Concatenate damage rolls into a single roll (for apply damage context menu).
+        const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE).map(f => f[1]);
+		
 		damageFields.forEach(field => {
 			if (field.baseRoll) {
 				terms.push(plus);
@@ -360,15 +364,17 @@ export class QuickRoll {
 		// Damage rolls must be added first into index 0 for applyChatCardDamage() to work.
 		if (terms.length !== 0) {
             roll = Roll.fromTerms(Roll.simplifyTerms(terms));
+			roll.terms.unshift(safety, plus);
         }
-		
-		// Add in dice for all other roll types.
+
+		// Add in dice for d20 rolls.
 		const rollFields = this.fields.filter(f => f[0] === FIELD_TYPE.CHECK || f[0] === FIELD_TYPE.ATTACK).map(f => f[1]);
 
 		rollFields.forEach(field => {
+			roll.terms.push(plus);
 			roll.terms.push(...field.roll.dice);
 		});
-
+		
 		return roll;
 	}
 }
