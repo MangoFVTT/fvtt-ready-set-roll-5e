@@ -31,6 +31,7 @@ Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper
 ### Verified Modules
 The following modules have been verified as compatible from the specified module release onward. Note that updates to Foundry VTT or the module in question may cause incompatibilities that need to be re-tested. Furthermore, each verified module is tested with Ready Set Roll in isolation. Combining modules is likely to still work, however may cause issues. Always proceed with caution (keep backups) when installing and using multiple modules.
 - [Dice So Nice](https://gitlab.com/riccisi/foundryvtt-dice-so-nice) <sup>(1.2.0+)</sup>
+- [Tidy5e Sheet](https://github.com/sdenec/tidy5e-sheet) <sup>(1.2.0+)</sup>
 - [Dynamic Active Effects](https://gitlab.com/tposney/dae) <sup>(1.3.1+)</sup>
 - [Build-a-Bonus](https://github.com/krbz999/babonus) <sup>(1.3.2+)</sup>
 
