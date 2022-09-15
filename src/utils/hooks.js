@@ -17,12 +17,13 @@ export const HOOKS_CORE = {
 
 export const HOOKS_DND5E = {
     USE_ITEM: "dnd5e.useItem",
+    PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
+    DISPLAY_CARD: "dnd5e.displayCard",
     RENDER_ITEM_SHEET: "renderItemSheet5e"
 }
 
 export const HOOKS_MODULE = {
     LOADED: `${MODULE_SHORT}.loaded`,
-    CHAT_MSG: `${MODULE_SHORT}.chatMessage`,
     RENDER: `${MODULE_SHORT}.render`,
     PROCESSED_ROLL: `${MODULE_SHORT}.rollProcessed`
 }
@@ -63,8 +64,8 @@ export class HooksUtility {
         Hooks.on(HOOKS_MODULE.LOADED, () => {          
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
             CONFIG[MODULE_SHORT].combinedDamageTypes = foundry.utils.mergeObject(
-                CONFIG.DND5E.damageTypes,
-                CONFIG.DND5E.healingTypes,
+                foundry.utils.duplicate(CONFIG.DND5E.damageTypes),
+                foundry.utils.duplicate(CONFIG.DND5E.healingTypes),
                 { recursive: false }
             );
 
