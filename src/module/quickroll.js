@@ -175,7 +175,9 @@ export class QuickRoll {
 			...CoreUtility.getWhisperData(rollMode),
 		}
 
-		Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData);
+		if (this.item) {
+			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData);
+		}
 
 		const card = createMessage ? await ChatMessage.create(chatData) : chatData;
 
@@ -183,7 +185,9 @@ export class QuickRoll {
 			this.messageId = card.id;
 		}
 
-		Hooks.callAll(HOOKS_DND5E.DISPLAY_CARD, item, card);
+		if (this.item) {
+			Hooks.callAll(HOOKS_DND5E.DISPLAY_CARD, item, card);
+		}
 
 		return card;
 	}
