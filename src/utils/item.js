@@ -391,7 +391,7 @@ async function _addFieldDamage(fields, item, params) {
             
             let critRoll = null;
             if (params?.isCrit) {
-                critRoll = await RollUtility.getCritRoll(baseRoll, i, roll.options, params);
+                critRoll = await RollUtility.getCritRoll(baseRoll, i, item.getRollData(), roll.options);
             }
 
             fields.push([
