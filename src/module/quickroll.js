@@ -248,7 +248,8 @@ export class QuickRoll {
 			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0
 		}
 
-		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, targetId, options);
+		const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE);
+		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), options);
 
 		return true;
 	}
