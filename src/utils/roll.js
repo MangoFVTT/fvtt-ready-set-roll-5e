@@ -291,11 +291,13 @@ export class RollUtility {
      * Generates a critical roll from a given base roll.
      * @param {Roll} baseRoll The base roll to roll a crit for.
      * @param {Number} groupIndex The index of the damage group. Some crit options only apply to the first damage group.
+     * @param {Object} rollData Roll data for the item to calculate modifiers if needed.
      * @param {Object} options Additional options for rolling critical damage.
      * @returns {Promise<Roll>} The critical roll for the given base.
      */
-    static async getCritRoll(baseRoll, groupIndex, options = {}) {
+    static async getCritRoll(baseRoll, groupIndex, rollData, options = {}) {
         const baseTerms = foundry.utils.duplicate(baseRoll.terms);
+        const plus = await new OperatorTerm({ operator: "+" }).evaluate({ async: true });
 
         const critTerms = [];
         baseTerms.forEach(term => {
@@ -311,12 +313,16 @@ export class RollUtility {
         const firstDie = critTerms.find(t => t instanceof Die);
         const index = critTerms.indexOf(firstDie);
 
-        if (groupIndex === 0 && firstDie) {
-            critTerms.splice(index, 1, new Die({
-                number: firstDie.number + (options.criticalBonusDice ?? 0),
-                faces: firstDie.faces,
-                results: firstDie.results
-            }));
+        if (options.criticalBonusDice && options.criticalBonusDice > 0 && groupIndex === 0 && firstDie) {
+            const bonusDice = await new Die({ number: options.criticalBonusDice, faces: firstDie.faces }).evaluate({ async: true });
+
+            critTerms.push(plus, bonusDice);
+        }
+
+        if (options.criticalBonusDamage && options.criticalBonusDamage !== "") {
+            const bonusDamage = await new CONFIG.Dice.DamageRoll(options.criticalBonusDamage, rollData).evaluate({ async: true });
+
+            critTerms.push(plus, ...bonusDamage.terms);
         }
 
         // Remove trailing operators to avoid errors.

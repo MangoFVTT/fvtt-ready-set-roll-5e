@@ -280,6 +280,13 @@ async function _renderDamageRoll(renderData = {}) {
         critRoll?.getTooltip()
     ])).filter(t => t);
 
+    // Generate a formula string that displays rolled crit damage as well.
+    let formula = baseRoll?.formula ?? "";    
+    if (baseRoll?.formula && critRoll?.formula) {
+        formula = formula.concat(" + ");
+    }
+    formula += critRoll?.formula ?? "";
+
     return _renderModuleTemplate(TEMPLATE.DAMAGE, {
         id,        
         damageRollType: ROLL_TYPE.DAMAGE,
@@ -290,7 +297,7 @@ async function _renderDamageRoll(renderData = {}) {
         damagetop: labels[1],
         damagemid: labels[2],
         damagebottom: labels[3],
-        formula: baseRoll?.formula ?? critRoll.formula,
+        formula,
         damageType,
     });
 }

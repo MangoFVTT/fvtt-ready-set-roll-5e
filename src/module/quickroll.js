@@ -252,11 +252,12 @@ export class QuickRoll {
 		const options = {
 			multiplyNumeric: game.settings.get("dnd5e", "criticalDamageModifiers"),
 			powerfulCritical: game.settings.get("dnd5e", "criticalDamageMaxDice"),
-			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0
+			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0,
+			criticalBonusDamage: this.item.system.critical.damage ?? ""
 		}
-
+		
 		const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE);
-		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), options);
+		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), this.item.getRollData(), options);
 
 		return true;
 	}
