@@ -1,5 +1,5 @@
 import { CoreUtility } from "../utils/core.js";
-import { HOOKS_MODULE } from "../utils/hooks.js";
+import { HOOKS_DND5E, HOOKS_MODULE } from "../utils/hooks.js";
 import { ITEM_TYPE } from "../utils/item.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
@@ -175,16 +175,17 @@ export class QuickRoll {
 			...CoreUtility.getWhisperData(rollMode),
 		}
 
-		await Hooks.callAll(HOOKS_MODULE.CHAT_MSG, this, chatData);
+		Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData);
 
-		// Send the chat message
+		const card = createMessage ? await ChatMessage.create(chatData) : chatData;
+
 		if (createMessage) {
-			const message = await ChatMessage.create(chatData);
-			this.messageId = message.id;
-			return message;
-		} else {
-			return chatData;
+			this.messageId = card.id;
 		}
+
+		Hooks.callAll(HOOKS_DND5E.DISPLAY_CARD, item, card);
+
+		return card;
 	}
 
 	/**
@@ -197,6 +198,8 @@ export class QuickRoll {
 			...flattenObject({ flags: duplicate(this._getFlags()) }),
 			...CoreUtility.getRollSound()
 		};
+
+		Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, this.item, update);
 
 		return update;
 	}		

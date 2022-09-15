@@ -17,12 +17,13 @@ export const HOOKS_CORE = {
 
 export const HOOKS_DND5E = {
     USE_ITEM: "dnd5e.useItem",
+    PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
+    DISPLAY_CARD: "dnd5e.displayCard",
     RENDER_ITEM_SHEET: "renderItemSheet5e"
 }
 
 export const HOOKS_MODULE = {
     LOADED: `${MODULE_SHORT}.loaded`,
-    CHAT_MSG: `${MODULE_SHORT}.chatMessage`,
     RENDER: `${MODULE_SHORT}.render`,
     PROCESSED_ROLL: `${MODULE_SHORT}.rollProcessed`
 }
