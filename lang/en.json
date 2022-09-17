@@ -17,6 +17,8 @@
             "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
             "alwaysApplyCrit.name": "Always Apply Critical Damage",
             "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
+            "applyDamageTo.name": "Apply Damage Options",
+            "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
             "showSkillAbilities.name": "Show Ability Names for Skills",
@@ -38,8 +40,7 @@
             "contextReplacesDamage.name": "Context Replaces Damage Type",
             "contextReplacesDamage.hint": "If a context label is in the same place as a damage type label, it will replace it.",
             "hideSaveDC.name": "Hide Save DCs",
-            "hideSaveDC.hint": "Determines if the DC is hidden on save DC buttons for quick rolls.",
-            "hideSaveDC.replacement": "??"
+            "hideSaveDC.hint": "Determines if the DC is hidden on save DC buttons for quick rolls."
         },
         "messages": {
             "error": {
@@ -65,6 +66,11 @@
                 "1": "Above",
                 "2": "Below & Inside",
                 "3": "Below & Outside"
+            },
+            "apply": {
+                "0": "Apply to Selected Tokens",
+                "1": "Apply to Targeted Tokens",
+                "2": "Apply to Both"
             },
             "hideSaveDC": {
                 "0": "Never",
@@ -105,6 +111,7 @@
             }
         },
         "chat": {
+            "hide": "??",
             "attack": "Attack",
             "check": "Check",
             "save": "Save",
