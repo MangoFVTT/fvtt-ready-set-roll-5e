@@ -16,6 +16,7 @@ export const SETTING_NAMES = {
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     ALWAYS_APPLY_CRIT: "alwaysApplyCrit",
+    APPLY_DAMAGE_TO: "applyDamageTo",
     PLACEMENT_ROLL_TITLE: "placementRollTitle",
     PLACEMENT_DAMAGE_TITLE: "placementDamageTitle",
     PLACEMENT_DAMAGE_CONTEXT: "placementDamageContext",
@@ -53,56 +54,71 @@ export class SettingsUtility {
 
         // QUICK ROLL SETTINGS        
 		const quickRollOptions = [
-            SETTING_NAMES.QUICK_ABILITY_ENABLED,
-            SETTING_NAMES.QUICK_SKILL_ENABLED,
-            SETTING_NAMES.QUICK_ITEM_ENABLED
+            { name: SETTING_NAMES.QUICK_ABILITY_ENABLED, default: true },
+            { name: SETTING_NAMES.QUICK_SKILL_ENABLED, default: true },
+            { name: SETTING_NAMES.QUICK_ITEM_ENABLED, default: true }
         ];
 
         quickRollOptions.forEach(option => {
-            game.settings.register(MODULE_NAME, option, {
-                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
-                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
+            game.settings.register(MODULE_NAME, option.name, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.hint`),
                 scope: "world",
                 config: true,
                 type: Boolean,
-                default: true,
+                default: option.default,
                 requiresReload: true
             });
         });
 
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
-            SETTING_NAMES.ALT_ROLL_ENABLED,
-            SETTING_NAMES.ALWAYS_ROLL_MULTIROLL
+            { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false },
+            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false }
         ];
 
         extraRollOptions.forEach(option => {
-            game.settings.register(MODULE_NAME, option, {
-                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
-                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
+            game.settings.register(MODULE_NAME, option.name, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.hint`),
                 scope: "world",
                 config: true,
                 type: Boolean,
-                default: false,
+                default: option.default,
             });
         });
 
         // OVERLAY BUTTON OPTIONS
         const overlayOptions = [
-            SETTING_NAMES.OVERLAY_BUTTONS_ENABLED,
-            SETTING_NAMES.ALWAYS_APPLY_CRIT
+            { name: SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, default: true },
+            { name: SETTING_NAMES.ALWAYS_APPLY_CRIT, default: true }
         ]        
 
         overlayOptions.forEach(option => {
-            game.settings.register(MODULE_NAME, option, {
-                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.name`),
-                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option}.hint`),
+            game.settings.register(MODULE_NAME, option.name, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.hint`),
                 scope: "world",
                 config: true,
                 type: Boolean,
-                default: true,
+                default: option.default,
                 requiresReload: true
             });
+        });
+        
+        game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_DAMAGE_TO, {
+            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_DAMAGE_TO}.name`),
+            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_DAMAGE_TO}.hint`),
+            scope: "world",
+            config: true,
+            type: Number,
+            default: 0,
+            requiresReload: true,
+            choices: {
+                0: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.0`),
+                1: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.1`),
+                2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`)
+            }
         });
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {

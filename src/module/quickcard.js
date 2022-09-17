@@ -9,7 +9,14 @@ import { QuickRoll } from "./quickroll.js";
  * Class that parses a base system card into a module card, with functionality for adding overlay card elements.
  */
 export class QuickCard {
+    _applyToTargeted;
+    _applyToSelected;
+
     constructor (message, html) {
+        const applyOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
+        this._applyToTargeted = applyOption === 1 || applyOption === 2;
+        this._applyToSelected = applyOption === 0 || applyOption === 2;
+
         this.updateBinding(message, html);
     }
 
@@ -49,14 +56,16 @@ export class QuickCard {
         const hasRolledCrit = this.roll?.hasRolledCrit ?? false;
         const isMultiRoll = this.roll?.params?.isMultiRoll ?? true;
 
+		const controlled = this._applyToSelected && canvas?.tokens?.controlled?.length > 0;
+        const targeted = this._applyToTargeted && game?.user?.targets?.size > 0;
+
 		html.find(".die-result-overlay-br").show();
 
 		// Apply Damage / Augment Crit
-		const controlled = canvas?.tokens?.controlled?.length > 0;
 		html.find('.multiroll-overlay-br').toggle(hasPermission && !isMultiRoll);
 		html.find('.crit-button').toggle(hasPermission && !hasRolledCrit);
-		html.find('.apply-damage-buttons').toggle(controlled);
-		html.find('.apply-temphp-buttons').toggle(controlled);
+		html.find('.apply-damage-buttons').toggle(controlled || targeted);
+		html.find('.apply-temphp-buttons').toggle(controlled || targeted);
 	}
 
     /**
@@ -197,7 +206,11 @@ export class QuickCard {
             damage = await this._resolveCritDamage(Number(damage), Number(crit), dialogPosition);
         }
 
-        await Promise.all(canvas.tokens.controlled.map( t => {
+        const selectTokens = this._applyToSelected ? canvas.tokens.controlled : [];
+        const targetTokens = this._applyToTargeted ? game.user.targets : [];
+        const targets = new Set([...selectTokens, ...targetTokens]);
+
+        await Promise.all(Array.from(targets).map( t => {
             const target = t.actor;
             return isTempHP ? target.applyTempHP(damage) : target.applyDamage(damage, modifier);
         }));
