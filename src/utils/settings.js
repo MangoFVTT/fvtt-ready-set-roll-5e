@@ -26,7 +26,8 @@ export const SETTING_NAMES = {
     DEFAULT_ROLL_ART: "defaultRollArt",
     HIDE_SAVE_DC: "hideSaveDC",
     SHOW_SKILL_ABILITIES: "showSkillAbilities",
-    ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti"
+    ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti",
+    ALWAYS_MANUAL_DAMAGE: "alwaysManualDamage"
 }
 
 /**
@@ -74,7 +75,8 @@ export class SettingsUtility {
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
             { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false },
-            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false }
+            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false },
+            { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false }
         ];
 
         extraRollOptions.forEach(option => {
