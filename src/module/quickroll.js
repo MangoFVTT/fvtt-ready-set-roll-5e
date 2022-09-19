@@ -259,6 +259,8 @@ export class QuickRoll {
 		const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE);
 		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), this.item.getRollData(), options);
 
+		await CoreUtility.tryRollDice3D(targetField[1].critRoll);
+
 		return true;
 	}
 
