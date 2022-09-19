@@ -268,6 +268,10 @@ export class RollUtility {
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
             const d20Additional = await new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: true });
 
+            if (params?.forceMultiRoll) {
+                await CoreUtility.tryRollDice3D(d20Additional);
+            }
+
             const d20Forced = new Die({
                 number: forcedDiceCount,
                 faces: 20,
