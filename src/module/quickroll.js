@@ -176,7 +176,7 @@ export class QuickRoll {
 		}
 
 		if (this.item) {
-			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData);
+			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
 		}
 
 		const card = createMessage ? await ChatMessage.create(chatData) : chatData;
