@@ -175,7 +175,7 @@ export class QuickRoll {
 			...CoreUtility.getWhisperData(rollMode),
 		}
 
-		if (this.item && createMessage) {
+		if (this.item) {
 			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
 		}
 
@@ -185,7 +185,7 @@ export class QuickRoll {
 			this.messageId = card.id;
 		}
 
-		if (this.item && createMessage) {
+		if (this.item) {
 			Hooks.callAll(HOOKS_DND5E.DISPLAY_CARD, item, card);
 		}
 
