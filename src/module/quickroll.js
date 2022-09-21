@@ -152,7 +152,7 @@ export class QuickRoll {
 
 	/**
 	 * Creates and sends (if told to) a chat message to all players (based on whisper config).
-	 * @param {object} param0 Additional message options.
+	 * @param {Object} param0 Additional message options.
 	 * @param {String} param0.rollMode The message roll mode (private/public/blind/etc).
 	 * @param {String} param0.createMessage Immediately send the message to chat or only return data.
 	 * @returns {Promise<ChatMessage>} The created chat message data.
@@ -209,7 +209,7 @@ export class QuickRoll {
 	 * Upgrades a specific roll in one of the roll fields to a multi roll if possible.
 	 * @param {Number} targetId The index of the roll field to upgrade. 
 	 * @param {ROLL_STATE} targetState The target state of the upgraded multi roll (advantage or disadvantage);
-	 * @returns 
+	 * @returns {Boolean} Whether or not the ugprade was succesful. 
 	 */
 	async upgradeToMultiRoll(targetId, targetState) {
 		const targetField = this.fields[targetId];
@@ -232,7 +232,7 @@ export class QuickRoll {
 	/**
 	 * Upgrades a specific damage roll in one of the damage fields to a crit if possible.
 	 * @param {Number} targetId The index of the damage field to upgrade.
-	 * @returns 
+	 * @returns {Boolean} Whether or not the ugprade was succesful. 
 	 */
 	async upgradeToCrit(targetId) {
 		const targetField = this.fields[targetId];
@@ -261,6 +261,12 @@ export class QuickRoll {
 		return true;
 	}
 
+	/**
+	 * Upgrades a quick roll that has damage to one with damage actually rolled.
+	 * Used for manually rolling damage via chat buttons, if the setting is enabled.
+	 * @param {Number} targetId The index of the manual damage button field.
+	 * @returns {Boolean} Whether or not the ugprade was succesful. 
+	 */
 	async upgradeToDamageRoll(targetId) {
 		const targetField = this.fields[targetId];
 

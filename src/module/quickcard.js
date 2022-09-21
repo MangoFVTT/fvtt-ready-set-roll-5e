@@ -84,6 +84,11 @@ export class QuickCard {
 		html.find(".die-result-overlay-br").attr("style", "display: none;");
 	}
 
+    /**
+     * Adds all manual action button event handlers to a chat card.
+     * Note that the actual buttons are created during rendering and not added here.
+     * @param {JQuery} html The object to add button handlers to.
+     */
     _setupActionButtons(html) {
         html.find(".rsr-damage-buttons button").click(async evt => {
             await this._processDamageButtonEvent(evt);
@@ -154,6 +159,11 @@ export class QuickCard {
         });
     }
 
+    /**
+     * Processes and handles a manual damage button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
     async _processDamageButtonEvent(event) {
         event.preventDefault();
         event.stopPropagation();

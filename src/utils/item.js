@@ -85,13 +85,21 @@ export class ItemUtility {
         return fields;
     }
     
-    static async getSpecificFieldsFromItem(item, params, types) {
+    /**
+     * Generates a list of specific fields from this item roll, instead of generating all.
+     * Will only generate fields if they are available and enabled via the roll configuraton flags.
+     * @param {Item} item The item from which to retrieve the roll fields. 
+     * @param {Object} params Addtional parameters for the item roll.
+     * @param {FIELD_TYPE} filter The list of field types to actually generate.
+     * @returns {Promies<Array>} A list of fields requested as specified by the roll configuration.
+     */
+    static async getSpecificFieldsFromItem(item, params, filter) {
         ItemUtility.ensureItemParams(item, params);
 
         const chatData = await item.getChatData();
         let fields = [];
 
-        for (const type of types) {
+        for (const type of filter) {
             switch (type) {
                 case FIELD_TYPE.DAMAGE:
                     await _addFieldDamage(fields, item, params);
