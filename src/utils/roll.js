@@ -182,7 +182,7 @@ export class RollUtility {
     static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
         
-        params = CoreUtility.ensureParams(params);
+        params = CoreUtility.ensureQuickRollParams(params);
         params.slotLevel = item.system.level;
         item.system.level = params.spellLevel ?? item.system.level;
 
@@ -362,7 +362,7 @@ async function _getActorRoll(actor, title, roll, rollType, createMessage = true)
         return null;
     }
 
-    const params = CoreUtility.ensureParams();
+    const params = CoreUtility.ensureQuickRollParams();
     const ensuredRoll = await RollUtility.ensureMultiRoll(roll, params);
 
     const hasAdvantage = roll.hasAdvantage;
@@ -412,10 +412,11 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
     const isCrit = params?.isCrit ?? false;
     const isFumble = params?.isFumble ?? false;
     const isMultiRoll = params?.isMultiRoll ?? false;
+    const isAltRoll = params?.isAltRoll ?? false;
 
     const quickroll = new QuickRoll(
         item,
-        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll, isAltRoll },
         [
             [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
             ...itemFields

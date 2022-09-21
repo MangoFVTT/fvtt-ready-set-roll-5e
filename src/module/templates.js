@@ -9,6 +9,7 @@ export const TEMPLATE = {
     DESCRIPTION: "rsr-description.html",
     MULTIROLL: "rsr-multiroll.html",
     DAMAGE: "rsr-damage-roll.html",
+    DAMAGE_BUTTON: "rsr-damage-button.html",
     SAVE_BUTTON: "rsr-save-button.html",
     OPTIONS: "rsr-item-options.html",
     BLANK: "rsr-blank.html",

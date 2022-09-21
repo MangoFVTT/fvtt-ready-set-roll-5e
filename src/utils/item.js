@@ -2,7 +2,8 @@ import { MODULE_SHORT } from "../module/const.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
-import { CRIT_TYPE, RollUtility, ROLL_TYPE } from "./roll.js";
+import { RollUtility, ROLL_TYPE } from "./roll.js";
+import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
 /**
  * Enumerable of identifiers for different types of dnd5e items.
@@ -29,28 +30,23 @@ export class ItemUtility {
      * Generates a list of the different fields required for this item roll.
      * Will only generate fields that are available and enabled via the roll configuraton flags.
      * @param {Item} item The item from which to retrieve the roll fields. 
-     * @param {object} params Addtional parameters for the item roll.
+     * @param {Object} params Addtional parameters for the item roll.
      * @returns {Promies<Array>} A list of fields as specified by the roll configuration.
      */
     static async getFieldsFromItem(item, params) {
         ItemUtility.ensureFlagsOnitem(item);
-
-        const chatData = await item.getChatData();
-        const isAltRoll = params?.isAltRoll ?? false;
-        let fields = [];
+        ItemUtility.ensureItemParams(item, params);
         
-        params = params ?? {};
-        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", isAltRoll);
-        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", isAltRoll);
-        params.elvenAccuracy = (item.actor?.flags?.dnd5e?.elvenAccuracy && 
-            CONFIG.DND5E.characterFlags.elvenAccuracy.abilities.includes(item.abilityMod)) || undefined
+        const manualDamage = SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE);
+        const chatData = await item.getChatData();
+        let fields = [];
 
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", params.isAltRoll)) {
             _addFieldFlavor(fields, chatData);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickDesc", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickDesc", params.isAltRoll)) {
             _addFieldDescription(fields, chatData);
         }
 
@@ -58,28 +54,57 @@ export class ItemUtility {
             fields.push([FIELD_TYPE.BLANK, { display: false }]);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickSave", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickSave", params.isAltRoll)) {
             _addFieldSave(fields, item);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickAttack", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickAttack", params.isAltRoll)) {
             await _addFieldAttack(fields, item, params);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickCheck", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickCheck", params.isAltRoll)) {
             await _addFieldAbilityCheck(fields, item, params);
         }
 
-        if (params.damageFlags) {
+        if (manualDamage) {
+            _addFieldDamageButton(fields, item);
+        }
+
+        if (params.damageFlags && !manualDamage) {
             await _addFieldDamage(fields, item, params);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickOther", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickOther", params.isAltRoll)) {
             await _addFieldOtherFormula(fields, item);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickFooter", isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickFooter", params.isAltRoll)) {
             _addFieldFooter(fields, chatData);
+        }
+
+        return fields;
+    }
+    
+    /**
+     * Generates a list of specific fields from this item roll, instead of generating all.
+     * Will only generate fields if they are available and enabled via the roll configuraton flags.
+     * @param {Item} item The item from which to retrieve the roll fields. 
+     * @param {Object} params Addtional parameters for the item roll.
+     * @param {FIELD_TYPE} filter The list of field types to actually generate.
+     * @returns {Promies<Array>} A list of fields requested as specified by the roll configuration.
+     */
+    static async getSpecificFieldsFromItem(item, params, filter) {
+        ItemUtility.ensureItemParams(item, params);
+
+        const chatData = await item.getChatData();
+        let fields = [];
+
+        for (const type of filter) {
+            switch (type) {
+                case FIELD_TYPE.DAMAGE:
+                    await _addFieldDamage(fields, item, params);
+                    break;
+            }
         }
 
         return fields;
@@ -90,7 +115,7 @@ export class ItemUtility {
      * This configuration largely handles what the item will consume, as specified in the roll configuration tab.
      * @param {Item} item The item from which to retrieve the roll configuration.
      * @param {Boolean} isAltRoll Whether to check the alternate roll configuration for the item or not. 
-     * @returns {object} A roll configuration in the format necessary for the dnd5e system.
+     * @returns {Object} A roll configuration in the format necessary for the dnd5e system.
      */
     static getRollConfigFromItem(item, isAltRoll = false) {
         ItemUtility.ensureFlagsOnitem(item);
@@ -156,6 +181,20 @@ export class ItemUtility {
             // For abilities with "Action Recharge" configured
             item.hasRecharge = !!(item.system.recharge?.value);
         }
+    }
+
+    /**
+     * 
+     * @param {Item} item 
+     * @param {Object} params 
+     */
+    static ensureItemParams(item, params) {
+        params = params ?? {};
+        params.isAltRoll = params?.isAltRoll ?? false;
+        params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", params.isAltRoll);
+        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", params.isAltRoll);
+        params.elvenAccuracy = (item.actor?.flags?.dnd5e?.elvenAccuracy && 
+            CONFIG.DND5E.characterFlags.elvenAccuracy.abilities.includes(item.abilityMod)) || undefined
     }
 
     /**
@@ -233,7 +272,7 @@ function _getConsumeTargetFromItem(item) {
 /**
  * Adds a render field for item chat flavor.
  * @param {Array} fields The current array of fields to add to. 
- * @param {object} chatData The chat data for the item (from item.getChatData).
+ * @param {Object} chatData The chat data for the item (from item.getChatData).
  * @private
  */
 function _addFieldFlavor(fields, chatData) {
@@ -251,7 +290,7 @@ function _addFieldFlavor(fields, chatData) {
 /**
  * Adds a render field for item description.
  * @param {Array} fields The current array of fields to add to. 
- * @param {object} chatData The chat data for the item (from item.getChatData). 
+ * @param {Object} chatData The chat data for the item (from item.getChatData). 
  * @private
  */
 function _addFieldDescription(fields, chatData) {
@@ -269,7 +308,7 @@ function _addFieldDescription(fields, chatData) {
 /**
  * Adds a render field for item footer properties.
  * @param {Array} fields The current array of fields to add to. 
- * @param {object} chatData The chat data for the item (from item.getChatData).
+ * @param {Object} chatData The chat data for the item (from item.getChatData).
  * @private
  */
 function _addFieldFooter(fields, chatData) {
@@ -303,10 +342,26 @@ function _addFieldSave(fields, item) {
 }
 
 /**
+ * Adds a render field for manual damage roll button.
+ * @param {Array} fields The current array of fields to add to. 
+ * @param {Item} item The item from which to derive the field.
+ * @private
+ */
+function _addFieldDamageButton(fields, item) {
+    if (item.hasDamage) {
+        fields.push([
+            FIELD_TYPE.MANUAL,
+            {
+            }
+        ]);
+    }
+}
+
+/**
  * Adds a render field for item attack roll.
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
- * @param {object} params Additional parameters for the attack roll.
+ * @param {Object} params Additional parameters for the attack roll.
  * @private
  */
 async function _addFieldAttack(fields, item, params) {
@@ -349,7 +404,7 @@ async function _addFieldAttack(fields, item, params) {
  * Adds render fields for item damage rolls and computes critical hits.
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
- * @param {object} params Additional parameters for the attack roll.
+ * @param {Object} params Additional parameters for the attack roll.
  * @private
  */
 async function _addFieldDamage(fields, item, params) {
@@ -435,7 +490,7 @@ async function _addFieldOtherFormula(fields, item) {
  * Adds a render field for item tool check.
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
- * @param {object} params Additional parameters for the attack roll.
+ * @param {Object} params Additional parameters for the attack roll.
  * @private
  */
 async function _addFieldAbilityCheck(fields, item, params) {
