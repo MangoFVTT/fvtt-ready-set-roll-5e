@@ -50,11 +50,10 @@ export class HooksUtility {
             SettingsUtility.registerSettings();
             PatchingUtility.patchActors();
             PatchingUtility.patchItems();
-            PatchingUtility.patchItemSheets();            
-            
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
-                HooksUtility.registerChatHooks();
-            }
+            PatchingUtility.patchItemSheets();
+                        
+            HooksUtility.registerChatHooks();
+            HooksUtility.registerTestHooks();
         });
 
         Hooks.on(HOOKS_CORE.READY, () => {
@@ -74,6 +73,9 @@ export class HooksUtility {
                 HooksUtility.registerItemHooks();
             }
         });
+    }
+
+    static registerTestHooks() {
     }
 
     /**

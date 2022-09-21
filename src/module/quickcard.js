@@ -34,16 +34,23 @@ export class QuickCard {
         this.speaker = game.actors.get(message.speaker.actor);
         this.id = message.id;
 
-        // Setup hover buttons when the message is actually hovered(for optimisation).
-        let hoverSetupComplete = false;
-        html.hover(async () => {
-            if (!hoverSetupComplete) {
-                hoverSetupComplete = true;
-                await this._setupOverlayButtons(html);
-                this._onHover(html);
-                LogUtility.log("Hover buttons for quick card initialised.")
-            }
-        })
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
+            this._setupActionButtons(html);
+            LogUtility.log("Initialised quick card action buttons.")
+        }
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
+            // Setup hover buttons when the message is actually hovered(for optimisation).
+            let hoverSetupComplete = false;
+            html.hover(async () => {
+                if (!hoverSetupComplete) {
+                    hoverSetupComplete = true;
+                    await this._setupOverlayButtons(html);
+                    this._onHover(html);
+                    LogUtility.log("Initialised quick card hover buttons.")
+                }
+            })
+        }
     }
 
     /**
@@ -76,6 +83,12 @@ export class QuickCard {
 	_onHoverEnd(html) {
 		html.find(".die-result-overlay-br").attr("style", "display: none;");
 	}
+
+    _setupActionButtons(html) {
+        html.find(".rsr-damage-buttons button").click(async evt => {
+            await this._processDamageButtonEvent(evt);
+        });
+    }
 
     /**
      * Adds all overlay buttons to a chat card.
@@ -141,6 +154,21 @@ export class QuickCard {
         });
     }
 
+    async _processDamageButtonEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const button = event.currentTarget;
+        const id = $(button).parents(".rsr-damage-buttons").attr('data-id');
+        const action = button.dataset.action;
+
+        if (action === "damage-rsr") {
+            if (await this.roll.upgradeToDamageRoll(id)) {
+                this._updateQuickCard();
+            }
+        }
+    }
+
     /**
      * Processes and handles a retroactive advantage/disadvantage button click event.
      * @param {Event} event The originating event of the button click.
@@ -157,8 +185,7 @@ export class QuickCard {
         if (action === "retroroll") {
             const state = button.dataset.state;
             if (await this.roll.upgradeToMultiRoll(id, state)) {
-                const update = await this.roll.toMessageUpdate();
-                this.message.update(update, { diff: true });
+                this._updateQuickCard();
             }
         }
     }
@@ -176,8 +203,7 @@ export class QuickCard {
         const id = $(button).parents(".rsr-dual").attr('data-id');
 
         if (await this.roll.upgradeToCrit(id)) {
-            const update = await this.roll.toMessageUpdate();
-            this.message.update(update, { diff: true });
+            this._updateQuickCard();
         }
     }
 
@@ -268,4 +294,12 @@ export class QuickCard {
 
 		return damage || crit;
 	}
+
+    /**
+     * Updates the contents of the quick card with the new setup of quick roll fields.
+     */
+    async _updateQuickCard() {
+        const update = await this.roll.toMessageUpdate();
+        this.message.update(update, { diff: true });
+    }
 }

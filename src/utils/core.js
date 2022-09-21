@@ -156,7 +156,7 @@ export class CoreUtility {
      * @param {Object} params The parameter data container to ensure with default parameters.
      * @returns {Object} The ensured parameter data container.
      */
-    static ensureParams(params) {
+    static ensureQuickRollParams(params) {
         params = foundry.utils.mergeObject(foundry.utils.duplicate(CONFIG[MODULE_SHORT].defaultQuickRollParams), params || {});
 
         params.isCrit = params.forceCrit || (params.isCrit ?? false);

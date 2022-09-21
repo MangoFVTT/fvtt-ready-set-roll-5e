@@ -1,6 +1,6 @@
 import { CoreUtility } from "../utils/core.js";
 import { HOOKS_DND5E, HOOKS_MODULE } from "../utils/hooks.js";
-import { ITEM_TYPE } from "../utils/item.js";
+import { ItemUtility, ITEM_TYPE } from "../utils/item.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { RollUtility, ROLL_STATE, ROLL_TYPE } from "../utils/roll.js";
@@ -28,8 +28,6 @@ export class QuickRoll {
 				this.actor = actor;
 			}
 		}
-
-		this._currentId = -1;
 
 		// Merges default parameter array with provided parameters, to have a complete list of parameters.
 		this.params = params ?? {};
@@ -264,6 +262,34 @@ export class QuickRoll {
 		return true;
 	}
 
+	async upgradeToDamageRoll(targetId) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !this.hasPermission) {
+			return false;
+		}
+
+		const newFields = await ItemUtility.getSpecificFieldsFromItem(this.item, this.params, [ FIELD_TYPE.DAMAGE ])
+
+		this.fields.splice(targetId, 1, ...newFields);	
+		this.processed = false;	
+
+		const promises = [];
+		newFields.forEach(field => {
+			if (field[1].baseRoll) {
+				promises.push(Promise.resolve(CoreUtility.tryRollDice3D(field[1].baseRoll)));
+			}			
+
+			if (field[1].critRoll) {
+				promises.push(Promise.resolve(CoreUtility.tryRollDice3D(field[1].critRoll)));
+			}
+		});
+
+		await Promise.all(promises);
+
+		return true;
+	}
+
     /**
 	 * Renders HTML templates for the provided fields and combines them into a card.
 	 * @returns {Promise<string>} Combined HTML chat data for all the roll fields.
@@ -271,6 +297,9 @@ export class QuickRoll {
 	 */
 	async _render() {
         if (!this.processed) {
+			this._currentId = -1;
+			this.templates.length = 0;
+
             for (const field of this.fields) {
                 const metadata = {
                     id: ++this._currentId,
