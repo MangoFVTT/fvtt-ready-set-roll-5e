@@ -29,7 +29,6 @@ export class QuickRoll {
 			}
 		}
 
-		// Merges default parameter array with provided parameters, to have a complete list of parameters.
 		this.params = params ?? {};
 
 		this.params.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
