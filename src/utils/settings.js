@@ -74,16 +74,16 @@ export class SettingsUtility {
 
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
-            { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false },
-            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false },
-            { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false }
+            { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false, scope: "world" },
+            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client"  },
+            { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false, scope: "client"  }
         ];
 
         extraRollOptions.forEach(option => {
             game.settings.register(MODULE_NAME, option.name, {
                 name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.name`),
                 hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.hint`),
-                scope: "world",
+                scope: option.scope,
                 config: true,
                 type: Boolean,
                 default: option.default,
