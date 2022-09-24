@@ -86,7 +86,7 @@ export class RollUtility {
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
-        if (config.consumeQuantity && !config.consumeUsage) {  
+        if (caller.id && config.consumeQuantity && !config.consumeUsage) {  
             if (caller.system.quantity === 0) {
                 ui.notifications.warn(CoreUtility.localize("DND5E.ItemNoUses", {name: caller.name})); 
                 return;  
