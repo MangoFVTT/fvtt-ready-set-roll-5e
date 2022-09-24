@@ -75,9 +75,8 @@ The following modules have been verified as compatible from the specified module
 ![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
 ## Planned Features
-- Ability to manually roll damage via a chat card button for quick rolls ([Issue #33](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/33))
 - Sheet roll buttons ([Issue #34](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/34))
-- Compatibility with other modules.
+- More compatibility with other modules.
 - Macro support for more flexible quick rolling.
 
 ## Known Issues
