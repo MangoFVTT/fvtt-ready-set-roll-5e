@@ -1,6 +1,6 @@
 import { CoreUtility } from "../utils/core.js";
 import { HOOKS_DND5E, HOOKS_MODULE } from "../utils/hooks.js";
-import { ITEM_TYPE } from "../utils/item.js";
+import { ItemUtility, ITEM_TYPE } from "../utils/item.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { RollUtility, ROLL_STATE, ROLL_TYPE } from "../utils/roll.js";
@@ -29,9 +29,6 @@ export class QuickRoll {
 			}
 		}
 
-		this._currentId = -1;
-
-		// Merges default parameter array with provided parameters, to have a complete list of parameters.
 		this.params = params ?? {};
 
 		this.params.isCrit = this.params.forceCrit || (this.params.isCrit ?? false);
@@ -155,7 +152,7 @@ export class QuickRoll {
 
 	/**
 	 * Creates and sends (if told to) a chat message to all players (based on whisper config).
-	 * @param {object} param0 Additional message options.
+	 * @param {Object} param0 Additional message options.
 	 * @param {String} param0.rollMode The message roll mode (private/public/blind/etc).
 	 * @param {String} param0.createMessage Immediately send the message to chat or only return data.
 	 * @returns {Promise<ChatMessage>} The created chat message data.
@@ -176,7 +173,7 @@ export class QuickRoll {
 		}
 
 		if (this.item) {
-			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData);
+			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
 		}
 
 		const card = createMessage ? await ChatMessage.create(chatData) : chatData;
@@ -212,7 +209,7 @@ export class QuickRoll {
 	 * Upgrades a specific roll in one of the roll fields to a multi roll if possible.
 	 * @param {Number} targetId The index of the roll field to upgrade. 
 	 * @param {ROLL_STATE} targetState The target state of the upgraded multi roll (advantage or disadvantage);
-	 * @returns 
+	 * @returns {Boolean} Whether or not the ugprade was succesful. 
 	 */
 	async upgradeToMultiRoll(targetId, targetState) {
 		const targetField = this.fields[targetId];
@@ -235,7 +232,7 @@ export class QuickRoll {
 	/**
 	 * Upgrades a specific damage roll in one of the damage fields to a crit if possible.
 	 * @param {Number} targetId The index of the damage field to upgrade.
-	 * @returns 
+	 * @returns {Boolean} Whether or not the ugprade was succesful. 
 	 */
 	async upgradeToCrit(targetId) {
 		const targetField = this.fields[targetId];
@@ -259,6 +256,42 @@ export class QuickRoll {
 		const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE);
 		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), this.item.getRollData(), options);
 
+		await CoreUtility.tryRollDice3D(targetField[1].critRoll);
+
+		return true;
+	}
+
+	/**
+	 * Upgrades a quick roll that has damage to one with damage actually rolled.
+	 * Used for manually rolling damage via chat buttons, if the setting is enabled.
+	 * @param {Number} targetId The index of the manual damage button field.
+	 * @returns {Boolean} Whether or not the ugprade was succesful. 
+	 */
+	async upgradeToDamageRoll(targetId) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !this.hasPermission) {
+			return false;
+		}
+
+		const newFields = await ItemUtility.getSpecificFieldsFromItem(this.item, this.params, [ FIELD_TYPE.DAMAGE ])
+
+		this.fields.splice(targetId, 1, ...newFields);	
+		this.processed = false;	
+
+		const promises = [];
+		newFields.forEach(field => {
+			if (field[1].baseRoll) {
+				promises.push(Promise.resolve(CoreUtility.tryRollDice3D(field[1].baseRoll)));
+			}			
+
+			if (field[1].critRoll) {
+				promises.push(Promise.resolve(CoreUtility.tryRollDice3D(field[1].critRoll)));
+			}
+		});
+
+		await Promise.all(promises);
+
 		return true;
 	}
 
@@ -269,6 +302,9 @@ export class QuickRoll {
 	 */
 	async _render() {
         if (!this.processed) {
+			this._currentId = -1;
+			this.templates.length = 0;
+
             for (const field of this.fields) {
                 const metadata = {
                     id: ++this._currentId,

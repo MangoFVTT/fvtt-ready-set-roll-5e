@@ -151,7 +151,12 @@ export class CoreUtility {
 		}
 	}
 
-    static ensureParams(params) {
+    /**
+     * Ensures that a parameter container has the correct default parameters and values.
+     * @param {Object} params The parameter data container to ensure with default parameters.
+     * @returns {Object} The ensured parameter data container.
+     */
+    static ensureQuickRollParams(params) {
         params = foundry.utils.mergeObject(foundry.utils.duplicate(CONFIG[MODULE_SHORT].defaultQuickRollParams), params || {});
 
         params.isCrit = params.forceCrit || (params.isCrit ?? false);
@@ -159,6 +164,22 @@ export class CoreUtility {
         params.isMultiRoll = params.forceMultiRoll || (params.isMultiRoll ?? false);
 
         return params;
+    }
+
+    /**
+     * Attempts to roll 3D dice if the relevant module (Dice So Nice) is installed.
+     * @param {Roll} roll The roll object to roll 3D dice for.
+     * @returns {Promise<Boolean>} Whether or not 3D dice were actually rolled.
+     */
+    static async tryRollDice3D(roll) {
+        const hasDice = roll.dice.length > 0;
+
+		if (game.dice3d && hasDice) {
+			const whisperData = CoreUtility.getWhisperData();
+			await game.dice3d.showForRoll(roll, game.user, true, whisperData.whisper, whisperData.blind || false, null, whisperData.speaker);
+		}       
+
+		return game.dice3d && hasDice;
     }
 }
 

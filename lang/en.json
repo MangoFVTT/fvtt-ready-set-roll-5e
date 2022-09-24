@@ -21,6 +21,8 @@
             "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
+            "alwaysManualDamage.name": "Always Roll Damage Manually",
+            "alwaysManualDamage.hint": "When outputting a quick roll, do not quick roll damage. Instead, show a damage button to manually roll if there is damage available.",
             "showSkillAbilities.name": "Show Ability Names for Skills",
             "showSkillAbilities.hint": "When outputting a skill quick roll, display the name of the ability used next to the skill name.",
             "rollModifierMode.name": "Roll Modifier Keys",

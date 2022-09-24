@@ -17,7 +17,8 @@ export const FIELD_TYPE = {
     ATTACK: 'attack',
     DAMAGE: 'damage',
     SAVE: 'save',
-    BLANK: 'blank'
+    MANUAL: "manual",
+    BLANK: 'blank',
 }
 
 /**
@@ -45,6 +46,8 @@ export class RenderUtility {
                 return _renderDescription(fieldData);
             case FIELD_TYPE.SAVE:
                 return _renderSaveButton(fieldData);
+            case FIELD_TYPE.MANUAL:
+                return _renderDamageButton(fieldData);
             case FIELD_TYPE.CHECK:
                 return _renderMultiRoll(fieldData);
             case FIELD_TYPE.ATTACK:
@@ -148,6 +151,14 @@ function _renderSaveButton(renderData = {}) {
         abilityLabel,
         hideDC,
         dc
+    });
+}
+
+function _renderDamageButton(renderData = {}) {
+    const { id } = renderData;
+
+    return _renderModuleTemplate(TEMPLATE.DAMAGE_BUTTON, {
+        id
     });
 }
 

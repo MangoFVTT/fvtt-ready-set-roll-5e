@@ -86,7 +86,7 @@ export class RollUtility {
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
-        if (config.consumeQuantity && !config.consumeUsage) {  
+        if (caller.id && config.consumeQuantity && !config.consumeUsage) {  
             if (caller.system.quantity === 0) {
                 ui.notifications.warn(CoreUtility.localize("DND5E.ItemNoUses", {name: caller.name})); 
                 return;  
@@ -182,7 +182,7 @@ export class RollUtility {
     static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
         
-        params = CoreUtility.ensureParams(params);
+        params = CoreUtility.ensureQuickRollParams(params);
         params.slotLevel = item.system.level;
         item.system.level = params.spellLevel ?? item.system.level;
 
@@ -267,6 +267,10 @@ export class RollUtility {
             const forcedDiceCount = params?.elvenAccuracy ? 3 : 2;
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
             const d20Additional = await new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: true });
+
+            if (params?.forceMultiRoll) {
+                await CoreUtility.tryRollDice3D(d20Additional);
+            }
 
             const d20Forced = new Die({
                 number: forcedDiceCount,
@@ -358,7 +362,7 @@ async function _getActorRoll(actor, title, roll, rollType, createMessage = true)
         return null;
     }
 
-    const params = CoreUtility.ensureParams();
+    const params = CoreUtility.ensureQuickRollParams();
     const ensuredRoll = await RollUtility.ensureMultiRoll(roll, params);
 
     const hasAdvantage = roll.hasAdvantage;
@@ -408,10 +412,11 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
     const isCrit = params?.isCrit ?? false;
     const isFumble = params?.isFumble ?? false;
     const isMultiRoll = params?.isMultiRoll ?? false;
+    const isAltRoll = params?.isAltRoll ?? false;
 
     const quickroll = new QuickRoll(
         item,
-        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll, isAltRoll },
         [
             [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
             ...itemFields
