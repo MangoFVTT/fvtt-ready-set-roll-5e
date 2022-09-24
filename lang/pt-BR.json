@@ -15,6 +15,7 @@
 			"enableDiceSounds.hint": "Ao emitir a mensagem de rolagem rápida, reproduzir o som de dados padrão do sistema.",
 			"enableOverlayButtons.name": "Habilitar Botões de Overlay",
 			"enableOverlayButtons.hint": "Ao emitir a mensagem de rolagem rápida, habilitar botões de overlay (passando o mouse por cima das rolagens) nas mensagens do chat que oferecerem funcionalidade adicional para a rolagem.",
+			"applyDamageTo.name": "Aplicar Opções de Dano",
 			"alwaysApplyCrit.name": "Sempre Aplicar Dano Crítico",
 			"alwaysApplyCrit.hint": "Usando os botões overlay de dano, sempre aplicar o dano crítico rolado (se houver). Se desativado, ao usar o botão de overlay para dano crítico será exibido um prompt permitindo que o usuário escolha.",
 			"alwaysRollMulti.name": "Sempre Rolar Múltiplos Dados",
@@ -38,9 +39,7 @@
 			"contextReplacesDamage.name": "Substituir Tipo de Dano por Contexto",
 			"contextReplacesDamage.hint": "Se um rótulo de contexto estiver no mesmo lugar que um rótulo de tipo de dano, ele o substituirá.",
 			"hideSaveDC.name": "Esconder NDs de Salvaguardas",
-			"hideSaveDC.hint": "Determina se o ND será oculto nos botões de Salvaguarda para rolagens rápidas.",
-			"hideSaveDC.replacement": "??",
-			"applyDamageTo.name": "Aplicar Opções de Dano"
+			"hideSaveDC.hint": "Determina se o ND será oculto nos botões de Salvaguarda para rolagens rápidas."
 		},
 		"messages": {
 			"error": {
@@ -111,6 +110,7 @@
 			}
 		},
 		"chat": {
+            "hide": "??",
 			"attack": "Ataque",
 			"check": "Teste",
 			"save": "Salvaguarda",
@@ -134,8 +134,7 @@
 				"title": "Aplicar Dano Crítico?",
 				"yes": "Sim",
 				"no": "Não"
-			},
-			"hide": "??"
+			}
 		}
 	}
 }
