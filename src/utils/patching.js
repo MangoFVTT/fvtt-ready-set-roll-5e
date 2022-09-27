@@ -60,6 +60,7 @@ export class PatchingUtility {
  * @private
  */
 async function _actorRollSkill(wrapper, skillId, options) {
+    options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
     const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, skillId);
 
     return ignore ? roll : RollUtility.rollSkill(this, skillId, roll);
@@ -74,6 +75,7 @@ async function _actorRollSkill(wrapper, skillId, options) {
  * @private
  */
 async function _actorRollAbilityTest(wrapper, ability, options) {
+    options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
     const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, ability);
 
     return ignore ? roll : RollUtility.rollAbilityTest(this, ability, roll);
@@ -88,6 +90,7 @@ async function _actorRollAbilityTest(wrapper, ability, options) {
  * @private
  */
 async function _actorRollAbilitySave(wrapper, ability, options) {
+    options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
     const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, ability);
 
     return ignore ? roll : RollUtility.rollAbilitySave(this, ability, roll);
