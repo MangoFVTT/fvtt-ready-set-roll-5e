@@ -94,6 +94,7 @@ export class ItemUtility {
      * @returns {Promies<Array>} A list of fields requested as specified by the roll configuration.
      */
     static async getSpecificFieldsFromItem(item, params, filter) {
+        ItemUtility.ensureFlagsOnitem(item);
         ItemUtility.ensureItemParams(item, params);
 
         const chatData = await item.getChatData();
@@ -157,6 +158,12 @@ export class ItemUtility {
         return false;
     }
 
+    /**
+     * Gets a specific context field for a given damage field index.
+     * @param {Item} item The item from which to retrieve the context value. 
+     * @param {Number} index The index of the damage field for which to get context. 
+     * @returns 
+     */
     static getDamageContextFromItem(item, index) {
         if (item?.flags[MODULE_SHORT].quickDamage) {          
             return item.flags[MODULE_SHORT].quickDamage.context[index] ?? undefined;
