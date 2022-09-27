@@ -122,6 +122,7 @@
             "healing": "Healing",
             "crit": "Crit",
             "other": "Other",
+            "effects": "Apply Effects",
             "buttons": {
                 "damageFull": "Click to apply full damage to selected token(s).",
                 "damageHalf": "Click to apply half damage to selected token(s).",
