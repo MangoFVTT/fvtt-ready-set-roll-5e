@@ -144,7 +144,7 @@ export class QuickRoll {
 			const storedData = message.getFlag("dnd5e", "itemData");
 			const Item5e = game.dnd5e.documents.Item5e;
 
-			roll.item = storedData && roll.actor ? Item5e.create(storedData) : roll.actor?.items.get(data.itemId);
+			roll.item = storedData && roll.actor ? Item5e.create(storedData, { temporary: true }) : roll.actor?.items.get(data.itemId);
 		}
 		
 		return roll;
