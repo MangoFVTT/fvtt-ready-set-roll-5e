@@ -413,11 +413,13 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
     const isFumble = params?.isFumble ?? false;
     const isMultiRoll = params?.isMultiRoll ?? false;
     const isAltRoll = params?.isAltRoll ?? false;
-    const elvenAccuracy = params?.elvenAccuracy ?? false;
+    const elvenAccuracy = params?.elvenAccuracy ?? false;    
+    const slotLevel = params?.slotLevel ?? undefined;
+    const spellLevel = params?.spellLevel ?? undefined;
 
     const quickroll = new QuickRoll(
         item,
-        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll, isAltRoll, elvenAccuracy },
+        { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll, isAltRoll, elvenAccuracy, slotLevel, spellLevel },
         [
             [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
             ...itemFields
