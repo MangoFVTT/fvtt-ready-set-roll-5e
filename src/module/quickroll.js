@@ -114,9 +114,9 @@ export class QuickRoll {
 	 * Creates a QuickRoll instance from data stored within chat card flags.
 	 * Used when needing to recreate chat card module data for existing chat messages.
 	 * @param {ChatMessage} message The chat card message data to retrieve a roll instance from.
-	 * @returns {QuickRoll} A quick roll instance derived from stored message data.
+	 * @returns {Promise<QuickRoll>} A quick roll instance derived from stored message data.
 	 */
-	static fromMessage(message) {
+	static async fromMessage(message) {
 		const data = message.flags[`${MODULE_SHORT}`];
 
 		// Rolls in fields are unpacked and must be recreated.
@@ -144,7 +144,7 @@ export class QuickRoll {
 			const storedData = message.getFlag("dnd5e", "itemData");
 			const Item5e = game.dnd5e.documents.Item5e;
 
-			roll.item = storedData && roll.actor ? Item5e.create(storedData, { temporary: true }) : roll.actor?.items.get(data.itemId);
+			roll.item = storedData && roll.actor ? await Item5e.create(storedData, { parent: roll.actor, temporary: true }) : roll.actor?.items.get(data.itemId);
 		}
 		
 		return roll;
