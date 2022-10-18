@@ -34,6 +34,7 @@ The following modules have been verified as compatible from the specified module
 - [Tidy5e Sheet](https://github.com/sdenec/tidy5e-sheet) <sup>(1.2.0+)</sup>
 - [Dynamic Active Effects](https://gitlab.com/tposney/dae) <sup>(1.3.1+)</sup>
 - [Build-a-Bonus](https://github.com/krbz999/babonus) <sup>(1.3.2+)</sup>
+- [Combat Utility Belt](https://github.com/death-save/combat-utility-belt) <sup>(1.3.11+)</sup>
 
 ## Implemented Features
 

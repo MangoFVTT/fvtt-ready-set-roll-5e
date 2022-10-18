@@ -17,7 +17,7 @@
 			"enableOverlayButtons.hint": "Ao emitir a mensagem de rolagem rápida, habilitar botões de overlay (passando o mouse por cima das rolagens) nas mensagens do chat que oferecerem funcionalidade adicional para a rolagem.",
 			"applyDamageTo.name": "Aplicar Opções de Dano",
 			"alwaysApplyCrit.name": "Sempre Aplicar Dano Crítico",
-			"alwaysApplyCrit.hint": "Usando os botões overlay de dano, sempre aplicar o dano crítico rolado (se houver). Se desativado, ao usar o botão de overlay para dano crítico será exibido um prompt permitindo que o usuário escolha.",
+			"alwaysApplyCrit.hint": "Usando os botões de overlay de dano, sempre aplicar o dano crítico rolado (se houver). Se desativado, ao usar o botão de overlay para dano crítico será exibido um prompt permitindo que o usuário escolha.",
 			"alwaysRollMulti.name": "Sempre Rolar Múltiplos Dados",
 			"alwaysRollMulti.hint": "Ao emitir a mensagem de rolagem rápida, sempre rolar dois dados (ou três para Precisão Élfica) até quando vantagem/desvantagem não se aplica.",
 			"showSkillAbilities.name": "Mostrar Nome do Atributo para Perícias",
@@ -38,8 +38,11 @@
 			"contextReplacesTitle.hint": "Se um rótulo de contexto estiver no mesmo lugar que o rótulo do título de uma rolagem de dano, como \"Dano\" ou \"Cura\", ele o substituirá.",
 			"contextReplacesDamage.name": "Substituir Tipo de Dano por Contexto",
 			"contextReplacesDamage.hint": "Se um rótulo de contexto estiver no mesmo lugar que um rótulo de tipo de dano, ele o substituirá.",
-			"hideSaveDC.name": "Esconder NDs de Salvaguardas",
-			"hideSaveDC.hint": "Determina se o ND será oculto nos botões de Salvaguarda para rolagens rápidas."
+			"hideSaveDC.name": "Esconder CDs de Salvaguardas",
+			"hideSaveDC.hint": "Determina se o CD será oculto nos botões de Salvaguarda para rolagens rápidas.",
+			"alwaysManualDamage.name": "Sempre Rolar Dano Manualmente",
+			"alwaysManualDamage.hint": "Ao emitir uma rolagem rápida, não rolar automaticamente o dano. Em vez disso, mostre um botão de dano para rolar manualmente se houver dano disponível.",
+			"applyDamageTo.hint": "Determina em quais tokens o dano é aplicado ao aplicar dano pelos botões de overlay no chat."
 		},
 		"messages": {
 			"error": {
@@ -49,7 +52,7 @@
 				"incorrectRollType": "Não é possível rolar uma rolagem de {function} para o tipo de rolagem '{type}'.",
 				"incorrectFieldType": "Não é possível aprimorar uma rolagem do tipo {type} para uma rolagem múltipla.",
 				"incorrectTargetState": "Não é possível aprimorar uma rolagem para o estado alvo {state} porque não é um estado válido (vantagem ou desvantagem).",
-				"rollIsNullOrUndefined": "O rolo dado é nulo ou indefinido."
+				"rollIsNullOrUndefined": "A rolagem fornecida é nula ou indefinida."
 			},
 			"warning": {
 				"emptyDamageField": "Um ou mais campos de dano neste item estão vazios! Para rolar dano, certifique-se de que todos os campos de dano estejam preenchidos."
@@ -68,7 +71,7 @@
 			},
 			"hideSaveDC": {
 				"0": "Nunca",
-				"1": "Somente NPJs",
+				"1": "Somente PNJs",
 				"2": "Sempre"
 			},
 			"apply": {
@@ -95,7 +98,7 @@
 					"footer": "Propriedades",
 					"attack": "Ataque",
 					"template": "Posicionar Modelo de Medição",
-					"save": "ND da Salvaguarda",
+					"save": "CD da Salvaguarda",
 					"other": "Outro",
 					"check": "Teste",
 					"quantity": "Quantidade",
@@ -110,11 +113,11 @@
 			}
 		},
 		"chat": {
-            "hide": "??",
+			"hide": "??",
 			"attack": "Ataque",
 			"check": "Teste",
 			"save": "Salvaguarda",
-			"saveDC": "Salvaguarda vs ND",
+			"saveDC": "Salvaguarda contra CD",
 			"damage": "Dano",
 			"healing": "Cura",
 			"crit": "Crít.",

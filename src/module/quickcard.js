@@ -29,8 +29,8 @@ export class QuickCard {
 	 * @param {ChatMessage} message The chat message to inflate.
 	 * @param {JQuery} html The object data for the chat message.
 	 */
-    updateBinding(message, html) {
-        this.roll = QuickRoll.fromMessage(message);
+    async updateBinding(message, html) {
+        this.roll = await QuickRoll.fromMessage(message);
         this.speaker = game.actors.get(message.speaker.actor);
         this.id = message.id;
 
