@@ -15,8 +15,10 @@ export const SETTING_NAMES = {
     D20_ICONS_ENABLED: "enableD20Icons",
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
+    APPLY_EFFECTS_ENABLED: "enableApplyEffects",
     ALWAYS_APPLY_CRIT: "alwaysApplyCrit",
     APPLY_DAMAGE_TO: "applyDamageTo",
+    APPLY_EFFECTS_TO: "applyEffectsTo",
     PLACEMENT_ROLL_TITLE: "placementRollTitle",
     PLACEMENT_DAMAGE_TITLE: "placementDamageTitle",
     PLACEMENT_DAMAGE_CONTEXT: "placementDamageContext",
@@ -122,6 +124,32 @@ export class SettingsUtility {
                 2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`)
             }
         });
+        
+        if (game.modules.get("dae")?.active) {
+            game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_ENABLED, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.hint`),
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: false
+            });        
+            
+            game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_TO, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_TO}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_TO}.hint`),
+                scope: "world",
+                config: true,
+                type: Number,
+                default: 0,
+                requiresReload: true,
+                choices: {
+                    0: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.0`),
+                    1: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.1`),
+                    2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`)
+                }
+            });
+        }
 
         game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.name`),

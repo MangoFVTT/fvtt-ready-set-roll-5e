@@ -17,6 +17,10 @@
             "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
             "applyDamageTo.name": "Apply Damage Options",
             "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons.",
+            "enableApplyEffects.name": "Enable Apply Effects Button",
+            "enableApplyEffects.hint": "When outputting a quick roll, show a button allowing the transfer of item effects to actors.",
+            "applyEffectsTo.name": "Apply Effects Options",
+            "applyEffectsTo.hint": "Determines which tokens effects are applied to when applying effects via the effects chat button.",
             "alwaysApplyCrit.name": "Always Apply Critical Damage",
             "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
@@ -90,6 +94,7 @@
                 "subsection": {
                     "main": "Main Content",
                     "damage": "Damage Rolls",
+                    "effects": "Effects",
                     "consume": "Consumables"
                 },
                 "options": {
