@@ -433,7 +433,7 @@ async function _addFieldDamage(fields, item, params) {
 
         let damageTermGroups = [];
         item.system.damage.parts.forEach((part, i) => {
-            const tmpRoll = new CONFIG.Dice.DamageRoll(part[0], item.getRollData());
+            const tmpRoll = new CONFIG.Dice.DamageRoll(part[0], item.getRollData()).evaluate({ async: false });
             const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
             roll.terms.shift();
 
