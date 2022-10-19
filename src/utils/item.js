@@ -54,12 +54,8 @@ export class ItemUtility {
             fields.push([FIELD_TYPE.BLANK, { display: false }]);
         }
 
-        if (true) {
-            _addFieldEffects(fields, item);
-        }
-
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", params.isAltRoll)) {
-            _addFieldSave(fields, item);
+            _addFieldSaveButton(fields, item);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", params.isAltRoll)) {
@@ -80,6 +76,10 @@ export class ItemUtility {
 
         if (ItemUtility.getFlagValueFromItem(item, "quickOther", params.isAltRoll)) {
             await _addFieldOtherFormula(fields, item);
+        }
+
+        if (params.effectFlags) {
+            _addFieldEffectsButton(fields, item);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickFooter", params.isAltRoll)) {
@@ -205,6 +205,7 @@ export class ItemUtility {
         params = params ?? {};
         params.isAltRoll = params?.isAltRoll ?? false;
         params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", params.isAltRoll);
+        params.effectFlags = ItemUtility.getFlagValueFromItem(item, "quickEffects", params.isAltRoll);
         params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", params.isAltRoll);
         params.elvenAccuracy = (item.actor?.flags?.dnd5e?.elvenAccuracy && 
             CONFIG.DND5E.characterFlags.elvenAccuracy.abilities.includes(item.abilityMod)) || undefined
@@ -357,22 +358,12 @@ function _addFieldFooter(fields, chatData) {
 }
 
 /**
- * Adds a render field for apply active effects button.
- * @param {Array} fields The current array of fields to add to. 
- * @param {Item} item The item from which to derive the field.
- * @private
- */
- function _addFieldEffects(fields, item) {
-    console.log(item);
-}
-
-/**
  * Adds a render field for item save DC button.
  * @param {Array} fields The current array of fields to add to. 
  * @param {Item} item The item from which to derive the field.
  * @private
  */
-function _addFieldSave(fields, item) {
+function _addFieldSaveButton(fields, item) {
     if (item.hasSave) {
         //const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
 
@@ -397,6 +388,22 @@ function _addFieldDamageButton(fields, item) {
     if (item.hasDamage) {
         fields.push([
             FIELD_TYPE.MANUAL,
+            {
+            }
+        ]);
+    }
+}
+
+/**
+ * Adds a render field for apply active effects button.
+ * @param {Array} fields The current array of fields to add to. 
+ * @param {Item} item The item from which to derive the field.
+ * @private
+ */
+ function _addFieldEffectsButton(fields, item) {
+    if (item.hasEffects) {
+        fields.push([
+            FIELD_TYPE.EFFECTS,
             {
             }
         ]);
