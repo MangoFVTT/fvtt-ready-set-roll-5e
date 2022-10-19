@@ -94,7 +94,7 @@
                 "subsection": {
                     "main": "Main Content",
                     "damage": "Damage Rolls",
-                    "effects": "Effects",
+                    "effects": "Active Effects",
                     "consume": "Consumables"
                 },
                 "options": {

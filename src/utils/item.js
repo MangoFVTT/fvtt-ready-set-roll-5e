@@ -54,6 +54,10 @@ export class ItemUtility {
             fields.push([FIELD_TYPE.BLANK, { display: false }]);
         }
 
+        if (true) {
+            _addFieldEffects(fields, item);
+        }
+
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", params.isAltRoll)) {
             _addFieldSave(fields, item);
         }
@@ -120,7 +124,7 @@ export class ItemUtility {
      */
     static getRollConfigFromItem(item, isAltRoll = false) {
         ItemUtility.ensureFlagsOnitem(item);
-        ItemUtility.ensureConsumePropertiesOnItem(item);
+        ItemUtility.ensurePropertiesOnItem(item);
 
         const config = {}
 
@@ -177,7 +181,7 @@ export class ItemUtility {
      * These booleans give a quick indication on if the item has that specific consume property.
      * @param {Item} item The item on which to ensure consume properties exist.
      */
-    static ensureConsumePropertiesOnItem(item) {
+    static ensurePropertiesOnItem(item) {
         if (item) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);
@@ -187,6 +191,8 @@ export class ItemUtility {
             item.hasResource = !!(item.system.consume?.target);
             // For abilities with "Action Recharge" configured
             item.hasRecharge = !!(item.system.recharge?.value);
+            // For items with active effects (requires DAE to work, so check for module availability here)
+            item.hasEffects = window.DAE && item.collections.effects.filter((effect) => !effect.disabled).length > 0;
         }
     }
 
@@ -237,12 +243,12 @@ export class ItemUtility {
         let moduleFlags = item.flags[MODULE_SHORT] ?? {};
         moduleFlags = foundry.utils.mergeObject(baseFlags, moduleFlags ?? {});
 
-        // If quickDamage flags should exist, update them based on which damage formulae are available
+        // If quick damage flags should exist, update them based on which damage formulae are available
         if (CONFIG[MODULE_SHORT].flags[item.type].quickDamage) {
             let newQuickDamageValues = [];
             let newQuickDamageAltValues = [];
 
-            // Make quickDamage flags if they don't exist
+            // Make quick damage flags if they don't exist
             if (!moduleFlags.quickDamage) {
                 moduleFlags.quickDamage = { type: "Array", value: [], altValue: [] };
             }
@@ -256,9 +262,32 @@ export class ItemUtility {
             moduleFlags.quickDamage.altValue = newQuickDamageAltValues;
         }
 
-        item.flags[MODULE_SHORT] = moduleFlags;        
+        // If quick effects flags should exist, update them based on which effects are active
+        if (CONFIG[MODULE_SHORT].flags[item.type].quickEffects) {
+            let newQuickEffectValues = [];
+            let newQuickEffectAltValues = [];
+            let newQuickEffectContexts = [];
+
+            if (!moduleFlags.quickEffects) {
+                moduleFlags.quickEffects = { type: "Array", value: [], altValue: [] };
+            }
+
+            const activeEffects = item.collections.effects.filter((effect) => !effect.disabled);
+
+            for (let i = 0; i < activeEffects.length; i++) {
+                newQuickEffectValues[i] = moduleFlags.quickEffects.value[i] ?? true;
+                newQuickEffectAltValues[i] = moduleFlags.quickEffects.altValue[i] ?? true;
+                newQuickEffectContexts[i] = activeEffects[i].label;
+            }
+
+            moduleFlags.quickEffects.value = newQuickEffectValues;
+            moduleFlags.quickEffects.altValue = newQuickEffectAltValues;
+            moduleFlags.quickEffects.context = newQuickEffectContexts;
+        }
+
+        item.flags[MODULE_SHORT] = moduleFlags;
         
-        ItemUtility.ensureConsumePropertiesOnItem(item);
+        ItemUtility.ensurePropertiesOnItem(item);
     }
 }
 
@@ -325,6 +354,16 @@ function _addFieldFooter(fields, chatData) {
             properties: chatData.properties
         }
     ]);
+}
+
+/**
+ * Adds a render field for apply active effects button.
+ * @param {Array} fields The current array of fields to add to. 
+ * @param {Item} item The item from which to derive the field.
+ * @private
+ */
+ function _addFieldEffects(fields, item) {
+    console.log(item);
 }
 
 /**
