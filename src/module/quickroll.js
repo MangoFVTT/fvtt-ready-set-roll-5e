@@ -136,7 +136,10 @@ export class QuickRoll {
 
 		roll.messageId = message.id
 
-		if (data?.actorId) {
+		if (data?.tokenId) {
+			const token = await fromUuid(data.tokenId);
+			roll.actor = token?.actor;
+		} else if (data?.actorId) {
 			roll.actor = game.actors.get(data.actorId);
 		}
 
