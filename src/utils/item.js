@@ -432,6 +432,7 @@ async function _addFieldDamage(fields, item, params) {
         });
 
         let damageTermGroups = [];
+        let damageContextGroups = [];
         item.system.damage.parts.forEach((part, i) => {
             const tmpRoll = new CONFIG.Dice.DamageRoll(part[0], item.getRollData()).evaluate({ async: false });
             const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
@@ -439,6 +440,7 @@ async function _addFieldDamage(fields, item, params) {
 
             if (params?.damageFlags[i] ?? true) {
                 damageTermGroups.push({ type: part[1], terms: partTerms});
+                damageContextGroups.push(ItemUtility.getDamageContextFromItem(item, i));
             }
         });
 
@@ -462,7 +464,7 @@ async function _addFieldDamage(fields, item, params) {
                     damageType: group.type,
                     baseRoll,
                     critRoll,
-                    context: ItemUtility.getDamageContextFromItem(item, i),
+                    context: damageContextGroups[i],
                     versatile: i !== 0 ? false : params?.versatile ?? false
                 }
             ]);
