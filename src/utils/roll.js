@@ -86,16 +86,16 @@ export class RollUtility {
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
-        if (caller.id && config.consumeQuantity && !config.consumeUsage) {  
+        if (caller.id && config.consumeQuantity && !config.consumeUsage) {
             if (caller.system.quantity === 0) {
-                ui.notifications.warn(CoreUtility.localize("DND5E.ItemNoUses", {name: caller.name})); 
-                return;  
+                ui.notifications.warn(CoreUtility.localize("SW5E.ItemNoUses", {name: caller.name}));
+                return;
             }
 
             config.consumeQuantity = false;
 
             const itemUpdates = {};
-			itemUpdates["system.quantity"] = Math.max(0, caller.system.quantity - 1);            
+			itemUpdates["system.quantity"] = Math.max(0, caller.system.quantity - 1);
             await caller.update(itemUpdates);
         }
 
@@ -110,7 +110,7 @@ export class RollUtility {
 
     /**
      * Rolls a skill check from a given actor.
-     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {Actor} actor The actor object from which the roll is being called.
      * @param {String} skillId The id of the skill being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
@@ -118,22 +118,22 @@ export class RollUtility {
     static async rollSkill(actor, skillId, roll) {
         LogUtility.log(`Quick rolling skill check from Actor '${actor.name}'.`);
 
-        if (!(skillId in CONFIG.DND5E.skills)) {
+        if (!(skillId in CONFIG.SW5E.skills)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Skill", label: skillId, dictionary: "CONFIG.DND5E.skills" }));
+                { type: "Skill", label: skillId, dictionary: "CONFIG.SW5E.skills" }));
             return null;
 		}
 
-        const skill = CONFIG.DND5E.skills[skillId];
+        const skill = CONFIG.SW5E.skills[skillId];
         let title = CoreUtility.localize(skill.label);
-        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[skill.ability]})` : "";
+        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.SW5E.abilities[skill.ability]})` : "";
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
-    }    
+    }
 
     /**
      * Rolls an ability test from a given actor.
-     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {Actor} actor The actor object from which the roll is being called.
      * @param {String} ability The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
@@ -141,20 +141,20 @@ export class RollUtility {
     static async rollAbilityTest(actor, ability, roll) {
         LogUtility.log(`Quick rolling ability test from Actor '${actor.name}'.`);
 
-        if (!(ability in CONFIG.DND5E.abilities)) {
+        if (!(ability in CONFIG.SW5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: ability, dictionary: "CONFIG.SW5E.abilities" }));
             return null;
 		}
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.SW5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
     }
 
     /**
      * Rolls an ability save from a given actor.
-     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {Actor} actor The actor object from which the roll is being called.
      * @param {String} ability The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
@@ -162,13 +162,13 @@ export class RollUtility {
     static async rollAbilitySave(actor, ability, roll) {
         LogUtility.log(`Quick rolling ability save from Actor '${actor.name}'.`);
 
-        if (!(ability in CONFIG.DND5E.abilities)) {
+        if (!(ability in CONFIG.SW5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: ability, dictionary: "CONFIG.SW5E.abilities" }));
             return null;
         }
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.SW5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
     }
@@ -181,7 +181,7 @@ export class RollUtility {
      */
     static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
-        
+
         params = CoreUtility.ensureQuickRollParams(params);
         params.slotLevel = item.system.level;
         item.system.level = params.spellLevel ?? item.system.level;
@@ -199,7 +199,7 @@ export class RollUtility {
     static getCritTypeForDie(die, options = {}) {
         if (!die) return null;
 
-        const { crit, fumble } = _countCritsFumbles(die, options)		
+        const { crit, fumble } = _countCritsFumbles(die, options)
 
         return _getCritResult(crit, fumble);
     }
@@ -217,7 +217,7 @@ export class RollUtility {
 		let totalCrit = 0;
 		let totalFumble = 0;
 
-        for (const die of roll.dice) {			
+        for (const die of roll.dice) {
             const { crit, fumble } = _countCritsFumbles(die, options)
             totalCrit += crit;
             totalFumble += fumble;
@@ -241,7 +241,7 @@ export class RollUtility {
 
         params.forceMultiRoll = true;
         const upgradedRoll = await RollUtility.ensureMultiRoll(roll, params);
-        
+
         const d20BaseTerm = upgradedRoll.terms.find(d => d.faces === 20);
         d20BaseTerm.keep(targetState);
         d20BaseTerm.modifiers.push(targetState);
@@ -306,7 +306,7 @@ export class RollUtility {
         const critTerms = [];
         baseTerms.forEach(term => {
             let critTerm = RollTerm.fromData(term);
-            
+
             if (critTerm instanceof NumericTerm) {
                 critTerm = options.multiplyNumeric ? critTerm : new NumericTerm({ number: 0 }).evaluate({ async: false });
             }
@@ -413,7 +413,7 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
     const isFumble = params?.isFumble ?? false;
     const isMultiRoll = params?.isMultiRoll ?? false;
     const isAltRoll = params?.isAltRoll ?? false;
-    const elvenAccuracy = params?.elvenAccuracy ?? false;    
+    const elvenAccuracy = params?.elvenAccuracy ?? false;
     const slotLevel = params?.slotLevel ?? undefined;
     const spellLevel = params?.spellLevel ?? undefined;
 
@@ -435,11 +435,11 @@ function _getCritResult(crit, fumble)
     if (crit > 0 && fumble > 0) {
         return CRIT_TYPE.MIXED;
     }
-    
+
     if (crit > 0) {
         return CRIT_TYPE.SUCCESS;
     }
-    
+
     if (fumble > 0) {
         return CRIT_TYPE.FAILURE;
     }

@@ -1,5 +1,5 @@
 import { CoreUtility } from "../utils/core.js";
-import { HOOKS_DND5E, HOOKS_MODULE } from "../utils/hooks.js";
+import { HOOKS_SW5E, HOOKS_MODULE } from "../utils/hooks.js";
 import { ItemUtility, ITEM_TYPE } from "../utils/item.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
@@ -22,8 +22,8 @@ export class QuickRoll {
 
 			if (item) {
 				this.item = item;
-			} 
-			
+			}
+
 			if (actor) {
 				this.actor = actor;
 			}
@@ -144,12 +144,12 @@ export class QuickRoll {
 		}
 
 		if (data?.itemId) {
-			const storedData = message.getFlag("dnd5e", "itemData");
-			const Item5e = game.dnd5e.documents.Item5e;
+			const storedData = message.getFlag("sw5e", "itemData");
+			const Item5e = game.sw5e.documents.Item5e;
 
 			roll.item = storedData && roll.actor ? await Item5e.create(storedData, { parent: roll.actor, temporary: true }) : roll.actor?.items.get(data.itemId);
 		}
-		
+
 		return roll;
 	}
 
@@ -176,7 +176,7 @@ export class QuickRoll {
 		}
 
 		if (this.item) {
-			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
+			Hooks.callAll(HOOKS_SW5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
 		}
 
 		const card = createMessage ? await ChatMessage.create(chatData) : chatData;
@@ -186,7 +186,7 @@ export class QuickRoll {
 		}
 
 		if (this.item) {
-			Hooks.callAll(HOOKS_DND5E.DISPLAY_CARD, item, card);
+			Hooks.callAll(HOOKS_SW5E.DISPLAY_CARD, item, card);
 		}
 
 		return card;
@@ -203,16 +203,16 @@ export class QuickRoll {
 			...CoreUtility.getRollSound()
 		};
 
-		Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, this.item, update);
+		Hooks.callAll(HOOKS_SWD5E.PRE_DISPLAY_CARD, this.item, update);
 
 		return update;
-	}		
+	}
 
 	/**
 	 * Upgrades a specific roll in one of the roll fields to a multi roll if possible.
-	 * @param {Number} targetId The index of the roll field to upgrade. 
+	 * @param {Number} targetId The index of the roll field to upgrade.
 	 * @param {ROLL_STATE} targetState The target state of the upgraded multi roll (advantage or disadvantage);
-	 * @returns {Boolean} Whether or not the ugprade was succesful. 
+	 * @returns {Boolean} Whether or not the ugprade was succesful.
 	 */
 	async upgradeToMultiRoll(targetId, targetState) {
 		const targetField = this.fields[targetId];
@@ -235,7 +235,7 @@ export class QuickRoll {
 	/**
 	 * Upgrades a specific damage roll in one of the damage fields to a crit if possible.
 	 * @param {Number} targetId The index of the damage field to upgrade.
-	 * @returns {Boolean} Whether or not the ugprade was succesful. 
+	 * @returns {Boolean} Whether or not the ugprade was succesful.
 	 */
 	async upgradeToCrit(targetId) {
 		const targetField = this.fields[targetId];
@@ -250,12 +250,12 @@ export class QuickRoll {
 		}
 
 		const options = {
-			multiplyNumeric: game.settings.get("dnd5e", "criticalDamageModifiers"),
-			powerfulCritical: game.settings.get("dnd5e", "criticalDamageMaxDice"),
-			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0,
+			multiplyNumeric: game.settings.get("sw5e", "criticalDamageModifiers"),
+			powerfulCritical: game.settings.get("sw5e", "criticalDamageMaxDice"),
+			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("sw5e", "meleeCriticalDamageDice") ?? 0) : 0,
 			criticalBonusDamage: this.item.system.critical.damage ?? ""
 		}
-		
+
 		const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE);
 		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), this.item.getRollData(), options);
 
@@ -268,7 +268,7 @@ export class QuickRoll {
 	 * Upgrades a quick roll that has damage to one with damage actually rolled.
 	 * Used for manually rolling damage via chat buttons, if the setting is enabled.
 	 * @param {Number} targetId The index of the manual damage button field.
-	 * @returns {Boolean} Whether or not the ugprade was succesful. 
+	 * @returns {Boolean} Whether or not the ugprade was succesful.
 	 */
 	async upgradeToDamageRoll(targetId) {
 		const targetField = this.fields[targetId];
@@ -279,14 +279,14 @@ export class QuickRoll {
 
 		const newFields = await ItemUtility.getSpecificFieldsFromItem(this.item, this.params, [ FIELD_TYPE.DAMAGE ])
 
-		this.fields.splice(targetId, 1, ...newFields);	
-		this.processed = false;	
+		this.fields.splice(targetId, 1, ...newFields);
+		this.processed = false;
 
 		const promises = [];
 		newFields.forEach(field => {
 			if (field[1].baseRoll) {
 				promises.push(Promise.resolve(CoreUtility.tryRollDice3D(field[1].baseRoll)));
-			}			
+			}
 
 			if (field[1].critRoll) {
 				promises.push(Promise.resolve(CoreUtility.tryRollDice3D(field[1].critRoll)));
@@ -353,19 +353,19 @@ export class QuickRoll {
 				params: this.params,
 				fields: this.fields
 			}
-		};		
+		};
 
 		if (this.fields.some(f => f[0] === ROLL_TYPE.ATTACK)) {
-			flags["dnd5e.roll.type"] = ROLL_TYPE.ATTACK;
+			flags["sw5e.roll.type"] = ROLL_TYPE.ATTACK;
 		}
 
 		if (this.itemId) {
-			flags["dnd5e.roll.itemId"] = this.itemId;
+			flags["sw5e.roll.itemId"] = this.itemId;
 		}
 
 		// If the item was destroyed in the process of displaying its card, embed the item data in the chat message.
 		if (this.item?.type === ITEM_TYPE.CONSUMABLE && !this.actor?.items?.has(this.itemId)) {
-			flags["dnd5e.itemData"] = this.item;
+			flags["sw5e.itemData"] = this.item;
 		}
 
 		// Allow the roll to popout
@@ -382,11 +382,11 @@ export class QuickRoll {
 	 */
 	_getChatMessageRolls() {
 		const rolls = [];
-	
+
         if (this.fields.length === 0) {
             return rolls;
         }
-		
+
 		// If we need to add damage that has no die rolls in it, we have to add a safety die with no value.
 		// Otherwise, when there is a d20 present, dnd5e will attempt to interpret all this as a d20 roll and error.
 		const safety = new Die({ number: 1, faces: 0 }).evaluate({ async: false });
@@ -395,17 +395,17 @@ export class QuickRoll {
 
 		// Concatenate damage rolls into a single roll (for apply damage context menu).
         const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE).map(f => f[1]);
-		
+
 		damageFields.forEach(field => {
 			if (field.baseRoll) {
 				terms.push(plus);
 				terms.push(...field.baseRoll.terms);
-			}		
+			}
 
 			if (field.critRoll) {
 				terms.push(plus);
 				terms.push(...field.critRoll.terms);
-			}			
+			}
 		});
 
 		// Damage rolls must be added first into index 0 for applyChatCardDamage() to work.
@@ -426,4 +426,3 @@ export class QuickRoll {
 		return rolls;
 	}
 }
-

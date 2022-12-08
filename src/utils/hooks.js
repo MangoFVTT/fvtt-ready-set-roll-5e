@@ -15,10 +15,10 @@ export const HOOKS_CORE = {
     RENDER_CHAT_MSG: "renderChatMessage"
 }
 
-export const HOOKS_DND5E = {
-    USE_ITEM: "dnd5e.useItem",
-    PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
-    DISPLAY_CARD: "dnd5e.displayCard",
+export const HOOKS_SW5E = {
+    USE_ITEM: "sw5e.useItem",
+    PRE_DISPLAY_CARD: "SW5e.preDisplayCard",
+    DISPLAY_CARD: "SW5e.displayCard",
     RENDER_ITEM_SHEET: "renderItemSheet5e"
 }
 
@@ -41,9 +41,9 @@ export class HooksUtility {
 
             if (!libWrapper.is_fallback && !libWrapper.version_at_least?.(1, 4, 0)) {
                 Hooks.once(HOOKS_CORE.READY, () => {
-                    const version = "v1.4.0.0";                    
+                    const version = "v1.4.0.0";
                     LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.libWrapperMinVersion`, { version }));
-                });        
+                });
                 return;
             }
 
@@ -51,7 +51,7 @@ export class HooksUtility {
             PatchingUtility.patchActors();
             PatchingUtility.patchItems();
             PatchingUtility.patchItemSheets();
-                        
+
             HooksUtility.registerChatHooks();
             HooksUtility.registerTestHooks();
         });
@@ -60,15 +60,15 @@ export class HooksUtility {
             Hooks.call(HOOKS_MODULE.LOADED);
         });
 
-        Hooks.on(HOOKS_MODULE.LOADED, () => {          
+        Hooks.on(HOOKS_MODULE.LOADED, () => {
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
             CONFIG[MODULE_SHORT].combinedDamageTypes = foundry.utils.mergeObject(
-                foundry.utils.duplicate(CONFIG.DND5E.damageTypes),
-                foundry.utils.duplicate(CONFIG.DND5E.healingTypes),
+                foundry.utils.duplicate(CONFIG.SW5E.damageTypes),
+                foundry.utils.duplicate(CONFIG.SW5E.healingTypes),
                 { recursive: false }
             );
 
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
                 HooksUtility.registerSheetHooks();
                 HooksUtility.registerItemHooks();
             }
@@ -86,7 +86,7 @@ export class HooksUtility {
             ItemUtility.ensureFlagsOnitem(item);
         });
 
-        Hooks.on(HOOKS_DND5E.USE_ITEM, (item, config, options) => {
+        Hooks.on(HOOKS_SW5E.USE_ITEM, (item, config, options) => {
             if (!options?.ignore) {
                 RollUtility.rollItem(item, { ...config, ...options });
             }
@@ -98,7 +98,7 @@ export class HooksUtility {
      */
     static registerChatHooks() {
         Hooks.on(HOOKS_CORE.RENDER_CHAT_MSG, (message, html, data) => {
-            ChatUtility.bindChatCard(message, html);           
+            ChatUtility.bindChatCard(message, html);
         });
     }
 
@@ -106,7 +106,7 @@ export class HooksUtility {
      * Register sheet specific hooks for module functionality.
      */
     static registerSheetHooks() {
-        Hooks.on(HOOKS_DND5E.RENDER_ITEM_SHEET, (app, html, data) => {
+        Hooks.on(HOOKS_SW5E.RENDER_ITEM_SHEET, (app, html, data) => {
             SheetUtility.setAutoHeightOnSheet(app);
             SheetUtility.addModuleContentToSheet(app, html);
         });

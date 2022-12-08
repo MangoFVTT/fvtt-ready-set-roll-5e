@@ -1,7 +1,7 @@
 /**
  * String identifier for the module used throughout other scripts.
  */
-export const MODULE_NAME = "ready-set-roll-5e";
+export const MODULE_NAME = "ready-set-roll-sw5e";
 
 /**
  * Full title string of the module.

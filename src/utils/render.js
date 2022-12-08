@@ -29,7 +29,7 @@ export class RenderUtility {
      * Handles individual field types and renders the appropriate template.
      * @param {Object} field Data and type for the requested field.
      * @param {Object} metadata Additional metadata for rendering.
-     * @returns {Promise<String>|String} The rendered html data for the field. 
+     * @returns {Promise<String>|String} The rendered html data for the field.
      */
     static async renderFromField(field, metadata) {
         let [fieldType, fieldData] = field;
@@ -81,7 +81,7 @@ export class RenderUtility {
      */
     static renderOverlayDamage() {
         return _renderModuleTemplate(TEMPLATE.OVERLAY_DAMAGE, {});
-    }    
+    }
 
      /**
      * Renders overlay buttons for retroactively applying advantage/disadvantage/crit to a chat card.
@@ -109,11 +109,11 @@ function _renderHeader(renderData = {}) {
     let title = renderData.title ?? item?.name ?? actor?.name ?? '';
 
     if (item?.type === ITEM_TYPE.SPELL && slotLevel && slotLevel != spellLevel) {
-        title += ` (${CONFIG.DND5E.spellLevels[slotLevel]})`;
+        title += ` (${CONFIG.SW5E.spellLevels[slotLevel]})`;
     }
 
     if (item?.type === ITEM_TYPE.TOOL) {
-        title += ` (${CONFIG.DND5E.abilities[item.system.ability]})`;
+        title += ` (${CONFIG.SW5E.abilities[item.system.ability]})`;
     }
 
     return _renderModuleTemplate(TEMPLATE.HEADER, {
@@ -141,9 +141,9 @@ function _renderDescription(renderData = {}) {
 }
 
 function _renderSaveButton(renderData = {}) {
-    const { id, ability, dc, hideDC } = renderData;    
+    const { id, ability, dc, hideDC } = renderData;
 
-    const abilityLabel = CONFIG.DND5E.abilities[ability];
+    const abilityLabel = CONFIG.SW5E.abilities[ability];
 
     return _renderModuleTemplate(TEMPLATE.SAVE_BUTTON, {
         id,
@@ -179,11 +179,11 @@ async function _renderMultiRoll(renderData = {}) {
             i++;
             tmpResults.push(d20Rolls.results[i]);
         }
-        
+
         // Die terms must have active results or the base roll total of the generated roll is 0.
         // This does not apply to dice that have been rerolled (unless they are replaced by a fixer value eg. for reliable talent).
         tmpResults.forEach(r => {
-            r.active = !(r.rerolled && !r.count) ?? true; 
+            r.active = !(r.rerolled && !r.count) ?? true;
         });
 
         const baseTerm = new Die({
@@ -232,7 +232,7 @@ async function _renderAttackRoll(renderData = {}) {
 
 async function _renderDamageRoll(renderData = {}) {
     const { id, damageType, baseRoll, critRoll, context, versatile } = renderData;
-    
+
     // If there's no content in the damage roll, silently end rendering the field.
     if (baseRoll?.terms.length === 0 && critRoll?.terms.length === 0) return;
 
@@ -252,12 +252,12 @@ async function _renderDamageRoll(renderData = {}) {
 
     let damagePrefix = "";
     let pushedTitle = false;
-    
-    if (CONFIG.DND5E.healingTypes[damageType]) {
-        damagePrefix += CONFIG.DND5E.healingTypes[damageType];
-    } else if (CONFIG.DND5E.damageTypes[damageType]) {
+
+    if (CONFIG.SW5E.healingTypes[damageType]) {
+        damagePrefix += CONFIG.SW5E.healingTypes[damageType];
+    } else if (CONFIG.SW5E.damageTypes[damageType]) {
         damagePrefix += CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.DAMAGE}`);
-        damagePrefix += versatile ? ` [${CONFIG.DND5E.weaponProperties.ver}]` : "";
+        damagePrefix += versatile ? ` [${CONFIG.SW5E.weaponProperties.ver}]` : "";
     } else if (damageType === ROLL_TYPE.OTHER) {
         damagePrefix += CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.OTHER}`);
     }
@@ -276,7 +276,7 @@ async function _renderDamageRoll(renderData = {}) {
         }
     }
 
-    const damageString = CONFIG.DND5E.damageTypes[damageType] ?? "";
+    const damageString = CONFIG.SW5E.damageTypes[damageType] ?? "";
     if (typePlacement !== "0" && damageString.length > 0 && !(replaceDamage && context && typePlacement == contextPlacement)) {
         labels[typePlacement].push(damageString);
     }
@@ -292,14 +292,14 @@ async function _renderDamageRoll(renderData = {}) {
     ])).filter(t => t);
 
     // Generate a formula string that displays rolled crit damage as well.
-    let formula = baseRoll?.formula ?? "";    
+    let formula = baseRoll?.formula ?? "";
     if (baseRoll?.formula && critRoll?.formula) {
         formula = formula.concat(" + ");
     }
     formula += critRoll?.formula ?? "";
 
     return _renderModuleTemplate(TEMPLATE.DAMAGE, {
-        id,        
+        id,
         damageRollType: ROLL_TYPE.DAMAGE,
         tooltips,
         base: baseRoll ? { roll: baseRoll, total: baseRoll.total, critType: RollUtility.getCritTypeForRoll(baseRoll) } : undefined,
@@ -323,4 +323,3 @@ async function _renderDamageRoll(renderData = {}) {
 function _renderModuleTemplate(template, props) {
     return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, props);
 }
-
