@@ -79,28 +79,28 @@ export class RollUtility {
         if (bypass || !CONFIG[MODULE_SHORT].validItemTypes.includes(caller?.type)) {
             return await wrapper.call(caller, {}, { ignore: true });
         }
-
         const isAltRoll = CoreUtility.eventToAltRoll(options?.event);
         const advMode = CoreUtility.eventToAdvantage(options?.event);
-        const config = ItemUtility.getRollConfigFromItem(caller, isAltRoll)
+        const config = ItemUtility.getRollConfigFromItem(caller, isAltRoll);
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
         if (caller.id && config.consumeQuantity && !config.consumeUsage) {
             if (caller.system.quantity === 0) {
-                ui.notifications.warn(CoreUtility.localize("SW5E.ItemNoUses", {name: caller.name}));
+                ui.notifications.warn(CoreUtility.localize("SW5E.ItemNoUses", { name: caller.name }));
                 return;
             }
 
             config.consumeQuantity = false;
 
             const itemUpdates = {};
-			itemUpdates["system.quantity"] = Math.max(0, caller.system.quantity - 1);
+            itemUpdates["system.quantity"] = Math.max(0, caller.system.quantity - 1);
+
             await caller.update(itemUpdates);
         }
 
         return await wrapper.call(caller, config, {
-            configureDialog: caller?.type === ITEM_TYPE.SPELL ? true : false,
+            configureDialog: caller?.type === ITEM_TYPE.POWER ? true : false,
             createMessage: false,
             advMode,
             isAltRoll,
@@ -122,7 +122,7 @@ export class RollUtility {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
                 { type: "Skill", label: skillId, dictionary: "CONFIG.SW5E.skills" }));
             return null;
-		}
+        }
 
         const skill = CONFIG.SW5E.skills[skillId];
         let title = CoreUtility.localize(skill.label);
@@ -145,7 +145,7 @@ export class RollUtility {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
                 { type: "Ability", label: ability, dictionary: "CONFIG.SW5E.abilities" }));
             return null;
-		}
+        }
 
         const title = `${CoreUtility.localize(CONFIG.SW5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
@@ -214,14 +214,14 @@ export class RollUtility {
     static getCritTypeForRoll(roll, options = {}) {
         if (!roll) return null;
 
-		let totalCrit = 0;
-		let totalFumble = 0;
+        let totalCrit = 0;
+        let totalFumble = 0;
 
         for (const die of roll.dice) {
             const { crit, fumble } = _countCritsFumbles(die, options)
             totalCrit += crit;
             totalFumble += fumble;
-		}
+        }
 
         return _getCritResult(totalCrit, totalFumble);
     }
@@ -234,10 +234,10 @@ export class RollUtility {
      * @returns {Promise<Roll>} The upgraded multi roll from the provided roll.
      */
     static async upgradeRoll(roll, targetState, params = {}) {
-		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
-			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
-			return roll;
-		}
+        if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
+            return roll;
+        }
 
         params.forceMultiRoll = true;
         const upgradedRoll = await RollUtility.ensureMultiRoll(roll, params);
@@ -257,7 +257,7 @@ export class RollUtility {
      */
     static async ensureMultiRoll(roll, params = {}) {
         if (!roll) {
-			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
             return null;
         }
 
@@ -282,7 +282,7 @@ export class RollUtility {
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
 
-        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), { ignoreDiscarded: true });
+        const critType = RollUtility.getCritTypeForDie(roll.terms.find(d => d.faces === 20), { ignoreDiscarded: true });
 
         params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
         params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
@@ -430,8 +430,7 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
     return quickroll;
 }
 
-function _getCritResult(crit, fumble)
-{
+function _getCritResult(crit, fumble) {
     if (crit > 0 && fumble > 0) {
         return CRIT_TYPE.MIXED;
     }
@@ -445,8 +444,7 @@ function _getCritResult(crit, fumble)
     }
 }
 
-function _countCritsFumbles(die, options)
-{
+function _countCritsFumbles(die, options) {
     let crit = 0;
     let fumble = 0;
 
