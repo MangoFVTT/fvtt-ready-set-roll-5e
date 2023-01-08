@@ -117,7 +117,11 @@ export class QuickRoll {
 	 * @returns {Promise<QuickRoll>} A quick roll instance derived from stored message data.
 	 */
 	static async fromMessage(message) {
-		const data = message.flags[`${MODULE_SHORT}`];
+		const data = message.flags[MODULE_SHORT];
+
+		// convert JSON string back to objects
+		if (typeof(data?.fields[0]) === "string")
+			data.fields = data.fields.map(JSON.parse)
 
 		// Rolls in fields are unpacked and must be recreated.
 		const fields = data?.fields ?? [];
@@ -174,6 +178,11 @@ export class QuickRoll {
 			...CoreUtility.getRollSound(),
 			...CoreUtility.getWhisperData(rollMode),
 		}
+
+		// Can't store classes in flags, but the fields may contain D20Roll classes, so convert them to JSON strings.
+		const flags = chatData.flags[MODULE_SHORT];
+		if (flags.fields)
+			flags.fields = flags.fields.map(JSON.stringify);
 
 		if (this.item) {
 			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
@@ -345,7 +354,7 @@ export class QuickRoll {
 	 */
 	_getFlags() {
 		const flags = {
-			rsr5e: {
+			[MODULE_SHORT]: {
 				version: CoreUtility.getVersion(),
 				actorId: this.actorId,
 				itemId: this.itemId,
@@ -353,7 +362,7 @@ export class QuickRoll {
 				params: this.params,
 				fields: this.fields
 			}
-		};		
+		};
 
 		if (this.fields.some(f => f[0] === ROLL_TYPE.ATTACK)) {
 			flags["dnd5e.roll.type"] = ROLL_TYPE.ATTACK;
