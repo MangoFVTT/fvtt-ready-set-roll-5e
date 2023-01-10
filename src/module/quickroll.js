@@ -120,8 +120,9 @@ export class QuickRoll {
 		const data = message.flags[MODULE_SHORT];
 
 		// convert JSON string back to objects
-		if (typeof(data?.fields[0]) === "string")
-			data.fields = data.fields.map(JSON.parse)
+		if (typeof(data?.fields[0]) === "string") {
+			data.fields = data.fields.map(JSON.parse);
+		}
 
 		// Rolls in fields are unpacked and must be recreated.
 		const fields = data?.fields ?? [];
@@ -181,8 +182,9 @@ export class QuickRoll {
 
 		// Can't store classes in flags, but the fields may contain D20Roll classes, so convert them to JSON strings.
 		const flags = chatData.flags[MODULE_SHORT];
-		if (flags.fields)
+		if (flags.fields) {
 			flags.fields = flags.fields.map(JSON.stringify);
+		}
 
 		if (this.item) {
 			Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, item, chatData, { createMessage });
