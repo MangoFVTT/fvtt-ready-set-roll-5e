@@ -12,6 +12,7 @@ export const SETTING_NAMES = {
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
     ALT_ROLL_ENABLED: "enableAltQuickRoll",
+    QUICK_ROLL_DESC_ENABLED: "enableQuickRollDesc",
     D20_ICONS_ENABLED: "enableD20Icons",
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
@@ -75,6 +76,7 @@ export class SettingsUtility {
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
             { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false, scope: "world" },
+            { name: SETTING_NAMES.QUICK_ROLL_DESC_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client"  },
             { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false, scope: "client"  }
         ];

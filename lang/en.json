@@ -9,6 +9,8 @@
             "enableItemQuickRoll.hint": "When clicking on an item's image (weapons, spells, features, etc.), automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Roll for Items",
             "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately, replacing the ability to bypass quick rolling for items. This setting has no effect if item quick rolling is disabled.",
+            "enableQuickRollDesc.name": "Enable Descriptions by Default",
+            "enableQuickRollDesc.hint": "When outputting a quick roll, always show the description by default. This can still be changed per item in quick roll configuration.",
             "enableD20Icons.name": "Show D20 Rolls for Quick Rolls",
             "enableD20Icons.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
             "enableDiceSounds.name": "Enable Dice Sounds for Quick Rolls",
