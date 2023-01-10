@@ -177,7 +177,12 @@ export class ItemUtility {
      * These booleans give a quick indication on if the item has that specific consume property.
      * @param {Item} item The item on which to ensure consume properties exist.
      */
-    static ensureConsumePropertiesOnItem(item) {
+    static ensureConsumePropertiesOnItem(item) {        
+        if (item?.type === ITEM_TYPE.SPELL)
+        {
+            return;
+        }
+
         if (item) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);

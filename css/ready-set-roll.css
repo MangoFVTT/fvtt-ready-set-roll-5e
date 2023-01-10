@@ -33,6 +33,14 @@
 	padding: 0px 4px 0px 4px;
 }
 
+.dice-roll .dice-total.critical {
+	color: var(--color-text-dark-primary);
+}
+
+.dice-roll .dice-total.fumble {
+	color: var(--color-text-dark-primary);
+}
+
 .rsr-dual .dice-row .failure {
 	color: #aa0200;
 }
