@@ -108,6 +108,7 @@ export class QuickCard {
     async _setupOverlayButtons(html) {
         await this._setupMultiRollOverlayButtons(html);
         await this._setupDamageOverlayButtons(html);
+        await this._setupHeaderOverlayButtons(html);
 
         // Enable Hover Events (to show/hide the elements).
 		this._onHoverEnd(html);
@@ -161,6 +162,22 @@ export class QuickCard {
         // Handle rolling crit damage
         html.find('.crit-button button').click(async evt => {
 			await this._processCritButtonEvent(evt);
+        });
+    }
+
+    /**
+     * Adds overlay buttons to a chat card header for quick-repeating a roll.
+     * @param {JQuery} html The object to add overlay buttons to.
+     * @private
+     */
+    async _setupHeaderOverlayButtons(html) {
+        const template = await RenderUtility.renderOverlayHeader();
+
+        html.find(".card-header").append($(template));      
+
+        // Handle clicking the multi-roll overlay buttons
+        html.find(".header-overlay-br button").click(async evt => {
+            await this._processRepeatButtonEvent(evt);
         });
     }
 
@@ -261,7 +278,24 @@ export class QuickCard {
                 canvas.hud.token.render();
             }
         }, 50);
-    }   
+    }
+
+    /**
+     * Processes and handles a quick-repeat button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
+    async _processRepeatButtonEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const button = event.currentTarget;
+        const action = button.dataset.action;
+
+        if (action === "repeat") {
+            console.log("repeat");
+        }
+    }
 
     /**
      * Displays a prompt allowing the user to choose if they want to apply critical damage in a field or not.
