@@ -12,6 +12,7 @@ export const SETTING_NAMES = {
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
     ALT_ROLL_ENABLED: "enableAltQuickRoll",
+    QUICK_ROLL_DESC_ENABLED: "enableQuickRollDesc",
     D20_ICONS_ENABLED: "enableD20Icons",
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
@@ -77,6 +78,7 @@ export class SettingsUtility {
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
             { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false, scope: "world" },
+            { name: SETTING_NAMES.QUICK_ROLL_DESC_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client"  },
             { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false, scope: "client"  }
         ];
@@ -246,19 +248,19 @@ export class SettingsUtility {
 			}
 		});
 
-        // game.settings.register(MODULE_NAME, SETTING_NAMES.HIDE_SAVE_DC, {
-		// 	name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.name`),
-		// 	hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.hint`),
-		// 	scope: "world",
-		// 	config: true,
-		// 	type: Number,
-		// 	default: 1,
-		// 	choices: {
-		// 		0: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.0`),
-		// 		1: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.1`),
-        //      2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.2`)
-		// 	}
-		// });
+        game.settings.register(MODULE_NAME, SETTING_NAMES.HIDE_SAVE_DC, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.hint`),
+			scope: "world",
+			config: true,
+			type: Number,
+			default: 0,
+			choices: {
+				0: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.0`),
+				1: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.1`),
+                2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.2`)
+			}
+		});
     }
     
     /**

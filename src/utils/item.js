@@ -181,7 +181,12 @@ export class ItemUtility {
      * These booleans give a quick indication on if the item has that specific consume property.
      * @param {Item} item The item on which to ensure consume properties exist.
      */
-    static ensurePropertiesOnItem(item) {
+    static ensurePropertiesOnItem(item) {        
+        if (item?.type === ITEM_TYPE.SPELL)
+        {
+            return;
+        }
+
         if (item) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);
@@ -365,14 +370,14 @@ function _addFieldFooter(fields, chatData) {
  */
 function _addFieldSaveButton(fields, item) {
     if (item.hasSave) {
-        //const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
+        const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
 
         fields.push([
             FIELD_TYPE.SAVE,
             {
                 ability: item.system.save.ability,
                 dc: item.system.save.dc,
-                //hideDC: (hideDCSetting === 2 || (hideDCSetting === 1 && item.actor.type === "npc"))
+                hideDC: (hideDCSetting === 2 || (hideDCSetting === 1 && item.actor.type === "npc"))
             }
         ]);
     }

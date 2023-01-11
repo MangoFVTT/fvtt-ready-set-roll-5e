@@ -1,5 +1,6 @@
 import { ITEM_TYPE } from "../utils/item.js";
 import { FIELD_TYPE } from "../utils/render.js";
+import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
 
 /**
@@ -31,7 +32,7 @@ CONFIG[MODULE_SHORT] = {
     },
     flags: {
         weapon: {
-			quickDesc: { type: "Boolean", value: false, altValue: false },
+			quickDesc: { type: "Boolean", get value() { return SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ROLL_DESC_ENABLED) }, altValue: false },
 			quickFlavor: { type: "Boolean", value: true, altValue: true },
 			quickFooter: { type: "Boolean", value: true, altValue: true },
 			quickAttack: { type: "Boolean", value: true, altValue: true },
@@ -87,7 +88,7 @@ CONFIG[MODULE_SHORT] = {
             consumeRecharge: { type: "Boolean", value: true, altValue: true }
         },
         tool: {
-            quickDesc: { type: "Boolean", value: false, altValue: false },
+			quickDesc: { type: "Boolean", get value() { return SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ROLL_DESC_ENABLED) }, altValue: false },
             quickFlavor: { type: "Boolean", value: true, altValue: true },
             quickFooter: { type: "Boolean", value: true, altValue: true },
             quickCheck: { type: "Boolean", value: true, altValue: true },
