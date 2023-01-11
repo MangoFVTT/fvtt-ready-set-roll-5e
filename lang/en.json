@@ -133,7 +133,8 @@
                 "healingTemp": "Click to apply temporary hitpoints to selected token(s).",
                 "rollCrit": "Click to roll critical damage.",
                 "rollAdvantage": "Click to roll with advantage.",
-                "rollDisadvantage": "Click to roll with disadvantage."
+                "rollDisadvantage": "Click to roll with disadvantage.",
+                "repeat": "Click to quick-repeat the roll."
             },
             "critPrompt": {                
                 "title": "Apply Crit Damage?",
