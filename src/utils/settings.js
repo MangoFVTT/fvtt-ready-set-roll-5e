@@ -220,19 +220,19 @@ export class SettingsUtility {
 			}
 		});
 
-        // game.settings.register(MODULE_NAME, SETTING_NAMES.HIDE_SAVE_DC, {
-		// 	name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.name`),
-		// 	hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.hint`),
-		// 	scope: "world",
-		// 	config: true,
-		// 	type: Number,
-		// 	default: 1,
-		// 	choices: {
-		// 		0: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.0`),
-		// 		1: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.1`),
-        //      2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.2`)
-		// 	}
-		// });
+        game.settings.register(MODULE_NAME, SETTING_NAMES.HIDE_SAVE_DC, {
+			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.name`),
+			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.HIDE_SAVE_DC}.hint`),
+			scope: "world",
+			config: true,
+			type: Number,
+			default: 0,
+			choices: {
+				0: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.0`),
+				1: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.1`),
+                2: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.HIDE_SAVE_DC}.2`)
+			}
+		});
     }
     
     /**
