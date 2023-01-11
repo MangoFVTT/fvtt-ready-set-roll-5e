@@ -44,7 +44,7 @@
             "contextReplacesDamage.name": "Context Replaces Damage Type",
             "contextReplacesDamage.hint": "If a context label is in the same place as a damage type label, it will replace it.",
             "hideSaveDC.name": "Hide Save DCs",
-            "hideSaveDC.hint": "Determines if the DC is hidden on save DC buttons for quick rolls."
+            "hideSaveDC.hint": "Determines when to hide the value of the DC for saving throw buttons in quick rolls."
         },
         "messages": {
             "error": {
