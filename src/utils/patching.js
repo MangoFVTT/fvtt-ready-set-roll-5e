@@ -74,11 +74,11 @@ async function _actorRollSkill(wrapper, skillId, options) {
  * @returns {Promise<Roll>} The generated roll for the Actor ability test.
  * @private
  */
-async function _actorRollAbilityTest(wrapper, ability, options) {
+async function _actorRollAbilityTest(wrapper, abilityId, options) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
-    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, ability);
+    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, abilityId);
 
-    return ignore ? roll : RollUtility.rollAbilityTest(this, ability, roll);
+    return ignore ? roll : RollUtility.rollAbilityTest(this, abilityId, roll);
 }
 
 /**
@@ -89,11 +89,11 @@ async function _actorRollAbilityTest(wrapper, ability, options) {
  * @returns {Promise<Roll>} The generated roll for the Actor ability save.
  * @private
  */
-async function _actorRollAbilitySave(wrapper, ability, options) {
+async function _actorRollAbilitySave(wrapper, abilityId, options) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
-    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, ability);
+    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, abilityId);
 
-    return ignore ? roll : RollUtility.rollAbilitySave(this, ability, roll);
+    return ignore ? roll : RollUtility.rollAbilitySave(this, abilityId, roll);
 }
 
 /**

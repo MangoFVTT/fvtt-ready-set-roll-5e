@@ -134,20 +134,20 @@ export class RollUtility {
     /**
      * Rolls an ability test from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {String} ability The id of the ability being rolled.
+     * @param {String} abilityId The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollAbilityTest(actor, ability, roll) {
+    static async rollAbilityTest(actor, abilityId, roll) {
         LogUtility.log(`Quick rolling ability test from Actor '${actor.name}'.`);
 
-        if (!(ability in CONFIG.DND5E.abilities)) {
+        if (!(abilityId in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
 		}
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
     }
@@ -155,20 +155,20 @@ export class RollUtility {
     /**
      * Rolls an ability save from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {String} ability The id of the ability being rolled.
+     * @param {String} abilityId The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollAbilitySave(actor, ability, roll) {
+    static async rollAbilitySave(actor, abilityId, roll) {
         LogUtility.log(`Quick rolling ability save from Actor '${actor.name}'.`);
 
-        if (!(ability in CONFIG.DND5E.abilities)) {
+        if (!(abilityId in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
         }
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
     }
