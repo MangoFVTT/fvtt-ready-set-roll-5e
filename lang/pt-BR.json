@@ -50,8 +50,8 @@
 				"labelNotInDictionary": "{type} '{label}' não existe. Os valores válidos podem ser encontrados em {dictionary}.",
 				"objectNotExpectedType": "O objeto de dados não corresponde ao tipo esperado. Tipo esperado '{type}'.",
 				"incorrectRollType": "Não é possível rolar uma rolagem de {function} para o tipo de rolagem '{type}'.",
-				"incorrectFieldType": "Não é possível aprimorar uma rolagem do tipo {type} para uma rolagem múltipla.",
-				"incorrectTargetState": "Não é possível aprimorar uma rolagem para o estado alvo {state} porque não é um estado válido (vantagem ou desvantagem).",
+				"incorrectFieldType": "Não é possível aprimorar uma rolagem do tipo '{type}' para uma rolagem múltipla.",
+				"incorrectTargetState": "Não é possível aprimorar uma rolagem para o estado alvo '{state}' porque não é um estado válido (vantagem ou desvantagem).",
 				"rollIsNullOrUndefined": "A rolagem fornecida é nula ou indefinida."
 			},
 			"warning": {

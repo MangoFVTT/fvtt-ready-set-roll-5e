@@ -7,6 +7,7 @@ import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
 import { ChatUtility } from "./chat.js";
+import { MacroUtility } from "./macro.js";
 
 export const HOOKS_CORE = {
     INIT: "init",
@@ -71,6 +72,11 @@ export class HooksUtility {
             if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
                 HooksUtility.registerSheetHooks();
                 HooksUtility.registerItemHooks();
+            }
+
+            // Setup specific fixed calls for the module
+            window[MODULE_SHORT] = {
+                macro: MacroUtility.getMacroList()
             }
         });
     }
