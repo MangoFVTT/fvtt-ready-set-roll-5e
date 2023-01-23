@@ -76,12 +76,10 @@ The following modules have been verified as compatible from the specified module
 ![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
 ## Planned Features
-- Sheet roll buttons ([Issue #34](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/34))
-- More compatibility with other modules.
-- Macro support for more flexible quick rolling.
+- [See [FEATURE] Issues List](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement)
 
 ## Known Issues
-- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
+- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Abug+)
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
