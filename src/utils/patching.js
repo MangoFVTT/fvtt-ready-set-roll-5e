@@ -55,7 +55,7 @@ export class PatchingUtility {
  * Patch function for rolling an Actor skill.
  * @param {function} wrapper The original wrapper for the function.
  * @param {String} skillId The id of the skill being rolled.
- * @param {*} options Options for processing the roll.
+ * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor skill.
  * @private
  */
@@ -70,7 +70,7 @@ async function _actorRollSkill(wrapper, skillId, options) {
  * Patch function for rolling an Actor ability test.
  * @param {function} wrapper The original wrapper for the function.
  * @param {String} skillId The id of the ability being rolled.
- * @param {*} options Options for processing the roll.
+ * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability test.
  * @private
  */
@@ -85,7 +85,7 @@ async function _actorRollAbilityTest(wrapper, abilityId, options) {
  * Patch function for rolling an Actor ability save.
  * @param {function} wrapper The original wrapper for the function.
  * @param {String} skillId The id of the ability being rolled.
- * @param {*} options Options for processing the roll.
+ * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability save.
  * @private
  */
@@ -99,7 +99,7 @@ async function _actorRollAbilitySave(wrapper, abilityId, options) {
 /**
  * Patch function for rolling an Item usage.
  * @param {function} wrapper The original wrapper for the function.
- * @param {*} options Options for processing the item usage.
+ * @param {Object} options Options for processing the item usage.
  * @returns {Promise<ChatMessage|object|void>} The generated chat data for the Item usage.
  * @private
  */
