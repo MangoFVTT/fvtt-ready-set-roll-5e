@@ -7,6 +7,8 @@ import { RollUtility } from "./roll.js";
 import { SheetUtility } from "./sheet.js";
 import { ItemUtility } from "./item.js";
 import { ChatUtility } from "./chat.js";
+import { MacroUtility } from "./macro.js";
+import { QueryUtility } from "./query.js";
 
 export const HOOKS_CORE = {
     INIT: "init",
@@ -57,11 +59,18 @@ export class HooksUtility {
         });
 
         Hooks.on(HOOKS_CORE.READY, () => {
+            // Setup specific fixed calls for the module
+            window[MODULE_SHORT] = {
+                macro: MacroUtility.getMacroList(),
+                query: QueryUtility.processQuery
+            }
+
             Hooks.call(HOOKS_MODULE.LOADED);
         });
 
-        Hooks.on(HOOKS_MODULE.LOADED, () => {          
+        Hooks.on(HOOKS_MODULE.LOADED, () => {
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
+
             CONFIG[MODULE_SHORT].combinedDamageTypes = foundry.utils.mergeObject(
                 foundry.utils.duplicate(CONFIG.DND5E.damageTypes),
                 foundry.utils.duplicate(CONFIG.DND5E.healingTypes),

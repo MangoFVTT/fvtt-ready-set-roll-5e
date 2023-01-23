@@ -34,6 +34,11 @@ export class QuickCard {
         this.speaker = game.actors.get(message.speaker.actor);
         this.id = message.id;
 
+        // Hide Save DCs
+        if (!(this.roll?.hasPermission ?? false)) {
+            html.find(".hideSave").text(CoreUtility.localize(`${MODULE_SHORT}.chat.hide`));
+        }
+
         if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
             this._setupActionButtons(html);
             LogUtility.log("Initialised quick card action buttons.")

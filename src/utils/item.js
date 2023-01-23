@@ -340,14 +340,14 @@ function _addFieldFooter(fields, chatData) {
  */
 function _addFieldSave(fields, item) {
     if (item.hasSave) {
-        //const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
+        const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
 
         fields.push([
             FIELD_TYPE.SAVE,
             {
                 ability: item.system.save.ability,
                 dc: item.system.save.dc,
-                //hideDC: (hideDCSetting === 2 || (hideDCSetting === 1 && item.actor.type === "npc"))
+                hideDC: (hideDCSetting === 2 || (hideDCSetting === 1 && item.actor.type === "npc"))
             }
         ]);
     }

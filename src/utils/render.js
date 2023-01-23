@@ -118,7 +118,8 @@ function _renderHeader(renderData = {}) {
 
     return _renderModuleTemplate(TEMPLATE.HEADER, {
         id,
-        item: { img: img ?? DEFAULT_IMG, name: title },
+        img: img ?? DEFAULT_IMG,
+        title: title ?? "Default",
         slotLevel
     });
 }
@@ -257,7 +258,7 @@ async function _renderDamageRoll(renderData = {}) {
     
     if (CONFIG.DND5E.healingTypes[damageType]) {
         damagePrefix += CONFIG.DND5E.healingTypes[damageType];
-    } else if (CONFIG.DND5E.damageTypes[damageType]) {
+    } else if (CONFIG.DND5E.damageTypes[damageType] || !damageType || damageType === '') {
         damagePrefix += CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.DAMAGE}`);
         damagePrefix += versatile ? ` [${CONFIG.DND5E.weaponProperties.ver}]` : "";
     } else if (damageType === ROLL_TYPE.OTHER) {

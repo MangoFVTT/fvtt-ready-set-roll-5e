@@ -75,13 +75,25 @@ The following modules have been verified as compatible from the specified module
 
 ![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
+### Macro Support
+- Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
+- Macros are available in the following format:
+    - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
+    - `rsr5e.macro.rollDamage([['formula 1', 'damage type 1'], ['formula 2', 'damage type 2'], ...], options = {})`
+
+![macros](https://user-images.githubusercontent.com/110994627/214150998-869afaaa-b93a-4ff0-b9af-470c54f35d52.png)
+
+### String Queries
+- Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
+- This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
+
+![image](https://user-images.githubusercontent.com/110994627/214161613-1bb4720e-b0b4-4f85-9658-e8c44d1227c3.png)
+
 ## Planned Features
-- Sheet roll buttons ([Issue #34](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/34))
-- More compatibility with other modules.
-- Macro support for more flexible quick rolling.
+- [See [FEATURE] Issues List](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement)
 
 ## Known Issues
-- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
+- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Abug+)
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.
