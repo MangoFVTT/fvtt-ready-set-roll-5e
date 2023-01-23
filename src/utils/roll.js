@@ -379,7 +379,7 @@ async function _getActorRoll(actor, title, roll, rollType, options = {}) {
         actor,
         { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
         [
-            [FIELD_TYPE.HEADER, { title }],
+            [FIELD_TYPE.HEADER, { title, img: options?.img }],
             [FIELD_TYPE.BLANK, { display: false }],
             [FIELD_TYPE.CHECK, { roll: ensuredRoll, rollType }]
         ]
@@ -425,7 +425,7 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
         item,
         { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll, isAltRoll, elvenAccuracy, slotLevel, spellLevel },
         [
-            [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
+            [FIELD_TYPE.HEADER, { title: item.name, img: params?.img, slotLevel }],
             ...itemFields
         ]
     );
