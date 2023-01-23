@@ -105,7 +105,8 @@ export class RollUtility {
             createMessage: false,
             advMode,
             isAltRoll,
-            spellLevel: caller?.system?.level
+            spellLevel: caller?.system?.level,
+            rollMode: options?.rollMode
         });
     }
 
@@ -180,14 +181,16 @@ export class RollUtility {
     /**
      * Rolls a single usage from a given item.
      * @param {Item} item The item to roll.
-     * @param {*} params A set of parameters for rolling the Item.
+     * @param {Object} params A set of parameters for rolling the Item.
+     * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollItem(item, params) {
+    static async rollItem(item, params, createMessage = true) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
-        
+
         params = CoreUtility.ensureQuickRollParams(params);
         params.slotLevel = item.system.level;
+        params.createMessage = createMessage;
         item.system.level = params.spellLevel ?? item.system.level;
 
         return await _getItemRoll(item, params, ROLL_TYPE.ITEM)
@@ -392,13 +395,12 @@ async function _getActorRoll(actor, title, roll, rollType, options = {}) {
 /**
  * Gets an item-based quick roll.
  * @param {Item} item The item object from which the roll is being generated.
- * @param {*} params The combined parameters of the item roll (config and options).
- * @param {*} rollType The type (as a string identifier) of the roll being quick rolled.
- * @param {boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
+ * @param {Object} params The combined parameters of the item roll (config and options).
+ * @param {String} rollType The type (as a string identifier) of the roll being quick rolled.
  * @returns {Promise<QuickRoll>} The created item quick roll.
  * @private
  */
-async function _getItemRoll(item, params, rollType, createMessage = true) {
+async function _getItemRoll(item, params, rollType) {
     if (!item instanceof Item) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Item" }));
         return null;
@@ -430,7 +432,7 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
         ]
     );
 
-    await quickroll.toMessage({ createMessage });
+    await quickroll.toMessage(params);
     return quickroll;
 }
 
