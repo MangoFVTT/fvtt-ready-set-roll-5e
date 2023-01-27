@@ -48,8 +48,8 @@ export class RollUtility {
     /**
      * Calls the wrapped Actor roll with advantage/disadvantage determined by pressed modifier keys in the triggering event.
      * @param {Actor} caller The calling object of the wrapper.
-     * @param {function} wrapper The roll wrapper to call.
-     * @param {any} options Option data for the triggering event.
+     * @param {Function} wrapper The roll wrapper to call.
+     * @param {Object} options Option data for the triggering event.
      * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
      * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<Roll>} The roll result of the wrapper.
@@ -69,8 +69,8 @@ export class RollUtility {
     /**
      * Calls the wrapped Item roll with advantage/disadvantage/alternate determined by pressed modifier keys in the triggering event.
      * @param {Item} caller The calling object of the wrapper.
-     * @param {function} wrapper The roll wrapper to call.
-     * @param {any} options Option data for the triggering event.
+     * @param {Function} wrapper The roll wrapper to call.
+     * @param {Object} options Option data for the triggering event.
      * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
      * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<ChatData>} The roll result of the wrapper.
