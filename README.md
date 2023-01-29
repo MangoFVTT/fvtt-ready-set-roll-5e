@@ -90,7 +90,7 @@ The following modules have been verified as compatible from the specified module
 ![image](https://user-images.githubusercontent.com/110994627/214161613-1bb4720e-b0b4-4f85-9658-e8c44d1227c3.png)
 
 ## Planned Features
-- [See [FEATURE] Issues List](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement)
+- [See [FEATURE] Issues List](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Afeature)
 
 ## Known Issues
 - [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Abug+)
