@@ -50,7 +50,9 @@ export class SheetUtility {
             _activate = false;
         }
         
-        SheetUtility.setAutoHeightOnSheet(sheet);
+        if  (sheet._tabs[0].active === MODULE_SHORT) {
+            SheetUtility.setAutoHeightOnSheet(sheet);
+        }
     }
 }
 
