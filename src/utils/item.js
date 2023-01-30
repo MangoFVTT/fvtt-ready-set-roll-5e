@@ -38,6 +38,7 @@ export class ItemUtility {
         ItemUtility.ensureItemParams(item, params);
         
         const manualDamage = SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE);
+        const applyEffects = CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED);
         const chatData = await item.getChatData();
         let fields = [];
 
@@ -78,7 +79,7 @@ export class ItemUtility {
             await _addFieldOtherFormula(fields, item);
         }
 
-        if (params.effectFlags) {
+        if (params.effectFlags && applyEffects) {
             _addFieldEffectsButton(fields, item);
         }
 
@@ -181,28 +182,31 @@ export class ItemUtility {
      * These booleans give a quick indication on if the item has that specific consume property.
      * @param {Item} item The item on which to ensure consume properties exist.
      */
-    static ensurePropertiesOnItem(item) {        
-        if (item?.type === ITEM_TYPE.SPELL)
-        {
+    static ensurePropertiesOnItem(item) {
+        if (!item) {
             return;
         }
 
-        if (item) {
+        // Spells have their own configuration dialog for consumables, so no ened to use quick roll configuration.
+        if (item.type !== ITEM_TYPE.SPELL) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);
             // For items with "Limited Uses" configured
-            item.hasUses = !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
+            item.hasUses = item.type !== ITEM_TYPE.SPELL && !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
             // For items with "Resource Consumption" configured
-            item.hasResource = !!(item.system.consume?.target);
+            item.hasResource = item.type !== ITEM_TYPE.SPELL && !!(item.system.consume?.target);
             // For abilities with "Action Recharge" configured
-            item.hasRecharge = !!(item.system.recharge?.value);
+            item.hasRecharge = item.type !== ITEM_TYPE.SPELL && !!(item.system.recharge?.value);
+        }
+
+        if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
             // For items with active effects (requires DAE to work, so check for module availability here)
             item.hasEffects = window.DAE && item.collections.effects.filter((effect) => !effect.disabled).length > 0;
         }
     }
 
     /**
-     * 
+     * Ensure that item parameters are available for the item roll, at least at default values.
      * @param {Item} item 
      * @param {Object} params 
      */

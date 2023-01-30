@@ -127,14 +127,15 @@ export class SettingsUtility {
             }
         });
         
-        if (game.modules.get("dae")?.active) {
+        if (CoreUtility.hasDAE()) {
             game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_ENABLED, {
                 name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.name`),
                 hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.hint`),
                 scope: "world",
                 config: true,
                 type: Boolean,
-                default: false
+                default: false,
+                requiresReload: true
             });        
             
             game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_TO, {
