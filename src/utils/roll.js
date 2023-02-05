@@ -289,7 +289,8 @@ export class RollUtility {
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
 
-        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), { ignoreDiscarded: true });
+        const critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble, ignoreDiscarded: true };
+        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), critOptions);
 
         params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
         params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
