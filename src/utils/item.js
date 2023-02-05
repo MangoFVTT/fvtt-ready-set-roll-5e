@@ -38,6 +38,7 @@ export class ItemUtility {
         ItemUtility.ensureItemParams(item, params);
         
         const manualDamage = SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE);
+        const applyEffects = CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED);
         const chatData = await item.getChatData();
         let fields = [];
 
@@ -55,7 +56,7 @@ export class ItemUtility {
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickSave", params.isAltRoll)) {
-            _addFieldSave(fields, item);
+            _addFieldSaveButton(fields, item);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", params.isAltRoll)) {
@@ -76,6 +77,10 @@ export class ItemUtility {
 
         if (ItemUtility.getFlagValueFromItem(item, "quickOther", params.isAltRoll)) {
             await _addFieldOtherFormula(fields, item);
+        }
+
+        if (params.effectFlags && applyEffects) {
+            _addFieldEffectsButton(fields, item, params);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickFooter", params.isAltRoll)) {
@@ -120,7 +125,7 @@ export class ItemUtility {
      */
     static getRollConfigFromItem(item, isAltRoll = false) {
         ItemUtility.ensureFlagsOnitem(item);
-        ItemUtility.ensureConsumePropertiesOnItem(item);
+        ItemUtility.ensurePropertiesOnItem(item);
 
         const config = {}
 
@@ -177,26 +182,31 @@ export class ItemUtility {
      * These booleans give a quick indication on if the item has that specific consume property.
      * @param {Item} item The item on which to ensure consume properties exist.
      */
-    static ensureConsumePropertiesOnItem(item) {        
-        if (item?.type === ITEM_TYPE.SPELL)
-        {
+    static ensurePropertiesOnItem(item) {
+        if (!item) {
             return;
         }
 
-        if (item) {
+        // Spells have their own configuration dialog for consumables, so no ened to use quick roll configuration.
+        if (item.type !== ITEM_TYPE.SPELL) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);
             // For items with "Limited Uses" configured
-            item.hasUses = !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
+            item.hasUses = item.type !== ITEM_TYPE.SPELL && !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
             // For items with "Resource Consumption" configured
-            item.hasResource = !!(item.system.consume?.target);
+            item.hasResource = item.type !== ITEM_TYPE.SPELL && !!(item.system.consume?.target);
             // For abilities with "Action Recharge" configured
-            item.hasRecharge = !!(item.system.recharge?.value);
+            item.hasRecharge = item.type !== ITEM_TYPE.SPELL && !!(item.system.recharge?.value);
+        }
+
+        if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
+            // For items with active effects (requires DAE to work, so check for module availability here)
+            item.hasEffects = window.DAE && item.collections.effects.filter((effect) => !effect.disabled).length > 0;
         }
     }
 
     /**
-     * 
+     * Ensure that item parameters are available for the item roll, at least at default values.
      * @param {Item} item 
      * @param {Object} params 
      */
@@ -204,6 +214,7 @@ export class ItemUtility {
         params = params ?? {};
         params.isAltRoll = params?.isAltRoll ?? false;
         params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", params.isAltRoll);
+        params.effectFlags = ItemUtility.getFlagValueFromItem(item, "quickEffects", params.isAltRoll);
         params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", params.isAltRoll);
         params.elvenAccuracy = (item.actor?.flags?.dnd5e?.elvenAccuracy && 
             CONFIG.DND5E.characterFlags.elvenAccuracy.abilities.includes(item.abilityMod)) || undefined
@@ -242,12 +253,12 @@ export class ItemUtility {
         let moduleFlags = item.flags[MODULE_SHORT] ?? {};
         moduleFlags = foundry.utils.mergeObject(baseFlags, moduleFlags ?? {});
 
-        // If quickDamage flags should exist, update them based on which damage formulae are available
+        // If quick damage flags should exist, update them based on which damage formulae are available
         if (CONFIG[MODULE_SHORT].flags[item.type].quickDamage) {
             let newQuickDamageValues = [];
             let newQuickDamageAltValues = [];
 
-            // Make quickDamage flags if they don't exist
+            // Make quick damage flags if they don't exist
             if (!moduleFlags.quickDamage) {
                 moduleFlags.quickDamage = { type: "Array", value: [], altValue: [] };
             }
@@ -261,9 +272,32 @@ export class ItemUtility {
             moduleFlags.quickDamage.altValue = newQuickDamageAltValues;
         }
 
-        item.flags[MODULE_SHORT] = moduleFlags;        
+        // If quick effects flags should exist, update them based on which effects are active
+        if (CONFIG[MODULE_SHORT].flags[item.type].quickEffects) {
+            let newQuickEffectValues = [];
+            let newQuickEffectAltValues = [];
+            let newQuickEffectContexts = [];
+
+            if (!moduleFlags.quickEffects) {
+                moduleFlags.quickEffects = { type: "Array", value: [], altValue: [] };
+            }
+
+            const activeEffects = item.collections.effects.filter((effect) => !effect.disabled);
+
+            for (let i = 0; i < activeEffects.length; i++) {
+                newQuickEffectValues[i] = moduleFlags.quickEffects.value[i] ?? true;
+                newQuickEffectAltValues[i] = moduleFlags.quickEffects.altValue[i] ?? true;
+                newQuickEffectContexts[i] = activeEffects[i].label;
+            }
+
+            moduleFlags.quickEffects.value = newQuickEffectValues;
+            moduleFlags.quickEffects.altValue = newQuickEffectAltValues;
+            moduleFlags.quickEffects.context = newQuickEffectContexts;
+        }
+
+        item.flags[MODULE_SHORT] = moduleFlags;
         
-        ItemUtility.ensureConsumePropertiesOnItem(item);
+        ItemUtility.ensurePropertiesOnItem(item);
     }
 }
 
@@ -338,7 +372,7 @@ function _addFieldFooter(fields, chatData) {
  * @param {Item} item The item from which to derive the field.
  * @private
  */
-function _addFieldSave(fields, item) {
+function _addFieldSaveButton(fields, item) {
     if (item.hasSave) {
         const hideDCSetting = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_SAVE_DC);
 
@@ -363,6 +397,26 @@ function _addFieldDamageButton(fields, item) {
     if (item.hasDamage) {
         fields.push([
             FIELD_TYPE.MANUAL,
+            {
+            }
+        ]);
+    }
+}
+
+/**
+ * Adds a render field for apply active effects button.
+ * @param {Array} fields The current array of fields to add to. 
+ * @param {Item} item The item from which to derive the field.
+ * @private
+ */
+ function _addFieldEffectsButton(fields, item, params) {
+    if (item.hasEffects) {
+        if (!Object.values(params.effectFlags).some(f => f === true)) {
+            return;
+        }
+
+        fields.push([
+            FIELD_TYPE.EFFECTS,
             {
             }
         ]);
