@@ -80,7 +80,7 @@ export class ItemUtility {
         }
 
         if (params.effectFlags && applyEffects) {
-            _addFieldEffectsButton(fields, item);
+            _addFieldEffectsButton(fields, item, params);
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickFooter", params.isAltRoll)) {
@@ -409,8 +409,12 @@ function _addFieldDamageButton(fields, item) {
  * @param {Item} item The item from which to derive the field.
  * @private
  */
- function _addFieldEffectsButton(fields, item) {
+ function _addFieldEffectsButton(fields, item, params) {
     if (item.hasEffects) {
+        if (!Object.values(params.effectFlags).some(f => f === true)) {
+            return;
+        }
+
         fields.push([
             FIELD_TYPE.EFFECTS,
             {

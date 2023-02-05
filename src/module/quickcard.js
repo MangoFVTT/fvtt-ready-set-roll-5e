@@ -209,7 +209,16 @@ export class QuickCard {
         event.preventDefault();
         event.stopPropagation();
 
-        console.log("apply effects");
+        const button = event.currentTarget;
+        const action = button.dataset.action;
+
+        if (action === "effects-rsr") {
+            const selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
+            const targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
+            const targets = new Set([...selectTokens, ...targetTokens]);
+
+            window.DAE.doEffects(this.roll.item, true, targets);
+        }
     }
 
     /**
