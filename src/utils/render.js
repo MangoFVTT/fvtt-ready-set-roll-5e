@@ -192,7 +192,7 @@ async function _renderMultiRoll(renderData = {}) {
             tmpResults.push(d20Rolls.results[i]);
         }        
         
-        let critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble };
+        const critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
         // This does not apply to dice that have been rerolled (unless they are replaced by a fixer value eg. for reliable talent).
