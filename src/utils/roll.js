@@ -331,7 +331,7 @@ export class RollUtility {
             critTerms.push(plus, bonusDice);
         }
 
-        if (options.criticalBonusDamage && options.criticalBonusDamage !== "") {
+        if (groupIndex === 0 && options.criticalBonusDamage && options.criticalBonusDamage !== "") {
             const bonusDamage = await new CONFIG.Dice.DamageRoll(options.criticalBonusDamage, rollData).evaluate({ async: true });
 
             critTerms.push(plus, ...bonusDamage.terms);
