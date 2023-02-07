@@ -217,7 +217,9 @@ export class QuickCard {
             const targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
             const targets = new Set([...selectTokens, ...targetTokens]);
 
-            window.DAE.doEffects(this.roll.item, true, targets);
+            window.DAE.doEffects(this.roll.item, true, targets, {
+                effectsToApply: this.roll.effectsToApply
+            });
         }
     }
 

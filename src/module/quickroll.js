@@ -111,6 +111,15 @@ export class QuickRoll {
 	}
 
 	/**
+	 * Returns the list of effect IDs to apply.
+	 * @returns {Array} An array of string IDs, where each one corresponds to an active effect.
+	 */
+	get effectsToApply() {
+		const effectsFields = this.fields.filter(field => field[0] === FIELD_TYPE.EFFECTS)
+		return effectsFields.flatMap(field => field[1].apply);
+	}
+
+	/**
 	 * Creates a QuickRoll instance from data stored within chat card flags.
 	 * Used when needing to recreate chat card module data for existing chat messages.
 	 * @param {ChatMessage} message The chat card message data to retrieve a roll instance from.
