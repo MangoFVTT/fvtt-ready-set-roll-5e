@@ -414,10 +414,20 @@ function _addFieldDamageButton(fields, item) {
         if (!Object.values(params.effectFlags).some(f => f === true)) {
             return;
         }
+       
+        const activeEffects = item.collections.effects.filter((effect) => !effect.disabled);
+
+        let effectsToApply = [];
+        for (let i = 0; i < activeEffects.length; i++) {
+            if (params?.effectFlags[i] ?? true) {
+                effectsToApply.push(activeEffects[i]._id);
+            }
+        }
 
         fields.push([
             FIELD_TYPE.EFFECTS,
             {
+                apply: effectsToApply
             }
         ]);
     }
