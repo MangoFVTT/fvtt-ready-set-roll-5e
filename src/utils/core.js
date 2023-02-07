@@ -206,5 +206,9 @@ export class CoreUtility {
 
 		return game.dice3d && hasDice;
     }
+
+    static hasDAE() {
+        return game.modules.get("dae")?.active;
+    }
 }
 

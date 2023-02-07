@@ -25,4 +25,4 @@ export const MODULE_DEBUG_TAG = [
 /**
  * Path to the default image to use when an actor/item image isn't available.
  */
-export const DEFAULT_IMG = "icons/svg/mystery-man.svg"
+export const DEFAULT_IMG = "icons/svg/mystery-man.svg";

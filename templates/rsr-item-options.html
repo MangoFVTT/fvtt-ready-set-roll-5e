@@ -141,6 +141,29 @@
 				</li>
 			</div>
 			{{/if}}
+			{{#if hasEffects}}
+			<li class="rsr5e-options-subsection flexrow" draggable="false">
+				<span><label class="rsr5e-options-title">{{localize "rsr5e.sheet.tab.subsection.effects"}}</label></span>
+			</li>
+			<div class="rsr5e-options-box">				
+				<li class="rsr5e-options-container flexrow">
+				{{#if flags.rsr5e.quickEffects}}
+				{{#each flags.rsr5e.quickEffects.value as |part i| }}
+				<label class="checkbox">
+					<input
+						type="checkbox"
+						name="flags.rsr5e.quickEffects.value.{{i}}"
+						value= "flags.rsr5e.quickEffects.value.{{i}}"
+						data-dtype="Boolean"
+						{{checked (lookup ../flags.rsr5e.quickEffects.value i)}}
+					/>
+					{{i}}: {{lookup ../flags.rsr5e.quickEffects.context i}}
+				</label>
+				{{/each}}
+				{{/if}}
+				</li>
+			</div>
+			{{/if}}
 			{{#if hasConsume}}
 			<li class="rsr5e-options-subsection flexrow" draggable="false">
 				<span><label class="rsr5e-options-title">{{localize "rsr5e.sheet.tab.subsection.consume"}}</label></span>
@@ -338,6 +361,29 @@
 						{{checked (lookup ../flags.rsr5e.quickDamage.altValue i)}}
 					/>
 					{{i}}: {{lookup ../flags.rsr5e.quickDamage.context i}} ({{lookup ../combinedDamageTypes (lookup (lookup ../item.system.damage.parts i) 1)}})
+				</label>
+				{{/each}}
+				{{/if}}
+				</li>
+			</div>
+			{{/if}}
+			{{#if hasEffects}}
+			<li class="rsr5e-options-subsection flexrow" draggable="false">
+				<span><label class="rsr5e-options-title">{{localize "rsr5e.sheet.tab.subsection.effects"}}</label></span>
+			</li>
+			<div class="rsr5e-options-box">				
+				<li class="rsr5e-options-container flexrow">
+				{{#if flags.rsr5e.quickEffects}}
+				{{#each flags.rsr5e.quickEffects.altValue as |part i| }}
+				<label class="checkbox">
+					<input
+						type="checkbox"
+						name="flags.rsr5e.quickEffects.altValue.{{i}}"
+						value= "flags.rsr5e.quickEffects.altValue.{{i}}"
+						data-dtype="Boolean"
+						{{checked (lookup ../flags.rsr5e.quickEffects.altValue i)}}
+					/>
+					{{i}}: {{lookup ../flags.rsr5e.quickEffects.context i}}
 				</label>
 				{{/each}}
 				{{/if}}

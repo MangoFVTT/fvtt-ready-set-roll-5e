@@ -17,7 +17,8 @@ export const FIELD_TYPE = {
     ATTACK: 'attack',
     DAMAGE: 'damage',
     SAVE: 'save',
-    MANUAL: "manual",
+    MANUAL: 'manual',
+    EFFECTS: 'effects',
     BLANK: 'blank',
 }
 
@@ -48,6 +49,8 @@ export class RenderUtility {
                 return _renderSaveButton(fieldData);
             case FIELD_TYPE.MANUAL:
                 return _renderDamageButton(fieldData);
+            case FIELD_TYPE.EFFECTS:
+                return _renderEffectsButton(fieldData);
             case FIELD_TYPE.CHECK:
                 return _renderMultiRoll(fieldData);
             case FIELD_TYPE.ATTACK:
@@ -163,6 +166,14 @@ function _renderDamageButton(renderData = {}) {
     });
 }
 
+function _renderEffectsButton(renderData = {}) {
+    const { id } = renderData;
+
+    return _renderModuleTemplate(TEMPLATE.EFFECTS_BUTTON, {
+        id
+    });
+}
+
 async function _renderMultiRoll(renderData = {}) {
     const { id, roll, title, rollType, rollState } = renderData;
     const entries = [];
@@ -181,7 +192,7 @@ async function _renderMultiRoll(renderData = {}) {
             tmpResults.push(d20Rolls.results[i]);
         }        
         
-        let critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble };
+        const critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
         // This does not apply to dice that have been rerolled (unless they are replaced by a fixer value eg. for reliable talent).

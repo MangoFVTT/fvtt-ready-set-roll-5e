@@ -87,6 +87,7 @@ async function _addItemOptions(item, html) {
         combinedDamageTypes: CONFIG[MODULE_SHORT].combinedDamageTypes,
         hasFlavor: item.system.chatFlavor && item.system.chatFlavor !== "",
         hasDamage: item.hasDamage,
+        hasEffects: item.hasEffects,
         hasConsume: item.hasQuantity || item.hasUses || item.hasResource || item.hasRecharge,
         hasQuantity: item.hasQuantity,
         hasUses: item.hasUses,
