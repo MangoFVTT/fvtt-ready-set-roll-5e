@@ -14,7 +14,6 @@
 			"discord": "Mangó#8639"
 		}
 	],
-	"system": [ "dnd5e" ],
 	"esmodules": [
 		"./lib/libWrapper/shim.js",
 		"./src/ready-set-roll.js",		
@@ -36,6 +35,17 @@
 		}
 	],
 	"relationships": {
+		"systems": [
+			{
+				"id": "dnd5e",
+				"type": "system",
+				"manifest": "https://raw.githubusercontent.com/foundryvtt/dnd5e/master/system.json",
+				"compatibility": {
+					"minimum": "2.0.1",
+					"verified": "2.1.4"
+				}
+			}
+		],
 		"requires": [
 			{
 				"id": "lib-wrapper",
