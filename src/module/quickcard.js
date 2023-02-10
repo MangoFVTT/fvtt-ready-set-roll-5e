@@ -210,7 +210,7 @@ export class QuickCard {
         event.stopPropagation();
 
         const button = event.currentTarget;
-        const action = button.dataset.action;
+        const action = button.dataset.rsr;
 
         if (action === "effects-rsr") {
             const selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
