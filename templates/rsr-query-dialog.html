@@ -1,0 +1,14 @@
+<div class="form-group">
+    <label style="font-weight: bold;">
+        {{title}}
+    </label>
+    {{#if isMulti}}
+    <select id="rollQuery" name="rollQuery" style="margin-bottom: 5px; margin-left: 5px;">
+        {{#each values}}
+        <option value="{{this.value}}">{{this.label}}</option>
+        {{/each}}
+    </select>
+    {{else}}
+    <input id="rollQuery" name="rollQuery" type="text" value="{{values}}" onfocus="this.select()" style="width: unset; margin-bottom: 5px; margin-left: 5px;">
+    {{/if}}
+</div>
