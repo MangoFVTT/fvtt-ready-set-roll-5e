@@ -77,10 +77,10 @@ export class QuickCard {
 		const controlled = this._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
         const targeted = this._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
-		html.find(".die-result-overlay-br").show();
+		html.find(".die-result-overlay-rsr").show();
 
 		// Apply Damage / Augment Crit
-		html.find('.multiroll-overlay-br').toggle(hasPermission && !isMultiRoll);
+		html.find('.multiroll-overlay-rsr').toggle(hasPermission && !isMultiRoll);
 		html.find('.crit-button').toggle(hasPermission && !hasRolledCrit);
 		html.find('.apply-damage-buttons').toggle(controlled || targeted);
 		html.find('.apply-temphp-buttons').toggle(controlled || targeted);
@@ -92,7 +92,7 @@ export class QuickCard {
      * @private
      */
 	_onHoverEnd(html) {
-		html.find(".die-result-overlay-br").attr("style", "display: none;");
+		html.find(".die-result-overlay-rsr").attr("style", "display: none;");
 	}
 
     /**
@@ -147,7 +147,7 @@ export class QuickCard {
         });        
 
         // Handle clicking the multi-roll overlay buttons
-        html.find(".multiroll-overlay-br button").click(async evt => {
+        html.find(".multiroll-overlay-rsr button").click(async evt => {
             await this._processRetroButtonEvent(evt);
         });
     }
@@ -210,7 +210,7 @@ export class QuickCard {
         event.stopPropagation();
 
         const button = event.currentTarget;
-        const action = button.dataset.action;
+        const action = button.dataset.rsr;
 
         if (action === "effects-rsr") {
             const selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];

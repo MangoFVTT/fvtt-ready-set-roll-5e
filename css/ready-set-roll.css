@@ -128,7 +128,7 @@
 	font-size: 12px;
 }
 
-.rsr-full .br-flavor {
+.rsr-full .rsr-flavor {
 	font-style: italic;
 }
 
@@ -174,7 +174,7 @@
 	align-items:baseline;
 }
 
-.die-result-overlay-br {
+.die-result-overlay-rsr {
 	text-align: right!important;
 	flex-grow: 1;
 	position: absolute;
@@ -190,11 +190,11 @@
 	z-index: 1;
 }
 
-.die-result-overlay-br span {
+.die-result-overlay-rsr span {
 	display: flex;
 }
 
-.die-result-overlay-br button {
+.die-result-overlay-rsr button {
 	width: 20px;
 	height: 20px;
 	font-size: 10px;
@@ -204,18 +204,18 @@
 	padding: 0;
 }
 
-.die-result-overlay-br button.icon {
+.die-result-overlay-rsr button.icon {
 	background-size: 14px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
-.header-overlay-br {
+.header-overlay-rsr {
 	left: auto;
 	justify-content: right;
 }
 
-.header-overlay-br button {
+.header-overlay-rsr button {
 	width: 30px;
 	height: 30px;
 	font-size: 14px;
@@ -245,7 +245,7 @@
 	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-double.svg");
 }
 
-.die-result-overlay-br button i {
+.die-result-overlay-rsr button i {
 	margin: 0;
 }
 
