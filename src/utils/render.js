@@ -19,7 +19,7 @@ export const FIELD_TYPE = {
     SAVE: 'save',
     MANUAL: 'manual',
     EFFECTS: 'effects',
-    BLANK: 'blank',
+    BLANK: 'blank'
 }
 
 /**
@@ -76,6 +76,15 @@ export class RenderUtility {
      */
     static renderItemOptions(props) {
         return _renderModuleTemplate(TEMPLATE.OPTIONS, props);
+    }   
+
+    /**
+     * Renders a user interface for resolving a string query.
+     * @param {object} props The necessary render props for the template.
+     * @returns {Promise<String>} The rendered html data for the item sheet.
+     */
+    static renderQueryDialog(props) {
+        return _renderModuleTemplate(TEMPLATE.QUERY_DIALOG, props);
     }
 
     /**
