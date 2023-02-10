@@ -15,5 +15,6 @@ export const TEMPLATE = {
     OPTIONS: "rsr-item-options.html",
     BLANK: "rsr-blank.html",
     OVERLAY_DAMAGE: "rsr-overlay-damage.html",
-    OVERLAY_MULTIROLL: "rsr-overlay-multiroll.html"
+    OVERLAY_MULTIROLL: "rsr-overlay-multiroll.html",
+    QUERY_DIALOG: "rsr-query-dialog.html"
 }
