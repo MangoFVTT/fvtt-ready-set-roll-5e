@@ -409,7 +409,9 @@ function _addFieldDamageButton(fields, item) {
  * @param {Item} item The item from which to derive the field.
  * @private
  */
- function _addFieldEffectsButton(fields, item, params) {
+ function _addFieldEffectsButton(fields, item, params) {    
+    ItemUtility.ensurePropertiesOnItem(item);
+
     if (item.hasEffects) {
         if (!Object.values(params.effectFlags).some(f => f === true)) {
             return;
