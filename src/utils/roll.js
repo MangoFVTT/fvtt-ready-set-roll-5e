@@ -129,7 +129,7 @@ export class RollUtility {
 
         const skill = CONFIG.DND5E.skills[skillId];
         let title = CoreUtility.localize(skill.label);
-        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[skill.ability]})` : "";
+        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[actor.system.skills[skillId].ability]})` : "";
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
     }    
