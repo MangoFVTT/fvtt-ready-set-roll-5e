@@ -81,9 +81,11 @@ export class RollUtility {
             return await wrapper.call(caller, {}, { ignore: true });
         }
 
-        const isAltRoll = CoreUtility.eventToAltRoll(options?.event);
         const advMode = CoreUtility.eventToAdvantage(options?.event);
-        const config = ItemUtility.getRollConfigFromItem(caller, isAltRoll)
+        const isAltRoll = CoreUtility.eventToAltRoll(options?.event) || (options?.isAltRoll ?? false);
+        
+        const config = foundry.utils.mergeObject(options, ItemUtility.getRollConfigFromItem(caller, isAltRoll), { recursive: false });
+        const configureDialog = config?.configureDialog ?? (caller?.type === ITEM_TYPE.SPELL ? true : false);
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
@@ -101,7 +103,7 @@ export class RollUtility {
         }
 
         return await wrapper.call(caller, config, {
-            configureDialog: caller?.type === ITEM_TYPE.SPELL ? true : false,
+            configureDialog,
             createMessage: false,
             advMode,
             isAltRoll,
@@ -129,7 +131,7 @@ export class RollUtility {
 
         const skill = CONFIG.DND5E.skills[skillId];
         let title = CoreUtility.localize(skill.label);
-        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[skill.ability]})` : "";
+        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[actor.system.skills[skillId].ability]})` : "";
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
     }    

@@ -140,7 +140,7 @@ export class CoreUtility {
         }
 
 		const actorImage = (actor.img && !actor.img.includes("*")) ? actor.img : null;
-		const tokenImage = actor.prototypeToken?.texture?.src ? actor.prototypeToken.texture.src : null;
+		const tokenImage = actor.prototypeToken?.randomImg ? (actor.token?.texture?.src ?? null) : (actor.prototypeToken?.texture?.src ?? null);
 
 		switch(SettingsUtility.getSettingValue(SETTING_NAMES.DEFAULT_ROLL_ART)) {
 			case "actor":

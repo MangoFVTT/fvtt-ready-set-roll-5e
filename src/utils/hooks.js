@@ -97,7 +97,7 @@ export class HooksUtility {
 
         Hooks.on(HOOKS_DND5E.USE_ITEM, (item, config, options) => {
             if (!options?.ignore) {
-                RollUtility.rollItem(item, { ...config, ...options });
+                RollUtility.rollItem(item, foundry.utils.mergeObject(config, options, { recursive: false }));
             }
         });
     }
