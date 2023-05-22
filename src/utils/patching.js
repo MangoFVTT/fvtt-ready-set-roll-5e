@@ -24,6 +24,12 @@ export class PatchingUtility {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilityTest`, _actorRollAbilityTest, "MIXED");
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilitySave`, _actorRollAbilitySave, "MIXED");
         }
+        
+        libWrapper.register(MODULE_NAME, `${actorPrototype}.rollInitiativeDialog`, _actorRollInitiativeDialog, "MIXED");
+
+        const combatPrototype = "CONFIG.Combat.documentClass.prototype";
+
+        //libWrapper.register(MODULE_NAME, `${actorPrototype}.rollInitiative`, _actorRollInitiative, "MIXED");
     }
 
     /**
@@ -96,11 +102,30 @@ async function _actorRollAbilitySave(wrapper, abilityId, options) {
     return ignore ? roll : RollUtility.rollAbilitySave(this, abilityId, roll, options);
 }
 
+async function _actorRollInitiativeDialog(wrapper, options) {    
+    options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
+
+    // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
+    const ignore = options?.event?.altKey ?? false;
+
+    if (options?.vanilla || ignore) {
+        wrapper.call(this, options);
+        return;
+    }
+
+    const roll = this.getInitiativeRoll(options);
+
+    this._cachedInitiativeRoll = roll;
+    await this.rollInitiative({ createCombatants: true });
+    delete this._cachedInitiativeRoll;
+}
+
+
 /**
  * Patch function for rolling an Item usage.
- * @param {function} wrapper The original wrapper for the function.
+ * @param {Function} wrapper The original wrapper for the function.
  * @param {Object} options Options for processing the item usage.
- * @returns {Promise<ChatMessage|object|void>} The generated chat data for the Item usage.
+ * @returns {Promise<ChatMessage|Object|void>} The generated chat data for the Item usage.
  * @private
  */
 async function _itemUse(wrapper, options) {
@@ -114,8 +139,8 @@ async function _itemUse(wrapper, options) {
 /**
  * Process the wrapper for an Actor roll and bypass quick rolling if necessary.
  * @param {Actor} caller The calling object of the wrapper.
- * @param {function} wrapper The original wrapper to process.
- * @param {*} options Options for processing the wrapper.
+ * @param {Function} wrapper The original wrapper to process.
+ * @param {Oject} options Options for processing the wrapper.
  * @param {String} id The associated id of the Actor roll (eg. skill id).
  * @returns {Promise<Roll>} The processed roll data from the wrapper.
  * @private
@@ -133,9 +158,9 @@ async function _actorProcessWrapper(caller, wrapper, options, id) {
 /**
  * Process the wrapper for an Item roll and bypass quick rolling if necessary.
  * @param {Item} caller The calling object of the wrapper.
- * @param {function} wrapper The original wrapper to process.
- * @param {*} config Configuration for processing the item.
- * @param {*} options Options for processing the wrapper.
+ * @param {Function} wrapper The original wrapper to process.
+ * @param {Object} config Configuration for processing the item.
+ * @param {Object} options Options for processing the wrapper.
  * @returns {Promise<ChatMessage>} The processed chat data for the wrapper.
  * @private
  */
