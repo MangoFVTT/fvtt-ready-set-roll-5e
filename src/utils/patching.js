@@ -26,10 +26,6 @@ export class PatchingUtility {
         }
         
         libWrapper.register(MODULE_NAME, `${actorPrototype}.rollInitiativeDialog`, _actorRollInitiativeDialog, "MIXED");
-
-        const combatPrototype = "CONFIG.Combat.documentClass.prototype";
-
-        //libWrapper.register(MODULE_NAME, `${actorPrototype}.rollInitiative`, _actorRollInitiative, "MIXED");
     }
 
     /**
