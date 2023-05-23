@@ -62,7 +62,8 @@
                 "itemNotSpecified": "No item identifier was specified. Please specify an item by name or ID.",
                 "cannotFindIdentifier": "No {type} exists with name or ID '{identifier}'. Please specify a valid {type}.",
                 "noSelectedActor": "You must have an actor selected to use this macro.",
-                "damageNotSpecified": "No damage formula was provided. Please specify one or more formulae to roll as damage."
+                "damageNotSpecified": "No damage formula was provided. Please specify one or more formulae to roll as damage.",
+                "cannotRepeatRoll": "Failed to repeat Quick Roll. Unspecified error."
             },
             "warning": {
                 "emptyDamageField": "One or more damage fields on this item are empty! To roll damage, ensure all damage fields are filled."
