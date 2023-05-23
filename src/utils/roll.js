@@ -243,6 +243,8 @@ export class RollUtility {
      * @returns {Promise<Roll>} The upgraded multi roll from the provided roll.
      */
     static async upgradeRoll(roll, targetState, params = {}) {
+        if (!roll) return null;
+
 		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
 			return roll;
