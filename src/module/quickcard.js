@@ -192,7 +192,7 @@ export class QuickCard {
         html.find(".card-header").append($(template));      
 
         // Handle clicking the multi-roll overlay buttons
-        html.find(".header-overlay-br button").click(async evt => {
+        html.find(".header-overlay-rsr button").click(async evt => {
             await this._processRepeatButtonEvent(evt);
         });
     }
@@ -332,7 +332,9 @@ export class QuickCard {
         const action = button.dataset.action;
 
         if (action === "repeat") {
-            console.log("repeat");
+           if (!await this.roll.repeatRoll()) {
+                LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.cannotRepeatRoll`));
+           }
         }
     }
 
