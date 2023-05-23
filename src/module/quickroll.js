@@ -111,6 +111,15 @@ export class QuickRoll {
 	}
 
 	/**
+	 * Returns the list of effect IDs to apply.
+	 * @returns {Array} An array of string IDs, where each one corresponds to an active effect.
+	 */
+	get effectsToApply() {
+		const effectsFields = this.fields.filter(field => field[0] === FIELD_TYPE.EFFECTS)
+		return effectsFields.flatMap(field => field[1].apply);
+	}
+
+	/**
 	 * Creates a QuickRoll instance from data stored within chat card flags.
 	 * Used when needing to recreate chat card module data for existing chat messages.
 	 * @param {ChatMessage} message The chat card message data to retrieve a roll instance from.
@@ -251,7 +260,7 @@ export class QuickRoll {
 	async upgradeToCrit(targetId) {
 		const targetField = this.fields[targetId];
 
-		if (!targetField || !this.item || !this.hasPermission || !targetField[1]?.baseRoll || targetField[1]?.critRoll) {
+		if (!targetField || !this.hasPermission || !targetField[1]?.baseRoll || targetField[1]?.critRoll) {
 			return false;
 		}
 
@@ -263,12 +272,12 @@ export class QuickRoll {
 		const options = {
 			multiplyNumeric: game.settings.get("dnd5e", "criticalDamageModifiers"),
 			powerfulCritical: game.settings.get("dnd5e", "criticalDamageMaxDice"),
-			criticalBonusDice: this.item.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0,
-			criticalBonusDamage: this.item.system.critical.damage ?? ""
+			criticalBonusDice: this.item?.system.actionType === "mwak" ? (this.actor.getFlag("dnd5e", "meleeCriticalDamageDice") ?? 0) : 0,
+			criticalBonusDamage: this.item?.system.critical.damage ?? ""
 		}
 		
 		const damageFields = this.fields.filter(f => f[0] === FIELD_TYPE.DAMAGE);
-		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), this.item.getRollData(), options);
+		targetField[1].critRoll = await RollUtility.getCritRoll(targetField[1].baseRoll, damageFields.indexOf(targetField), this.item?.getRollData(), options);
 
 		await CoreUtility.tryRollDice3D(targetField[1].critRoll);
 

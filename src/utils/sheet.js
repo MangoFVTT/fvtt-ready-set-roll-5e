@@ -50,7 +50,9 @@ export class SheetUtility {
             _activate = false;
         }
         
-        SheetUtility.setAutoHeightOnSheet(sheet);
+        if  (sheet._tabs[0].active === MODULE_SHORT) {
+            SheetUtility.setAutoHeightOnSheet(sheet);
+        }
     }
 }
 
@@ -85,6 +87,7 @@ async function _addItemOptions(item, html) {
         combinedDamageTypes: CONFIG[MODULE_SHORT].combinedDamageTypes,
         hasFlavor: item.system.chatFlavor && item.system.chatFlavor !== "",
         hasDamage: item.hasDamage,
+        hasEffects: item.hasEffects,
         hasConsume: item.hasQuantity || item.hasUses || item.hasResource || item.hasRecharge,
         hasQuantity: item.hasQuantity,
         hasUses: item.hasUses,

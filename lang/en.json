@@ -19,6 +19,10 @@
             "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
             "applyDamageTo.name": "Apply Damage Options",
             "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons.",
+            "enableApplyEffects.name": "Enable Apply Effects Button",
+            "enableApplyEffects.hint": "When outputting a quick roll, show a button allowing the transfer of item effects to actors.",
+            "applyEffectsTo.name": "Apply Effects Options",
+            "applyEffectsTo.hint": "Determines which tokens effects are applied to when applying effects via the effects chat button.",
             "alwaysApplyCrit.name": "Always Apply Critical Damage",
             "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
@@ -52,9 +56,13 @@
                 "labelNotInDictionary": "{type} '{label}' does not exist. Valid values can be found in {dictionary}.",
                 "objectNotExpectedType": "Data object did not match the expected type. Expected type '{type}'.",
                 "incorrectRollType": "Cannot roll an {function} roll for roll type '{type}'.",
-                "incorrectFieldType": "Cannot upgrade a roll of type {type} to a multi roll.",
-                "incorrectTargetState": "Cannot ugprade a roll to target state {state} because it is not a valid state (advantage or disadvantage).",
-                "rollIsNullOrUndefined": "The given roll is null or undefined."
+                "incorrectFieldType": "Cannot upgrade a roll of type '{type}' to a multi roll.",
+                "incorrectTargetState": "Cannot ugprade a roll to target state '{state}' because it is not a valid state (advantage or disadvantage).",
+                "rollIsNullOrUndefined": "The given roll is null or undefined.",
+                "itemNotSpecified": "No item identifier was specified. Please specify an item by name or ID.",
+                "cannotFindIdentifier": "No {type} exists with name or ID '{identifier}'. Please specify a valid {type}.",
+                "noSelectedActor": "You must have an actor selected to use this macro.",
+                "damageNotSpecified": "No damage formula was provided. Please specify one or more formulae to roll as damage."
             },
             "warning": {
                 "emptyDamageField": "One or more damage fields on this item are empty! To roll damage, ensure all damage fields are filled."
@@ -92,6 +100,7 @@
                 "subsection": {
                     "main": "Main Content",
                     "damage": "Damage Rolls",
+                    "effects": "Active Effects",
                     "consume": "Consumables"
                 },
                 "options": {
@@ -124,6 +133,7 @@
             "healing": "Healing",
             "crit": "Crit",
             "other": "Other",
+            "effects": "Apply Active Effects",
             "buttons": {
                 "damageFull": "Click to apply full damage to selected token(s).",
                 "damageHalf": "Click to apply half damage to selected token(s).",

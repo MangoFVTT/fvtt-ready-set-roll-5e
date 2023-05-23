@@ -48,8 +48,8 @@ export class RollUtility {
     /**
      * Calls the wrapped Actor roll with advantage/disadvantage determined by pressed modifier keys in the triggering event.
      * @param {Actor} caller The calling object of the wrapper.
-     * @param {function} wrapper The roll wrapper to call.
-     * @param {any} options Option data for the triggering event.
+     * @param {Function} wrapper The roll wrapper to call.
+     * @param {Object} options Option data for the triggering event.
      * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
      * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<Roll>} The roll result of the wrapper.
@@ -61,15 +61,16 @@ export class RollUtility {
             fastForward: !bypass,
             chatMessage: bypass,
             advantage: advMode > 0,
-            disadvantage: advMode < 0
+            disadvantage: advMode < 0,
+            rollMode: options?.rollMode
         });
     }
 
     /**
      * Calls the wrapped Item roll with advantage/disadvantage/alternate determined by pressed modifier keys in the triggering event.
      * @param {Item} caller The calling object of the wrapper.
-     * @param {function} wrapper The roll wrapper to call.
-     * @param {any} options Option data for the triggering event.
+     * @param {Function} wrapper The roll wrapper to call.
+     * @param {Object} options Option data for the triggering event.
      * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
      * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<ChatData>} The roll result of the wrapper.
@@ -80,9 +81,11 @@ export class RollUtility {
             return await wrapper.call(caller, {}, { ignore: true });
         }
 
-        const isAltRoll = CoreUtility.eventToAltRoll(options?.event);
         const advMode = CoreUtility.eventToAdvantage(options?.event);
-        const config = ItemUtility.getRollConfigFromItem(caller, isAltRoll)
+        const isAltRoll = CoreUtility.eventToAltRoll(options?.event) || (options?.isAltRoll ?? false);
+        
+        const config = foundry.utils.mergeObject(options, ItemUtility.getRollConfigFromItem(caller, isAltRoll), { recursive: false });
+        const configureDialog = config?.configureDialog ?? (caller?.type === ITEM_TYPE.SPELL ? true : false);
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
@@ -100,11 +103,12 @@ export class RollUtility {
         }
 
         return await wrapper.call(caller, config, {
-            configureDialog: caller?.type === ITEM_TYPE.SPELL ? true : false,
+            configureDialog,
             createMessage: false,
             advMode,
             isAltRoll,
-            spellLevel: caller?.system?.level
+            spellLevel: caller?.system?.level,
+            rollMode: options?.rollMode
         });
     }
 
@@ -113,9 +117,10 @@ export class RollUtility {
      * @param {Actor} actor The actor object from which the roll is being called. 
      * @param {String} skillId The id of the skill being rolled.
      * @param {Roll} roll The roll object that was made for the check.
+     * @param {Object} options Additional options for rolling a skill.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollSkill(actor, skillId, roll) {
+    static async rollSkill(actor, skillId, roll, options = {}) {
         LogUtility.log(`Quick rolling skill check from Actor '${actor.name}'.`);
 
         if (!(skillId in CONFIG.DND5E.skills)) {
@@ -126,64 +131,68 @@ export class RollUtility {
 
         const skill = CONFIG.DND5E.skills[skillId];
         let title = CoreUtility.localize(skill.label);
-        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[skill.ability]})` : "";
+        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[actor.system.skills[skillId].ability]})` : "";
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL);
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
     }    
 
     /**
      * Rolls an ability test from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {String} ability The id of the ability being rolled.
+     * @param {String} abilityId The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
+     * @param {Object} options Additional options for rolling an ability test.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollAbilityTest(actor, ability, roll) {
+    static async rollAbilityTest(actor, abilityId, roll, options = {}) {
         LogUtility.log(`Quick rolling ability test from Actor '${actor.name}'.`);
 
-        if (!(ability in CONFIG.DND5E.abilities)) {
+        if (!(abilityId in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
 		}
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST);
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
     }
 
     /**
      * Rolls an ability save from a given actor.
      * @param {Actor} actor The actor object from which the roll is being called. 
-     * @param {String} ability The id of the ability being rolled.
+     * @param {String} abilityId The id of the ability being rolled.
      * @param {Roll} roll The roll object that was made for the check.
+     * @param {Object} options Additional options for rolling an ability save.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollAbilitySave(actor, ability, roll) {
+    static async rollAbilitySave(actor, abilityId, roll, options = {}) {
         LogUtility.log(`Quick rolling ability save from Actor '${actor.name}'.`);
 
-        if (!(ability in CONFIG.DND5E.abilities)) {
+        if (!(abilityId in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
         }
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[ability])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE);
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
     }
 
     /**
      * Rolls a single usage from a given item.
      * @param {Item} item The item to roll.
-     * @param {*} params A set of parameters for rolling the Item.
+     * @param {Object} params A set of parameters for rolling the Item.
+     * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollItem(item, params) {
+    static async rollItem(item, params, createMessage = true) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
-        
+
         params = CoreUtility.ensureQuickRollParams(params);
         params.slotLevel = item.system.level;
+        params.createMessage = createMessage;
         item.system.level = params.spellLevel ?? item.system.level;
 
         return await _getItemRoll(item, params, ROLL_TYPE.ITEM)
@@ -192,8 +201,8 @@ export class RollUtility {
     /**
      * Processes a set of dice results to check what type of critical was rolled (for showing colour in chat card).
      * @param {Die} die A die term to process into a crit type.
-     * @param {Number} critThreshold The threshold above which a result is considered a crit.
-     * @param {Number} fumbleThreshold The threshold below which a result is considered a crit.
+     * @param {Number} options.critThreshold The threshold above which a result is considered a crit.
+     * @param {Number} options.fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
     static getCritTypeForDie(die, options = {}) {
@@ -207,8 +216,8 @@ export class RollUtility {
     /**
      * Processes a set of dice results to check what type of critical was rolled (for showing colour in chat card).
      * @param {Roll} roll A die term to process into a crit type.
-     * @param {*} critThreshold The threshold above which a result is considered a crit.
-     * @param {*} fumbleThreshold The threshold below which a result is considered a crit.
+     * @param {Number} options.critThreshold The threshold above which a result is considered a crit.
+     * @param {Number} options.fumbleThreshold The threshold below which a result is considered a crit.
      * @returns {CRIT_TYPE} The type of crit for the die term.
      */
     static getCritTypeForRoll(roll, options = {}) {
@@ -282,7 +291,8 @@ export class RollUtility {
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
 
-        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), { ignoreDiscarded: true });
+        const critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble, ignoreDiscarded: true };
+        const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), critOptions);
 
         params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
         params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
@@ -323,7 +333,7 @@ export class RollUtility {
             critTerms.push(plus, bonusDice);
         }
 
-        if (options.criticalBonusDamage && options.criticalBonusDamage !== "") {
+        if (groupIndex === 0 && options.criticalBonusDamage && options.criticalBonusDamage !== "") {
             const bonusDamage = await new CONFIG.Dice.DamageRoll(options.criticalBonusDamage, rollData).evaluate({ async: true });
 
             critTerms.push(plus, ...bonusDamage.terms);
@@ -347,11 +357,11 @@ export class RollUtility {
  * @param {String} title The label to show on the header of the chat card.
  * @param {String} roll The roll being quick rolled.
  * @param {String} rollType The type (as a string identifier) of the roll being quick rolled.
- * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
+ * @param {Object} options Additional options for rolling an actor roll.
  * @returns {Promise<QuickRoll>} The created actor quick roll.
  * @private
  */
-async function _getActorRoll(actor, title, roll, rollType, createMessage = true) {
+async function _getActorRoll(actor, title, roll, rollType, options = {}) {
     if (!actor instanceof Actor) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Actor" }));
         return null;
@@ -375,26 +385,25 @@ async function _getActorRoll(actor, title, roll, rollType, createMessage = true)
         actor,
         { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll },
         [
-            [FIELD_TYPE.HEADER, { title }],
+            [FIELD_TYPE.HEADER, { title, img: options?.img }],
             [FIELD_TYPE.BLANK, { display: false }],
             [FIELD_TYPE.CHECK, { roll: ensuredRoll, rollType }]
         ]
     );
 
-    await quickroll.toMessage({ createMessage });
+    await quickroll.toMessage(options);
     return quickroll;
 }
 
 /**
  * Gets an item-based quick roll.
  * @param {Item} item The item object from which the roll is being generated.
- * @param {*} params The combined parameters of the item roll (config and options).
- * @param {*} rollType The type (as a string identifier) of the roll being quick rolled.
- * @param {boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
+ * @param {Object} params The combined parameters of the item roll (config and options).
+ * @param {String} rollType The type (as a string identifier) of the roll being quick rolled.
  * @returns {Promise<QuickRoll>} The created item quick roll.
  * @private
  */
-async function _getItemRoll(item, params, rollType, createMessage = true) {
+async function _getItemRoll(item, params, rollType) {
     if (!item instanceof Item) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Item" }));
         return null;
@@ -421,12 +430,12 @@ async function _getItemRoll(item, params, rollType, createMessage = true) {
         item,
         { hasAdvantage, hasDisadvantage, isCrit, isFumble, isMultiRoll, isAltRoll, elvenAccuracy, slotLevel, spellLevel },
         [
-            [FIELD_TYPE.HEADER, { title: item.name, slotLevel: params?.slotLevel }],
+            [FIELD_TYPE.HEADER, { title: item.name, img: params?.img, slotLevel }],
             ...itemFields
         ]
     );
 
-    await quickroll.toMessage({ createMessage });
+    await quickroll.toMessage(params);
     return quickroll;
 }
 

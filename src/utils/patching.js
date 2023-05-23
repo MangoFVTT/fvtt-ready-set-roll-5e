@@ -55,7 +55,7 @@ export class PatchingUtility {
  * Patch function for rolling an Actor skill.
  * @param {function} wrapper The original wrapper for the function.
  * @param {String} skillId The id of the skill being rolled.
- * @param {*} options Options for processing the roll.
+ * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor skill.
  * @private
  */
@@ -63,43 +63,43 @@ async function _actorRollSkill(wrapper, skillId, options) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
     const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, skillId);
 
-    return ignore ? roll : RollUtility.rollSkill(this, skillId, roll);
+    return ignore ? roll : RollUtility.rollSkill(this, skillId, roll, options);
 }
 
 /**
  * Patch function for rolling an Actor ability test.
  * @param {function} wrapper The original wrapper for the function.
  * @param {String} skillId The id of the ability being rolled.
- * @param {*} options Options for processing the roll.
+ * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability test.
  * @private
  */
-async function _actorRollAbilityTest(wrapper, ability, options) {
+async function _actorRollAbilityTest(wrapper, abilityId, options) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
-    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, ability);
+    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, abilityId);
 
-    return ignore ? roll : RollUtility.rollAbilityTest(this, ability, roll);
+    return ignore ? roll : RollUtility.rollAbilityTest(this, abilityId, roll, options);
 }
 
 /**
  * Patch function for rolling an Actor ability save.
  * @param {function} wrapper The original wrapper for the function.
  * @param {String} skillId The id of the ability being rolled.
- * @param {*} options Options for processing the roll.
+ * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability save.
  * @private
  */
-async function _actorRollAbilitySave(wrapper, ability, options) {
+async function _actorRollAbilitySave(wrapper, abilityId, options) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
-    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, ability);
+    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, abilityId);
 
-    return ignore ? roll : RollUtility.rollAbilitySave(this, ability, roll);
+    return ignore ? roll : RollUtility.rollAbilitySave(this, abilityId, roll, options);
 }
 
 /**
  * Patch function for rolling an Item usage.
  * @param {function} wrapper The original wrapper for the function.
- * @param {*} options Options for processing the item usage.
+ * @param {Object} options Options for processing the item usage.
  * @returns {Promise<ChatMessage|object|void>} The generated chat data for the Item usage.
  * @private
  */

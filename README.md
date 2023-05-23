@@ -63,7 +63,7 @@ The following modules have been verified as compatible from the specified module
 ![retroactiveoverlay](https://user-images.githubusercontent.com/110994627/189863316-90a483e8-b35b-4bc5-905a-ca7d0e2ea80c.gif)
 
 ### Apply Individual Damage
-- If enabled via the module settings, each damage field in a quick roll chat card can apply damage or healing to selected tokens individually via overlay buttons. This extends core system behaviour (applying damage via context menus) to allow for the application of each damage field individually instead of as a single whole.
+- If enabled via the module settings, each damage field in a quick roll chat card can apply damage or healing to selected or targeted tokens via overlay buttons. This extends core system behaviour (applying damage via context menus) to allow for the application of each damage field individually instead of as a single whole.
 - Damage fields can be applied in a specific manner (damage or healing) regardless of the actual damage type. This is intended to allow Players or GMs to manually decide what to do with the damage field in the event of edge cases (such as a specific damage type healing instead of doing damage for a particular creature).
 - Applying critical damage to a token will display a prompt allowing for critical damage to be ignored if desired. This can be disabled via a setting to always apply critical damage.
 
@@ -75,13 +75,31 @@ The following modules have been verified as compatible from the specified module
 
 ![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
+### Transfer Item Effects
+- If enabled via the module settings, quick rolls for items that have transferrable effects can be configured to transfer some or all of those effects to selected or targeted tokens via a clickable button in the roll card.
+- This feature requires [Dynamic Active Effects (DAE)](https://gitlab.com/tposney/dae) to work. If this module is not available, the setting will automatically be hidden/disabled.
+
+![applyeffects](https://user-images.githubusercontent.com/110994627/217320554-9f62e5ce-1b6e-4671-8cc9-5b780a98bfd2.gif)
+
+### Macro Support
+- Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
+- Macros are available in the following format:
+    - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
+    - `rsr5e.macro.rollDamage([['formula 1', 'damage type 1'], ['formula 2', 'damage type 2'], ...], options = {})`
+
+![macros](https://user-images.githubusercontent.com/110994627/214150998-869afaaa-b93a-4ff0-b9af-470c54f35d52.png)
+
+### String Queries
+- Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
+- This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
+
+![image](https://user-images.githubusercontent.com/110994627/214161613-1bb4720e-b0b4-4f85-9658-e8c44d1227c3.png)
+
 ## Planned Features
-- Sheet roll buttons ([Issue #34](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues/34))
-- More compatibility with other modules.
-- Macro support for more flexible quick rolling.
+- [See [FEATURE] Issues List](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Afeature)
 
 ## Known Issues
-- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=label%3Abug+)
+- [See [BUG] Issues list](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Abug+)
 
 ## Acknowledgements
 - Atropos and the Foundry development team for making a truly fantastic VTT.

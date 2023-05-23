@@ -41,6 +41,7 @@ CONFIG[MODULE_SHORT] = {
 			quickVersatile: { type: "Boolean", value: false, altValue: true },
 			quickTemplate: { type: "Boolean", value: true, altValue: true },
 			quickDamage: { type: "Array", value: [], altValue: [], context: [] },
+			quickEffects: { type: "Array", value: [], altValue: [], context: [] },
 			quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            
 			consumeQuantity: { type: "Boolean", value: false, altValue: false },
 			consumeUses: { type: "Boolean", value: false, altValue: true },
@@ -54,6 +55,7 @@ CONFIG[MODULE_SHORT] = {
             quickVersatile: { type: "Boolean", value: false, altValue: false },
             quickSave: { type: "Boolean", value: true, altValue: true },
             quickDamage: { type: "Array", value: [], altValue: [], context: [] },
+			quickEffects: { type: "Array", value: [], altValue: [], context: [] },
             quickOther: { type: "Boolean", value: true, altValue: true, context: "" }
         },
         equipment: {
@@ -64,6 +66,7 @@ CONFIG[MODULE_SHORT] = {
             quickTemplate: { type: "Boolean", value: true, altValue: true },
             quickSave: { type: "Boolean", value: true, altValue: true },
             quickDamage: { type: "Array", value: [], altValue: [], context: [] },
+			quickEffects: { type: "Array", value: [], altValue: [], context: [] },
             quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            
             consumeQuantity: { type: "Boolean", value: false, altValue: false },
             consumeUses: { type: "Boolean", value: false, altValue: true },
@@ -77,6 +80,7 @@ CONFIG[MODULE_SHORT] = {
             quickTemplate: { type: "Boolean", value: true, altValue: true },
             quickSave: { type: "Boolean", value: true, altValue: true },
             quickDamage: { type: "Array", value: [], altValue: [], context: [] },
+			quickEffects: { type: "Array", value: [], altValue: [], context: [] },
             quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            
             consumeQuantity: { type: "Boolean", value: true, altValue: true },
             consumeUses: { type: "Boolean", value: true, altValue: true },
@@ -87,7 +91,8 @@ CONFIG[MODULE_SHORT] = {
 			quickDesc: { type: "Boolean", get value() { return SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ROLL_DESC_ENABLED) }, altValue: false },
             quickFlavor: { type: "Boolean", value: true, altValue: true },
             quickFooter: { type: "Boolean", value: true, altValue: true },
-            quickCheck: { type: "Boolean", value: true, altValue: true }
+            quickCheck: { type: "Boolean", value: true, altValue: true },
+			quickEffects: { type: "Array", value: [], altValue: [], context: [] }
         },
         consumable: {
             quickDesc: { type: "Boolean", value: true, altValue: true },
@@ -97,6 +102,7 @@ CONFIG[MODULE_SHORT] = {
             quickTemplate: { type: "Boolean", value: true, altValue: true },
             quickSave: { type: "Boolean", value: true, altValue: true },
             quickDamage: { type: "Array", value: [], altValue: [], context: [] },
+			quickEffects: { type: "Array", value: [], altValue: [], context: [] },
             quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            
             consumeQuantity: { type: "Boolean", value: true, altValue: true },
             consumeUses: { type: "Boolean", value: true, altValue: true },

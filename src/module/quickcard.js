@@ -9,13 +9,22 @@ import { QuickRoll } from "./quickroll.js";
  * Class that parses a base system card into a module card, with functionality for adding overlay card elements.
  */
 export class QuickCard {
-    _applyToTargeted;
-    _applyToSelected;
+    _applyDamageToTargeted;
+    _applyDamageToSelected;
+    _applyEffectsToTargeted;
+    _applyEffectsToSelected;
 
     constructor (message, html) {
-        const applyOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        this._applyToTargeted = applyOption === 1 || applyOption === 2;
-        this._applyToSelected = applyOption === 0 || applyOption === 2;
+        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
+        this._applyDamageToTargeted = applyDamageOption === 1 || applyDamageOption === 2;
+        this._applyDamageToSelected = applyDamageOption === 0 || applyDamageOption === 2;
+
+        if (CoreUtility.hasDAE())
+        {
+            const applyEffectsOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_TO);
+            this._applyEffectsToTargeted = applyEffectsOption === 1 || applyEffectsOption === 2;
+            this._applyEffectsToSelected = applyEffectsOption === 0 || applyEffectsOption === 2;
+        }
 
         this.updateBinding(message, html);
     }
@@ -39,10 +48,7 @@ export class QuickCard {
             html.find(".hideSave").text(CoreUtility.localize(`${MODULE_SHORT}.chat.hide`));
         }
 
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
-            this._setupActionButtons(html);
-            LogUtility.log("Initialised quick card action buttons.")
-        }
+        this._setupActionButtons(html);
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
             // Setup hover buttons when the message is actually hovered(for optimisation).
@@ -68,13 +74,13 @@ export class QuickCard {
         const hasRolledCrit = this.roll?.hasRolledCrit ?? false;
         const isMultiRoll = this.roll?.params?.isMultiRoll ?? true;
 
-		const controlled = this._applyToSelected && canvas?.tokens?.controlled?.length > 0;
-        const targeted = this._applyToTargeted && game?.user?.targets?.size > 0;
+		const controlled = this._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
+        const targeted = this._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
-		html.find(".die-result-overlay-br").show();
+		html.find(".die-result-overlay-rsr").show();
 
 		// Apply Damage / Augment Crit
-		html.find('.multiroll-overlay-br').toggle(hasPermission && !isMultiRoll);
+		html.find('.multiroll-overlay-rsr').toggle(hasPermission && !isMultiRoll);
 		html.find('.crit-button').toggle(hasPermission && !hasRolledCrit);
 		html.find('.apply-damage-buttons').toggle(controlled || targeted);
 		html.find('.apply-temphp-buttons').toggle(controlled || targeted);
@@ -86,7 +92,7 @@ export class QuickCard {
      * @private
      */
 	_onHoverEnd(html) {
-		html.find(".die-result-overlay-br").attr("style", "display: none;");
+		html.find(".die-result-overlay-rsr").attr("style", "display: none;");
 	}
 
     /**
@@ -94,10 +100,20 @@ export class QuickCard {
      * Note that the actual buttons are created during rendering and not added here.
      * @param {JQuery} html The object to add button handlers to.
      */
-    _setupActionButtons(html) {
-        html.find(".rsr-damage-buttons button").click(async evt => {
-            await this._processDamageButtonEvent(evt);
-        });
+    _setupActionButtons(html) {        
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
+            html.find(".rsr-damage-buttons button").click(async evt => {
+                await this._processDamageButtonEvent(evt);
+            });
+        }
+
+        if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
+            html.find(".rsr-effects-buttons button").click(async evt => {
+                await this._processEffectsButtonEvent(evt);
+            });
+        }
+        
+        LogUtility.log("Initialised quick card action buttons.")
     }
 
     /**
@@ -132,7 +148,7 @@ export class QuickCard {
         });        
 
         // Handle clicking the multi-roll overlay buttons
-        html.find(".multiroll-overlay-br button").click(async evt => {
+        html.find(".multiroll-overlay-rsr button").click(async evt => {
             await this._processRetroButtonEvent(evt);
         });
     }
@@ -202,6 +218,29 @@ export class QuickCard {
     }
 
     /**
+     * Processes and handles an apply effects button click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
+    async _processEffectsButtonEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const button = event.currentTarget;
+        const action = button.dataset.rsr;
+
+        if (action === "effects-rsr") {
+            const selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
+            const targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
+            const targets = new Set([...selectTokens, ...targetTokens]);
+
+            window.DAE.doEffects(this.roll.item, true, targets, {
+                effectsToApply: this.roll.effectsToApply
+            });
+        }
+    }
+
+    /**
      * Processes and handles a retroactive advantage/disadvantage button click event.
      * @param {Event} event The originating event of the button click.
      * @private
@@ -264,8 +303,8 @@ export class QuickCard {
             damage = await this._resolveCritDamage(Number(damage), Number(crit), dialogPosition);
         }
 
-        const selectTokens = this._applyToSelected ? canvas.tokens.controlled : [];
-        const targetTokens = this._applyToTargeted ? game.user.targets : [];
+        const selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
+        const targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
         const targets = new Set([...selectTokens, ...targetTokens]);
 
         await Promise.all(Array.from(targets).map( t => {
