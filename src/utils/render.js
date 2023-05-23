@@ -93,6 +93,14 @@ export class RenderUtility {
     static renderOverlayMultiRoll() {
         return _renderModuleTemplate(TEMPLATE.OVERLAY_MULTIROLL, {});
     }
+
+    /**
+     * Renders overlay buttons for repeating a roll from a chat card.
+     * @returns {Promise<String>} The rendered html data for the chat card.
+     */
+    static renderOverlayHeader() {
+        return _renderModuleTemplate(TEMPLATE.OVERLAY_HEADER, {});
+    }  
 }
 
 function _renderBlank(renderData = {}) {

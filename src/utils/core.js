@@ -192,6 +192,26 @@ export class CoreUtility {
     }
 
     /**
+     * Attempts to repack rolls in an array of fields into proper roll objects.
+     * @param {Array} fields The array of fields to repack.
+     * @returns {Array} The array of fields with repacked rolls.
+     */
+    static repackQuickRollFields(fields) {
+        fields.forEach(field => {
+			if (CONFIG[MODULE_SHORT].validMultiRollFields.includes(field[0])) {
+				field[1].roll = Roll.fromData(field[1].roll);
+			}
+
+			if (CONFIG[MODULE_SHORT].validDamageRollFields.includes(field[0])) {
+				field[1].baseRoll = field[1].baseRoll ? Roll.fromData(field[1].baseRoll) : null;
+				field[1].critRoll = field[1].critRoll ? Roll.fromData(field[1].critRoll) : null;
+			}
+		});
+
+        return fields;
+    }
+
+    /**
      * Attempts to roll 3D dice if the relevant module (Dice So Nice) is installed.
      * @param {Roll} roll The roll object to roll 3D dice for.
      * @returns {Promise<Boolean>} Whether or not 3D dice were actually rolled.
