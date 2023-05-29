@@ -43,11 +43,11 @@ export class ItemUtility {
         let fields = [];
 
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", params.isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", params.isAltRoll) && !params?.forceHideDescription) {
             _addFieldFlavor(fields, chatData);
         }
 
-        if (ItemUtility.getFlagValueFromItem(item, "quickDesc", params.isAltRoll)) {
+        if (ItemUtility.getFlagValueFromItem(item, "quickDesc", params.isAltRoll) && !params?.forceHideDescription) {
             _addFieldDescription(fields, chatData);
         }
 
