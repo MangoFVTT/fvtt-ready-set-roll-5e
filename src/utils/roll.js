@@ -153,7 +153,7 @@ export class RollUtility {
             return null;
 		}
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId].label || CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
     }
@@ -175,7 +175,7 @@ export class RollUtility {
             return null;
         }
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId].label || CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
     }
@@ -243,6 +243,8 @@ export class RollUtility {
      * @returns {Promise<Roll>} The upgraded multi roll from the provided roll.
      */
     static async upgradeRoll(roll, targetState, params = {}) {
+        if (!roll) return null;
+
 		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
 			return roll;
@@ -325,7 +327,6 @@ export class RollUtility {
         });
 
         const firstDie = critTerms.find(t => t instanceof Die);
-        const index = critTerms.indexOf(firstDie);
 
         if (options.criticalBonusDice && options.criticalBonusDice > 0 && groupIndex === 0 && firstDie) {
             const bonusDice = await new Die({ number: options.criticalBonusDice, faces: firstDie.faces }).evaluate({ async: true });
