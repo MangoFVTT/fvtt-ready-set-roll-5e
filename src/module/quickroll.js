@@ -226,10 +226,14 @@ export class QuickRoll {
 		if (!this.hasPermission || !this.fields || this.fields.length === 0) {
 			return false;
 		}
-
+		
 		// For item rolls, simply reroll the item without any consumes.
 		if (this.item) {
-			await RollUtility.rollItem(this.item, { forceHideDescription: true });
+			await RollUtility.rollItem(this.item, { 
+				forceHideDescription: true,
+				slotLevel: this.params?.slotLevel,
+				spellLevel: this.params?.spellLevel
+			});
 			return true;
 		}
 
