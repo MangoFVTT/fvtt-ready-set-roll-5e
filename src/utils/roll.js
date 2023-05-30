@@ -191,7 +191,7 @@ export class RollUtility {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
 
         params = CoreUtility.ensureQuickRollParams(params);
-        params.slotLevel = item.system.level;
+        params.slotLevel = params.slotLevel ?? item.system.level;
         params.createMessage = createMessage;
         item.system.level = params.spellLevel ?? item.system.level;
 
