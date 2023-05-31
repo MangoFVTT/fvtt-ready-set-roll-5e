@@ -15,6 +15,7 @@ export const ROLL_TYPE = {
     TOOL: "tool",
     ABILITY_TEST: "check",
     ABILITY_SAVE: "save",
+    DEATH_SAVE: "death",
     ITEM: "item",
     ATTACK: "attack",
     DAMAGE: "damage",
@@ -58,13 +59,15 @@ export class RollUtility {
     static async rollActorWrapper(caller, wrapper, options, id, bypass = false) {
         const advMode = CoreUtility.eventToAdvantage(options.event);
 
-        return await wrapper.call(caller, id, {
+        const params = {
             fastForward: !bypass,
             chatMessage: bypass,
             advantage: advMode > 0,
             disadvantage: advMode < 0,
             rollMode: options?.rollMode
-        });
+        }
+
+        return id ? wrapper.call(caller, id, params) : wrapper.call(caller, params);
     }
 
     /**
@@ -79,7 +82,7 @@ export class RollUtility {
     static async rollItemWrapper(caller, wrapper, options, bypass = false) {
         // We can ignore the item if it is not one of the types that requires a quick roll.
         if (bypass || !CONFIG[MODULE_SHORT].validItemTypes.includes(caller?.type)) {
-            return await wrapper.call(caller, {}, { ignore: true });
+            return wrapper.call(caller, {}, { ignore: true });
         }
 
         const advMode = CoreUtility.eventToAdvantage(options?.event);
@@ -103,7 +106,7 @@ export class RollUtility {
             await caller.update(itemUpdates);
         }
 
-        return await wrapper.call(caller, config, {
+        return wrapper.call(caller, config, {
             configureDialog,
             createMessage: false,
             advMode,
@@ -143,7 +146,7 @@ export class RollUtility {
 
         const title = `${skill.label}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
+        return _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
     }
 
     /**
@@ -177,7 +180,7 @@ export class RollUtility {
         const title = `${tool.name}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
         options.img = tool.img;
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.TOOL, options);
+        return _getActorRoll(actor, title, roll, ROLL_TYPE.TOOL, options);
     }
 
     /**
@@ -201,7 +204,7 @@ export class RollUtility {
 
         const title = `${ability.label} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
+        return _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
     }
 
     /**
@@ -225,7 +228,17 @@ export class RollUtility {
 
         const title = `${ability.label} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
-        return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
+        return _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
+    }
+
+    static async rollDeathSave(actor, roll, options = {}) {
+        if (!roll) return null;
+        
+        LogUtility.log(`Quick rolling death save from Actor '${actor.name}'.`);
+
+        const title = "Death Save";
+
+        return _getActorRoll(actor, title, roll, ROLL_TYPE.DEATH_SAVE, options);
     }
 
     /**
@@ -416,7 +429,7 @@ async function _getActorRoll(actor, title, roll, rollType, options = {}) {
         return null;
     }
 
-    if (rollType !== ROLL_TYPE.SKILL && rollType !== ROLL_TYPE.ABILITY_SAVE && rollType !== ROLL_TYPE.ABILITY_TEST && rollType !== ROLL_TYPE.TOOL) {
+    if (!CONFIG[MODULE_SHORT].validActorRolls.includes(rollType)) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectRollType`, { function: "Actor", type: rollType }));
         return null;
     }
@@ -458,7 +471,7 @@ async function _getItemRoll(item, params, rollType) {
         return null;
     }
 
-    if (rollType !== ROLL_TYPE.ITEM) {
+    if (!CONFIG[MODULE_SHORT].validItemRolls.includes(rollType)) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectRollType`, { function: "Item", type: rollType }));
         return null;
     }
