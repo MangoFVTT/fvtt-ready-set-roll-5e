@@ -129,8 +129,16 @@ export class RollUtility {
             return null;
 		}
 
+        const abilityId = actor.system.skills[skillId].ability;
+
+        if (!(abilityId in CONFIG.DND5E.abilities)) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
+                { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
+            return null;
+		}
+
         const skill = CONFIG.DND5E.skills[skillId];
-        const ability = CONFIG.DND5E.abilities[skill.ability];
+        const ability = CONFIG.DND5E.abilities[abilityId];
 
         const title = `${CoreUtility.localize(skill.label)}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
 
