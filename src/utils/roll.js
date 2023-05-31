@@ -138,10 +138,9 @@ export class RollUtility {
             return null;
 		}
 
-        const skill = CONFIG.DND5E.skills[skillId];
         const ability = CONFIG.DND5E.abilities[abilityId];
 
-        const title = `${CoreUtility.localize(skill.label)}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
+        const title = `${skill.label}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
     }    
@@ -165,7 +164,7 @@ export class RollUtility {
         
         const ability = CONFIG.DND5E.abilities[abilityId];
 
-        const title = `${CoreUtility.localize(ability.label)} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${ability.label} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
     }
@@ -189,7 +188,7 @@ export class RollUtility {
 
         const ability = CONFIG.DND5E.abilities[abilityId];
 
-        const title = `${CoreUtility.localize(ability.label)} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const title = `${ability.label} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
     }
