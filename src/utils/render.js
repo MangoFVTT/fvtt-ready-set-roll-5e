@@ -188,7 +188,7 @@ async function _renderMultiRoll(renderData = {}) {
 
     // Process bonuses beyond the base d20s into a single roll.
     const bonusTerms = roll.terms.slice(1);
-    const bonusRoll = bonusTerms ? Roll.fromTerms(bonusTerms) : null;
+    const bonusRoll = (bonusTerms && bonusTerms.length > 0) ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
     for (let i = 0; i < d20Rolls.results.length; i++) {
