@@ -124,7 +124,7 @@ function _renderHeader(renderData = {}) {
     }
 
     if (item?.type === ITEM_TYPE.TOOL) {
-        title += ` (${CONFIG.DND5E.abilities[item.system.ability]})`;
+        title += ` (${CONFIG.DND5E.abilities[item.system.ability].label})`;
     }
 
     return _renderModuleTemplate(TEMPLATE.HEADER, {
@@ -155,7 +155,7 @@ function _renderDescription(renderData = {}) {
 function _renderSaveButton(renderData = {}) {
     const { id, ability, dc, hideDC } = renderData;    
 
-    const abilityLabel = CONFIG.DND5E.abilities[ability];
+    const abilityLabel = CONFIG.DND5E.abilities[ability].label;
 
     return _renderModuleTemplate(TEMPLATE.SAVE_BUTTON, {
         id,

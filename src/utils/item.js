@@ -591,13 +591,13 @@ async function _addFieldAbilityCheck(fields, item, params) {
             }
         ]);
     } else if (item.hasAbilityCheck && item.actor) {
-        if (!(item.hasAbilityCheck in CONFIG.DND5E.abilities)) {
+        if (!(item.abilityMod in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Ability", label: ability, dictionary: "CONFIG.DND5E.abilities" }));
+                { type: "Ability", label: item.abilityMod, dictionary: "CONFIG.DND5E.abilities" }));
             return;
 		}
 
-        const roll = await item.actor.rollAbilityTest(item.hasAbilityCheck, {
+        const roll = await item.actor.rollAbilityTest(item.abilityMod, {
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
@@ -612,7 +612,7 @@ async function _addFieldAbilityCheck(fields, item, params) {
             {
                 roll: await RollUtility.ensureMultiRoll(roll, params),
                 rollType: ROLL_TYPE.ATTACK,
-                title: `Ability Check - ${CONFIG.DND5E.abilities[item.hasAbilityCheck]}`
+                title: `Ability Check - ${CONFIG.DND5E.abilities[item.abilityMod].label}`
             }
         ]);
     }    
