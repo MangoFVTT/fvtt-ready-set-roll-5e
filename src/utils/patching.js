@@ -18,6 +18,7 @@ export class PatchingUtility {
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollSkill`, _actorRollSkill, "MIXED");
+            libWrapper.register(MODULE_NAME, `${actorPrototype}.rollToolCheck`, _actorRollTool, "MIXED");
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ABILITY_ENABLED)) {
@@ -64,6 +65,21 @@ async function _actorRollSkill(wrapper, skillId, options) {
     const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, skillId);
 
     return ignore ? roll : RollUtility.rollSkill(this, skillId, roll, options);
+}
+
+/**
+ * Patch function for rolling an Actor tool.
+ * @param {function} wrapper The original wrapper for the function.
+ * @param {String} skillId The id of the tool being rolled.
+ * @param {Object} options Options for processing the roll.
+ * @returns {Promise<Roll>} The generated roll for the Actor tool.
+ * @private
+ */
+async function _actorRollTool(wrapper, toolId, options) {
+    options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
+    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, toolId);
+
+    return ignore ? roll : RollUtility.rollTool(this, toolId, roll, options);
 }
 
 /**
