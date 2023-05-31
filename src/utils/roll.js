@@ -153,7 +153,7 @@ export class RollUtility {
             return null;
 		}
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId].label || CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
     }
@@ -175,7 +175,7 @@ export class RollUtility {
             return null;
         }
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId].label || CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
     }
@@ -191,7 +191,7 @@ export class RollUtility {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
 
         params = CoreUtility.ensureQuickRollParams(params);
-        params.slotLevel = item.system.level;
+        params.slotLevel = params.slotLevel ?? item.system.level;
         params.createMessage = createMessage;
         item.system.level = params.spellLevel ?? item.system.level;
 
