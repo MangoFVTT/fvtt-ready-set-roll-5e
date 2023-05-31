@@ -12,6 +12,7 @@ import { SettingsUtility, SETTING_NAMES } from "./settings.js";
  */
 export const ROLL_TYPE = {
     SKILL: "skill",
+    TOOL: "tool",
     ABILITY_TEST: "check",
     ABILITY_SAVE: "save",
     ITEM: "item",
@@ -130,7 +131,7 @@ export class RollUtility {
 		}
 
         const skill = CONFIG.DND5E.skills[skillId];
-        const abilityId = actor.system?.skills[skillId]?.ability ?? skill.ability;
+        const abilityId = options.ability || (actor.system?.skills[skillId]?.ability ?? skill.ability);
 
         if (!(abilityId in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
@@ -143,7 +144,41 @@ export class RollUtility {
         const title = `${skill.label}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
-    }    
+    }
+
+    /**
+     * Rolls a tool check from a given actor.
+     * @param {Actor} actor The actor object from which the roll is being called. 
+     * @param {String} toolId The id of the tool being rolled.
+     * @param {Roll} roll The roll object that was made for the check.
+     * @param {Object} options Additional options for rolling a tool.
+     * @returns {Promise<QuickRoll>} The created quick roll.
+     */
+    static async rollTool(actor, toolId, roll, options = {}) {        
+        LogUtility.log(`Quick rolling tool check from Actor '${actor.name}'.`);
+
+        if (!(toolId in CONFIG.DND5E.toolIds)) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
+                { type: "Tool", label: toolId, dictionary: "CONFIG.DND5E.toolIds" }));
+            return null;
+		}
+
+        const tool = CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]);
+        const abilityId = options.ability || (actor.system.tools[toolId]?.ability ?? "int");
+
+        if (!(abilityId in CONFIG.DND5E.abilities)) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
+                { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
+            return null;
+		}
+
+        const ability = CONFIG.DND5E.abilities[abilityId];
+
+        const title = `${tool.name}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
+        options.img = tool.img;
+
+        return await _getActorRoll(actor, title, roll, ROLL_TYPE.TOOL, options);
+    }
 
     /**
      * Rolls an ability test from a given actor.
@@ -381,7 +416,7 @@ async function _getActorRoll(actor, title, roll, rollType, options = {}) {
         return null;
     }
 
-    if (rollType !== ROLL_TYPE.SKILL && rollType !== ROLL_TYPE.ABILITY_SAVE && rollType !== ROLL_TYPE.ABILITY_TEST) {
+    if (rollType !== ROLL_TYPE.SKILL && rollType !== ROLL_TYPE.ABILITY_SAVE && rollType !== ROLL_TYPE.ABILITY_TEST && rollType !== ROLL_TYPE.TOOL) {
         LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectRollType`, { function: "Actor", type: rollType }));
         return null;
     }
