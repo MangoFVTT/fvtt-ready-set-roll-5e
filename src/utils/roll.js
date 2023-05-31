@@ -129,7 +129,8 @@ export class RollUtility {
             return null;
 		}
 
-        const abilityId = actor.system.skills[skillId].ability;
+        const skill = CONFIG.DND5E.skills[skillId];
+        const abilityId = actor.system?.skills[skillId]?.ability ?? skill.ability;
 
         if (!(abilityId in CONFIG.DND5E.abilities)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
