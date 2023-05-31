@@ -130,8 +130,9 @@ export class RollUtility {
 		}
 
         const skill = CONFIG.DND5E.skills[skillId];
-        let title = CoreUtility.localize(skill.label);
-        title += SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${CONFIG.DND5E.abilities[actor.system.skills[skillId].ability]})` : "";
+        const ability = CONFIG.DND5E.abilities[skill.ability];
+
+        const title = `${CoreUtility.localize(skill.label)}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.SKILL, options);
     }    
@@ -152,8 +153,10 @@ export class RollUtility {
                 { type: "Ability", label: abilityId, dictionary: "CONFIG.DND5E.abilities" }));
             return null;
 		}
+        
+        const ability = CONFIG.DND5E.abilities[abilityId];
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId].label || CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
+        const title = `${CoreUtility.localize(ability.label)} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_TEST}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_TEST, options);
     }
@@ -175,7 +178,9 @@ export class RollUtility {
             return null;
         }
 
-        const title = `${CoreUtility.localize(CONFIG.DND5E.abilities[abilityId].label || CONFIG.DND5E.abilities[abilityId])} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
+        const ability = CONFIG.DND5E.abilities[abilityId];
+
+        const title = `${CoreUtility.localize(ability.label)} ${CoreUtility.localize(`${MODULE_SHORT}.chat.${ROLL_TYPE.ABILITY_SAVE}`)}`;
 
         return await _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
     }
