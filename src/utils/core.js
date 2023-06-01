@@ -177,6 +177,21 @@ export class CoreUtility {
 	}
 
     /**
+     * Retrieves an index item from compendiums or other collections.
+     * @param {String} identifier The identifier of the iteem to attempt to retrieve.
+     * @returns {Object} The indexed item object with the given identifier.
+     */
+    static getBaseItemIndex(identifier) {
+        let pack = CONFIG.DND5E.sourcePacks.ITEMS;
+        let [scope, collection, id] = identifier.split(".");
+        if ( scope && collection ) pack = `${scope}.${collection}`;
+        if ( !id ) id = identifier;
+        
+        const packObject = game.packs.get(pack);
+        return packObject?.index.get(id);
+    }
+
+    /**
      * Ensures that a parameter container has the correct default parameters and values.
      * @param {Object} params The parameter data container to ensure with default parameters.
      * @returns {Object} The ensured parameter data container.

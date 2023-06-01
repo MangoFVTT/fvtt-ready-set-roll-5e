@@ -10,6 +10,7 @@ export const SETTING_NAMES = {
     ROLL_MODIFIER_MODE: "rollModifierMode",
     QUICK_SKILL_ENABLED: "enableSkillQuickRoll",
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
+    QUICK_DEATH_ENABLED: "enableDeathQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
     ALT_ROLL_ENABLED: "enableAltQuickRoll",
     QUICK_ROLL_DESC_ENABLED: "enableQuickRollDesc",
@@ -60,6 +61,7 @@ export class SettingsUtility {
 		const quickRollOptions = [
             { name: SETTING_NAMES.QUICK_ABILITY_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_SKILL_ENABLED, default: true },
+            { name: SETTING_NAMES.QUICK_DEATH_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_ITEM_ENABLED, default: true }
         ];
 

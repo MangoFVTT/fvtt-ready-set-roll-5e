@@ -4,9 +4,9 @@
 	"description": "This module overhauls rolls for the D&D 5e system in the style of BetterRolls5e.",
 	"version": "1.5.4",
 	"compatibility": {
-		"minimum": "10.274",
-		"verified": "10.291",
-		"maximum": "10"
+		"minimum": "11.299",
+		"verified": "11.299",
+		"maximum": "11"
 	},
 	"authors": [
 		{
