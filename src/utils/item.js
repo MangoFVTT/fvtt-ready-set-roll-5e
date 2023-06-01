@@ -492,6 +492,12 @@ async function _addFieldDamage(fields, item, params) {
             return;
         }
 
+        // Backup ammo damage so we can temporarily replace with versatile damage if needed.
+        const ammoDamageBackup = item._ammo ? foundry.utils.duplicate(item._ammo?.system?.damage) : null;
+        if (item._ammo && ItemUtility.getFlagValueFromItem(item._ammo, "quickVersatile", params.isAltRoll)) {
+            item._ammo.system.damage.parts[0][0] = item._ammo.system.damage.versatile;
+        }
+
         const roll = await item.rollDamage({
             critical: false,
             versatile: params?.versatile ?? false,
@@ -501,6 +507,11 @@ async function _addFieldDamage(fields, item, params) {
                 chatMessage: false
             }
         });
+
+        // Restore ammo damage post rolling.
+        if (ammoDamageBackup) {
+            _getConsumeTargetFromItem(item).system.damage = ammoDamageBackup;
+        }
 
         let damageTermGroups = [];
         let damageContextGroups = [];
