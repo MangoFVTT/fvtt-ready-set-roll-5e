@@ -25,6 +25,8 @@ export class PatchingUtility {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilityTest`, _actorRollAbilityTest, "MIXED");
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilitySave`, _actorRollAbilitySave, "MIXED");
         }
+        
+        libWrapper.register(MODULE_NAME, `${actorPrototype}.rollDeathSave`, _actorRollDeathSave, "MIXED");
     }
 
     /**
@@ -70,7 +72,7 @@ async function _actorRollSkill(wrapper, skillId, options) {
 /**
  * Patch function for rolling an Actor tool.
  * @param {function} wrapper The original wrapper for the function.
- * @param {String} skillId The id of the tool being rolled.
+ * @param {String} toolId The id of the tool being rolled.
  * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor tool.
  * @private
@@ -85,7 +87,7 @@ async function _actorRollTool(wrapper, toolId, options) {
 /**
  * Patch function for rolling an Actor ability test.
  * @param {function} wrapper The original wrapper for the function.
- * @param {String} skillId The id of the ability being rolled.
+ * @param {String} abilityId The id of the ability being rolled.
  * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability test.
  * @private
@@ -100,7 +102,7 @@ async function _actorRollAbilityTest(wrapper, abilityId, options) {
 /**
  * Patch function for rolling an Actor ability save.
  * @param {function} wrapper The original wrapper for the function.
- * @param {String} skillId The id of the ability being rolled.
+ * @param {String} abilityId The id of the ability being rolled.
  * @param {Object} options Options for processing the roll.
  * @returns {Promise<Roll>} The generated roll for the Actor ability save.
  * @private
@@ -110,6 +112,20 @@ async function _actorRollAbilitySave(wrapper, abilityId, options) {
     const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, abilityId);
 
     return ignore ? roll : RollUtility.rollAbilitySave(this, abilityId, roll, options);
+}
+
+/**
+ * Patch function for rolling an Actor death save.
+ * @param {function} wrapper The original wrapper for the function.
+ * @param {Object} options Options for processing the roll.
+ * @returns {Promise<Roll>} The generated roll for the Actor death save.
+ * @private
+ */
+async function _actorRollDeathSave(wrapper, options) {
+    options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
+    const { roll, ignore } = await _actorProcessWrapper(this, wrapper, options, null);
+
+    return ignore ? roll : RollUtility.rollDeathSave(this, roll, options);
 }
 
 /**
@@ -138,7 +154,10 @@ async function _itemUse(wrapper, options) {
  */
 async function _actorProcessWrapper(caller, wrapper, options, id) {
     if (options?.chatMessage === false || options?.vanilla) {
-        return { roll: wrapper.call(caller, id, options), ignore: true };
+        return { 
+            roll: id ? wrapper.call(caller, id, options) : wrapper.call(caller, options),
+            ignore: true 
+        };
     }
 
     // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.

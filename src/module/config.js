@@ -1,5 +1,6 @@
 import { ITEM_TYPE } from "../utils/item.js";
 import { FIELD_TYPE } from "../utils/render.js";
+import { ROLL_TYPE } from "../utils/roll.js";
 import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
 
@@ -22,6 +23,16 @@ CONFIG[MODULE_SHORT] = {
     ],
     validDamageRollFields: [
         FIELD_TYPE.DAMAGE
+    ],
+    validActorRolls: [
+        ROLL_TYPE.SKILL,
+        ROLL_TYPE.TOOL,
+        ROLL_TYPE.ABILITY_TEST,
+        ROLL_TYPE.ABILITY_SAVE,
+        ROLL_TYPE.DEATH_SAVE
+    ],
+    validItemRolls: [
+        ROLL_TYPE.ITEM
     ],
     defaultQuickRollParams: {
         forceCrit: false,
