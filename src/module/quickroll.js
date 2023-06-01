@@ -133,18 +133,8 @@ export class QuickRoll {
 			data.fields = data.fields.map(JSON.parse);
 		}
 
-		// Rolls in fields are unpacked and must be recreated.
-		const fields = data?.fields ?? [];
-		fields.forEach(field => {
-			if (CONFIG[MODULE_SHORT].validMultiRollFields.includes(field[0])) {
-				field[1].roll = Roll.fromData(field[1].roll);
-			}
-
-			if (CONFIG[MODULE_SHORT].validDamageRollFields.includes(field[0])) {
-				field[1].baseRoll = field[1].baseRoll ? Roll.fromData(field[1].baseRoll) : null;
-				field[1].critRoll = field[1].critRoll ? Roll.fromData(field[1].critRoll) : null;
-			}
-		});
+		// Rolls in message data fields are unpacked and must be recreated.
+		const fields = CoreUtility.repackQuickRollFields(data?.fields ?? []);
 
 		const roll = new QuickRoll(null, data?.params ?? {}, fields);
 
@@ -226,7 +216,47 @@ export class QuickRoll {
 		Hooks.callAll(HOOKS_DND5E.PRE_DISPLAY_CARD, this.item, update);
 
 		return update;
-	}		
+	}
+
+	/**
+	 * Rerolls a quickroll into a new chat card.
+	 * @returns {Boolean} Whether or not the reroll was succesful.
+	 */
+	async repeatRoll() {
+		if (!this.hasPermission || !this.fields || this.fields.length === 0) {
+			return false;
+		}
+		
+		// For item rolls, simply reroll the item without any consumes.
+		if (this.item) {
+			await RollUtility.rollItem(this.item, { 
+				forceHideDescription: true,
+				slotLevel: this.params?.slotLevel,
+				spellLevel: this.params?.spellLevel
+			});
+			return true;
+		}
+
+		// For actor rolls, we don't know the type of actor roll so must reroll the fields directly.
+		if (this.actor) {			
+			// Rolls in duplicates are unpacked and must be recreated.
+			const fields = CoreUtility.repackQuickRollFields(foundry.utils.duplicate(this.fields));
+			
+			console.log(fields);
+
+			fields.forEach(field => {
+				if (CONFIG[MODULE_SHORT].validMultiRollFields.includes(field[0])) {
+					field[1].roll = field[1].roll.reroll({ async: false });
+				}
+			});
+	
+			const roll = new QuickRoll(this.actor, {}, fields);	
+			await roll.toMessage();
+			return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Upgrades a specific roll in one of the roll fields to a multi roll if possible.
@@ -248,6 +278,8 @@ export class QuickRoll {
 
 		targetField[1].roll = await RollUtility.upgradeRoll(targetField[1].roll, targetState, this.params);
 		this.params.isMultiRoll = true;
+		this.params.hasAdvantage = targetState == ROLL_STATE.ADV;
+		this.params.hasDisadvantage = targetState == ROLL_STATE.DIS;
 
 		return true;
 	}

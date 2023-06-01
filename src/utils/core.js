@@ -140,7 +140,7 @@ export class CoreUtility {
         }
 
 		const actorImage = (actor.img && !actor.img.includes("*")) ? actor.img : null;
-		const tokenImage = actor.prototypeToken?.texture?.src ? actor.prototypeToken.texture.src : null;
+		const tokenImage = actor.prototypeToken?.randomImg ? (actor.token?.texture?.src ?? null) : (actor.prototypeToken?.texture?.src ?? null);
 
 		switch(SettingsUtility.getSettingValue(SETTING_NAMES.DEFAULT_ROLL_ART)) {
 			case "actor":
@@ -177,6 +177,21 @@ export class CoreUtility {
 	}
 
     /**
+     * Retrieves an index item from compendiums or other collections.
+     * @param {String} identifier The identifier of the iteem to attempt to retrieve.
+     * @returns {Object} The indexed item object with the given identifier.
+     */
+    static getBaseItemIndex(identifier) {
+        let pack = CONFIG.DND5E.sourcePacks.ITEMS;
+        let [scope, collection, id] = identifier.split(".");
+        if ( scope && collection ) pack = `${scope}.${collection}`;
+        if ( !id ) id = identifier;
+        
+        const packObject = game.packs.get(pack);
+        return packObject?.index.get(id);
+    }
+
+    /**
      * Ensures that a parameter container has the correct default parameters and values.
      * @param {Object} params The parameter data container to ensure with default parameters.
      * @returns {Object} The ensured parameter data container.
@@ -189,6 +204,26 @@ export class CoreUtility {
         params.isMultiRoll = params.forceMultiRoll || (params.isMultiRoll ?? false);
 
         return params;
+    }
+
+    /**
+     * Attempts to repack rolls in an array of fields into proper roll objects.
+     * @param {Array} fields The array of fields to repack.
+     * @returns {Array} The array of fields with repacked rolls.
+     */
+    static repackQuickRollFields(fields) {
+        fields.forEach(field => {
+			if (CONFIG[MODULE_SHORT].validMultiRollFields.includes(field[0])) {
+				field[1].roll = Roll.fromData(field[1].roll);
+			}
+
+			if (CONFIG[MODULE_SHORT].validDamageRollFields.includes(field[0])) {
+				field[1].baseRoll = field[1].baseRoll ? Roll.fromData(field[1].baseRoll) : null;
+				field[1].critRoll = field[1].critRoll ? Roll.fromData(field[1].critRoll) : null;
+			}
+		});
+
+        return fields;
     }
 
     /**
