@@ -236,7 +236,7 @@ export class RollUtility {
         
         LogUtility.log(`Quick rolling death save from Actor '${actor.name}'.`);
 
-        const title = "Death Save";
+        const title = roll.options.flavor;
 
         return _getActorRoll(actor, title, roll, ROLL_TYPE.DEATH_SAVE, options);
     }
@@ -354,11 +354,16 @@ export class RollUtility {
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
         }
 
-        const critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble, ignoreDiscarded: true };
+        const critOptions = { 
+            critThreshold: roll.options.critical,
+            fumbleThreshold: roll.options.fumble,
+            targetValue: roll.options.targetValue,
+            ignoreDiscarded: true 
+        };
         const critType = RollUtility.getCritTypeForDie( roll.terms.find(d => d.faces === 20), critOptions);
 
         params.isCrit = params.isCrit || critType === CRIT_TYPE.SUCCESS;
-        params.isFumble = params.isFumble || critType == CRIT_TYPE.FAILURE;
+        params.isFumble = params.isFumble || critType === CRIT_TYPE.FAILURE;
         params.isMultiRoll = params.isMultiRoll || roll.hasAdvantage || roll.hasDisadvantage;
 
         return roll;
@@ -522,7 +527,7 @@ function _countCritsFumbles(die, options)
     let fumble = 0;
 
     if (die && die.faces > 1) {
-        let { critThreshold, fumbleThreshold, ignoreDiscarded } = options
+        let { critThreshold, fumbleThreshold, targetValue, ignoreDiscarded } = options
 
         critThreshold = critThreshold ?? die.options.critical ?? die.faces;
         fumbleThreshold = fumbleThreshold ?? die.options.fumble ?? 1;
@@ -532,9 +537,9 @@ function _countCritsFumbles(die, options)
                 continue;
             }
 
-            if (result.result >= critThreshold) {
+            if (result.result >= targetValue || result.result >= critThreshold) {
                 crit += 1;
-            } else if (result.result <= fumbleThreshold) {
+            } else if (result.result < targetValue || result.result <= fumbleThreshold) {
                 fumble += 1;
             }
         }
