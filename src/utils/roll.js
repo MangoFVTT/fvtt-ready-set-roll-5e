@@ -231,6 +231,13 @@ export class RollUtility {
         return _getActorRoll(actor, title, roll, ROLL_TYPE.ABILITY_SAVE, options);
     }
 
+    /**
+     * Rolls a death save from a given actor.
+     * @param {Actor} actor The actor object from which the roll is being called.
+     * @param {Roll} roll The roll object that was made for the check.
+     * @param {Object} options Additional options for rolling a death save.
+     * @returns {Promise<QuickRoll>} The created quick roll.
+     */
     static async rollDeathSave(actor, roll, options = {}) {
         if (!roll) return null;
         
