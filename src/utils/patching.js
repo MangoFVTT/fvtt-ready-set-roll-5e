@@ -29,7 +29,10 @@ export class PatchingUtility {
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollDeathSave`, _actorRollDeathSave, "MIXED");
         }
-        libWrapper.register(MODULE_NAME, `${actorPrototype}.rollInitiativeDialog`, _actorRollInitiativeDialog, "MIXED");
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_INIT_ENABLED)) {
+            libWrapper.register(MODULE_NAME, `${actorPrototype}.rollInitiativeDialog`, _actorRollInitiativeDialog, "MIXED");
+        }
     }
 
     /**
@@ -142,13 +145,8 @@ async function _actorRollInitiativeDialog(wrapper, options) {
         return;
     }
 
-    const roll = this.getInitiativeRoll(options);
-
-    this._cachedInitiativeRoll = roll;
     await this.rollInitiative({ createCombatants: true });
-    delete this._cachedInitiativeRoll;
 }
-
 
 /**
  * Patch function for rolling an Item usage.
