@@ -5,6 +5,8 @@
             "enableAbilityQuickRoll.hint": "When clicking on an ability check or saving throw, quick roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding Alt when clicking.",
             "enableSkillQuickRoll.name": "Enable Quick Roll for Skills",
             "enableSkillQuickRoll.hint": "When clicking on a skill check, automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
+            "enableDeathQuickRoll.name": "Enable Quick Roll for Death Saves",
+            "enableDeathQuickRoll.hint": "When clicking on a death saving throw, quick roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding Alt when clicking.",
             "enableItemQuickRoll.name": "Enable Quick Roll for Items",
             "enableItemQuickRoll.hint": "When clicking on an item's image (weapons, spells, features, etc.), automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Roll for Items",

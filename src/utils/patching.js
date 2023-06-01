@@ -26,7 +26,9 @@ export class PatchingUtility {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilitySave`, _actorRollAbilitySave, "MIXED");
         }
         
-        libWrapper.register(MODULE_NAME, `${actorPrototype}.rollDeathSave`, _actorRollDeathSave, "MIXED");
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) {
+            libWrapper.register(MODULE_NAME, `${actorPrototype}.rollDeathSave`, _actorRollDeathSave, "MIXED");
+        }
     }
 
     /**
