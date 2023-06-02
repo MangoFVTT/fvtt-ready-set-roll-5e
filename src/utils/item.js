@@ -42,7 +42,6 @@ export class ItemUtility {
         const chatData = await item.getChatData();
         let fields = [];
 
-
         if (ItemUtility.getFlagValueFromItem(item, "quickFlavor", params.isAltRoll) && !params?.forceHideDescription) {
             _addFieldFlavor(fields, chatData);
         }
@@ -171,7 +170,7 @@ export class ItemUtility {
      */
     static getDamageContextFromItem(item, index) {
         if (item?.flags[MODULE_SHORT].quickDamage) {          
-            return item.flags[MODULE_SHORT].quickDamage.context[index] ?? undefined;
+            return item.flags[MODULE_SHORT].quickDamage.context[index] ?? CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
         }
 
         return undefined;
@@ -452,11 +451,14 @@ async function _addFieldAttack(fields, item, params) {
             item.system.consume.amount = 0;
         }
 
+        const bonuses = params?.bonuses?.filter(b => b.id === ROLL_TYPE.ATTACK).map(b => b.value);
+
         let roll = await item.rollAttack({
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
-            disadvantage: params?.advMode < 0 ?? false
+            disadvantage: params?.advMode < 0 ?? false,
+            parts: bonuses
         });
 
         // Reset ammo to avoid later issues.
@@ -496,7 +498,8 @@ async function _addFieldDamage(fields, item, params) {
         const ammoDamageBackup = item._ammo ? foundry.utils.duplicate(item._ammo?.system?.damage) : null;
         if (item._ammo && ItemUtility.getFlagValueFromItem(item._ammo, "quickVersatile", params.isAltRoll)) {
             item._ammo.system.damage.parts[0][0] = item._ammo.system.damage.versatile;
-        }
+        }        
+        const bonuses = params?.bonuses?.filter(b => b.id === ROLL_TYPE.DAMAGE && b.value !== '').map(b => b.value);
 
         const roll = await item.rollDamage({
             critical: false,
@@ -504,7 +507,8 @@ async function _addFieldDamage(fields, item, params) {
             spellLevel: params?.slotLevel,
             options: {
                 fastForward: true,
-                chatMessage: false
+                chatMessage: false,
+                parts: bonuses
             }
         });
 
@@ -513,9 +517,14 @@ async function _addFieldDamage(fields, item, params) {
             _getConsumeTargetFromItem(item).system.damage = ammoDamageBackup;
         }
 
+        const damageParts = [ ...item.system.damage.parts ];
+        if (bonuses.length > 0) {
+            damageParts.push(...bonuses.map(b => [ b, '' ]));
+        }
+
         let damageTermGroups = [];
         let damageContextGroups = [];
-        item.system.damage.parts.forEach((part, i) => {
+        damageParts.forEach((part, i) => {
             const damagePart = (i === 0 && (params?.versatile ?? false)) ? item.system.damage.versatile : part[0];
             const tmpRoll = new CONFIG.Dice.DamageRoll(damagePart, item.getRollData()).evaluate({ async: false });
             const partTerms = roll.terms.splice(0, tmpRoll.terms.length);
@@ -587,11 +596,14 @@ async function _addFieldOtherFormula(fields, item) {
  */
 async function _addFieldAbilityCheck(fields, item, params) {
     if (item.type === ITEM_TYPE.TOOL) {
+        const bonuses = params?.bonuses?.filter(b => b.id === ROLL_TYPE.TOOL).map(b => b.value);
+
         const roll = await item.rollToolCheck({
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
-            disadvantage: params?.advMode < 0 ?? false
+            disadvantage: params?.advMode < 0 ?? false,
+            parts: bonuses
         });
 
         fields.push([
@@ -607,12 +619,15 @@ async function _addFieldAbilityCheck(fields, item, params) {
                 { type: "Ability", label: item.abilityMod, dictionary: "CONFIG.DND5E.abilities" }));
             return;
 		}
+        
+        const bonuses = params?.bonuses?.filter(b => b.id === ROLL_TYPE.ABILITY_TEST).map(b => b.value);
 
         const roll = await item.actor.rollAbilityTest(item.abilityMod, {
             fastForward: true,
             chatMessage: false,
             advantage: params?.advMode > 0 ?? false,
-            disadvantage: params?.advMode < 0 ?? false
+            disadvantage: params?.advMode < 0 ?? false,            
+            parts: bonuses
         });
 
         // Adds a seperator for UI clarity.
