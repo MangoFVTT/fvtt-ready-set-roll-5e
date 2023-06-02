@@ -81,6 +81,10 @@ The following modules have been verified as compatible from the specified module
 
 ![applyeffects](https://user-images.githubusercontent.com/110994627/217320554-9f62e5ce-1b6e-4671-8cc9-5b780a98bfd2.gif)
 
+### Situational Bonuses
+- If enabled via the module settings, right-clicking anything that would normally output a quick roll will display a pop-up dialog providing the possibility to add a situational bonus to relevant parts of the roll.
+- For actor rolls, this is a simple bonus to the roll. For item rolls, this can be a bonus to attack, ability check, or damage, depending on what's available for the item.
+
 ### Macro Support
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
