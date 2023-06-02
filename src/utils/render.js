@@ -100,7 +100,15 @@ export class RenderUtility {
      */
     static renderOverlayHeader() {
         return _renderModuleTemplate(TEMPLATE.OVERLAY_HEADER, {});
-    }  
+    }
+
+    /**
+     * Renders a user interface for resolving a situational bonus striung.
+     * @returns {Promise<String>} The rendered html data for the item sheet.
+     */
+    static renderDialogBonus(props) {
+        return _renderModuleTemplate(TEMPLATE.DIALOG_BONUS, props);
+    }
 }
 
 function _renderBlank(renderData = {}) {

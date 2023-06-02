@@ -1,0 +1,8 @@
+<form>
+    {{#each groups}}
+    <div class="form-group">
+        <label>{{this.label}}</label>
+        <input type="text" id="{{this.id}}" name="rsr-bonus" value placeholder="{{localize 'rsr5e.chat.bonus.placeholder'}}">
+    </div>
+    {{/each}}
+</form>
