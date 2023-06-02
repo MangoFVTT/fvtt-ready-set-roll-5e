@@ -85,6 +85,8 @@ The following modules have been verified as compatible from the specified module
 - If enabled via the module settings, right-clicking anything that would normally output a quick roll will display a pop-up dialog providing the possibility to add a situational bonus to relevant parts of the roll.
 - For actor rolls, this is a simple bonus to the roll. For item rolls, this can be a bonus to attack, ability check, or damage, depending on what's available for the item.
 
+![situationalbonus](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/72d2204c-e02d-4a90-8641-50bd5c8bf1b4)
+
 ### Macro Support
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
