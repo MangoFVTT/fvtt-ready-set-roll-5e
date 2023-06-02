@@ -256,3 +256,8 @@
 .rsr5e-hidden {
 	display: none;
 }
+
+.dice-tooltip .dice-rolls .roll.rollable:hover {
+	cursor: pointer;
+	text-shadow: 0 0 10px red;
+}
