@@ -518,7 +518,7 @@ async function _addFieldDamage(fields, item, params) {
         }
 
         const damageParts = [ ...item.system.damage.parts ];
-        if (bonuses.length > 0) {
+        if (bonuses && bonuses.length > 0) {
             damageParts.push(...bonuses.map(b => [ b, '' ]));
         }
 

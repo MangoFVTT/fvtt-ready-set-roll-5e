@@ -136,7 +136,7 @@ export class RollUtility {
                 groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.tool`), id: ROLL_TYPE.TOOL });
             }
 
-            if (caller.hasDamage) {
+            if (caller.hasDamage && !SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
                 groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.damage`), id: ROLL_TYPE.DAMAGE });
             }
 
