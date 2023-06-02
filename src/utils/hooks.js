@@ -21,7 +21,10 @@ export const HOOKS_DND5E = {
     USE_ITEM: "dnd5e.useItem",
     PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
     DISPLAY_CARD: "dnd5e.displayCard",
-    RENDER_ITEM_SHEET: "renderItemSheet5e"
+    PRE_ROLL_SKILL: "dnd5e.preRollSkill",
+    PRE_ROLL_TOOL: "dnd5e.preRollToolCheck",
+    RENDER_ITEM_SHEET: "renderItemSheet5e",
+    RENDER_ACTOR_SHEET: "renderActorSheet5e"
 }
 
 export const HOOKS_MODULE = {
@@ -117,7 +120,11 @@ export class HooksUtility {
     static registerSheetHooks() {
         Hooks.on(HOOKS_DND5E.RENDER_ITEM_SHEET, (app, html, data) => {
             SheetUtility.setAutoHeightOnSheet(app);
-            SheetUtility.addModuleContentToSheet(app, html);
+            SheetUtility.addModuleContentToItemSheet(app, html);
+        });
+
+        Hooks.on(HOOKS_DND5E.RENDER_ACTOR_SHEET, (app, html, data) => {
+            SheetUtility.addModuleContentToActorSheet(app, html);
         });
     }
 }

@@ -100,7 +100,15 @@ export class RenderUtility {
      */
     static renderOverlayHeader() {
         return _renderModuleTemplate(TEMPLATE.OVERLAY_HEADER, {});
-    }  
+    }
+
+    /**
+     * Renders a user interface for resolving a situational bonus striung.
+     * @returns {Promise<String>} The rendered html data for the item sheet.
+     */
+    static renderDialogBonus(props) {
+        return _renderModuleTemplate(TEMPLATE.DIALOG_BONUS, props);
+    }
 }
 
 function _renderBlank(renderData = {}) {
@@ -124,7 +132,7 @@ function _renderHeader(renderData = {}) {
     }
 
     if (item?.type === ITEM_TYPE.TOOL) {
-        title += ` (${CONFIG.DND5E.abilities[item.system.ability]})`;
+        title += ` (${CONFIG.DND5E.abilities[item.system.ability].label})`;
     }
 
     return _renderModuleTemplate(TEMPLATE.HEADER, {
@@ -155,7 +163,7 @@ function _renderDescription(renderData = {}) {
 function _renderSaveButton(renderData = {}) {
     const { id, ability, dc, hideDC } = renderData;    
 
-    const abilityLabel = CONFIG.DND5E.abilities[ability];
+    const abilityLabel = CONFIG.DND5E.abilities[ability].label;
 
     return _renderModuleTemplate(TEMPLATE.SAVE_BUTTON, {
         id,
@@ -188,7 +196,7 @@ async function _renderMultiRoll(renderData = {}) {
 
     // Process bonuses beyond the base d20s into a single roll.
     const bonusTerms = roll.terms.slice(1);
-    const bonusRoll = bonusTerms ? Roll.fromTerms(bonusTerms) : null;
+    const bonusRoll = (bonusTerms && bonusTerms.length > 0) ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
     for (let i = 0; i < d20Rolls.results.length; i++) {
@@ -200,7 +208,11 @@ async function _renderMultiRoll(renderData = {}) {
             tmpResults.push(d20Rolls.results[i]);
         }        
         
-        const critOptions = { critThreshold: roll.options.critical, fumbleThreshold: roll.options.fumble };
+        const critOptions = { 
+            critThreshold: roll.options.critical,
+            fumbleThreshold: roll.options.fumble,
+            targetValue: roll.options.targetValue
+        };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
         // This does not apply to dice that have been rerolled (unless they are replaced by a fixer value eg. for reliable talent).

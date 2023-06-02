@@ -1,5 +1,6 @@
 import { ITEM_TYPE } from "../utils/item.js";
 import { FIELD_TYPE } from "../utils/render.js";
+import { ROLL_TYPE } from "../utils/roll.js";
 import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
 
@@ -8,6 +9,7 @@ import { MODULE_SHORT } from "./const.js";
  * This currently includes valid item types for roll configuration and default configuration flags.
  */
 CONFIG[MODULE_SHORT] = {
+    situRollMouseButton: 2,
     validItemTypes: [
         ITEM_TYPE.WEAPON,
         ITEM_TYPE.SPELL,
@@ -22,6 +24,16 @@ CONFIG[MODULE_SHORT] = {
     ],
     validDamageRollFields: [
         FIELD_TYPE.DAMAGE
+    ],
+    validActorRolls: [
+        ROLL_TYPE.SKILL,
+        ROLL_TYPE.TOOL,
+        ROLL_TYPE.ABILITY_TEST,
+        ROLL_TYPE.ABILITY_SAVE,
+        ROLL_TYPE.DEATH_SAVE
+    ],
+    validItemRolls: [
+        ROLL_TYPE.ITEM
     ],
     defaultQuickRollParams: {
         forceCrit: false,
@@ -101,6 +113,9 @@ CONFIG[MODULE_SHORT] = {
             quickAttack: { type: "Boolean", value: true, altValue: true },
             quickTemplate: { type: "Boolean", value: true, altValue: true },
             quickSave: { type: "Boolean", value: true, altValue: true },
+			quickCheck: { type: "Boolean", value: true, altValue: true },
+			quickVersatile: { type: "Boolean", value: false, altValue: true },
+			quickTemplate: { type: "Boolean", value: true, altValue: true },
             quickDamage: { type: "Array", value: [], altValue: [], context: [] },
 			quickEffects: { type: "Array", value: [], altValue: [], context: [] },
             quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            

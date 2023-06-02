@@ -10,8 +10,10 @@ export const SETTING_NAMES = {
     ROLL_MODIFIER_MODE: "rollModifierMode",
     QUICK_SKILL_ENABLED: "enableSkillQuickRoll",
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
+    QUICK_DEATH_ENABLED: "enableDeathQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
     ALT_ROLL_ENABLED: "enableAltQuickRoll",
+    SITU_ROLL_ENABLED: "enableSituQuickRoll",
     QUICK_ROLL_DESC_ENABLED: "enableQuickRollDesc",
     D20_ICONS_ENABLED: "enableD20Icons",
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
@@ -60,6 +62,7 @@ export class SettingsUtility {
 		const quickRollOptions = [
             { name: SETTING_NAMES.QUICK_ABILITY_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_SKILL_ENABLED, default: true },
+            { name: SETTING_NAMES.QUICK_DEATH_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_ITEM_ENABLED, default: true }
         ];
 
@@ -78,6 +81,7 @@ export class SettingsUtility {
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
             { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false, scope: "world" },
+            { name: SETTING_NAMES.SITU_ROLL_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.QUICK_ROLL_DESC_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client"  },
             { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false, scope: "client"  }
