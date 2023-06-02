@@ -41,8 +41,8 @@
 				"type": "system",
 				"manifest": "https://raw.githubusercontent.com/foundryvtt/dnd5e/master/system.json",
 				"compatibility": {
-					"minimum": "2.0.1",
-					"verified": "2.2.0"
+					"minimum": "2.2.0",
+					"verified": "2.2.1"
 				}
 			}
 		],
