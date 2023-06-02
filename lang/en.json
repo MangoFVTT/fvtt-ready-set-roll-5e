@@ -11,6 +11,8 @@
             "enableItemQuickRoll.hint": "When clicking on an item's image (weapons, spells, features, etc.), automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Roll for Items",
             "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately, replacing the ability to bypass quick rolling for items. This setting has no effect if item quick rolling is disabled.",
+            "enableSituQuickRoll.name": "Enable Situational Bonus Rolls",
+            "enableSituQuickRoll.hint": "When right-clicking instead of left-clicking any quick roll, show a dialog that can add a situational bonus to the roll. This setting has no effect if item quick rolling is disabled.",
             "enableQuickRollDesc.name": "Enable Descriptions by Default",
             "enableQuickRollDesc.hint": "When outputting a quick roll, always show the description by default. This can still be changed per item in quick roll configuration.",
             "enableD20Icons.name": "Show D20 Rolls for Quick Rolls",
@@ -153,6 +155,15 @@
                 "title": "Apply Crit Damage?",
 		        "yes": "Yes",
 		        "no": "No"
+            },
+            "bonus": {
+                "generic": "Quick Roll Bonus",
+                "attack": "Attack Roll Bonus",
+                "ability": "Ability Check Bonus",
+                "tool": "Tool Check Bonus",
+                "damage": "Damage Roll Bonus",
+                "placeholder": "e.g. 1d4",
+                "bonus": "Bonus"
             }
         }
     }
