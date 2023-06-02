@@ -5,6 +5,7 @@ import { LogUtility } from "./log.js";
 import { QuickRoll } from "../module/quickroll.js";
 import { ItemUtility, ITEM_TYPE } from "./item.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
+import { DialogUtility } from "./dialog.js";
 
 /**
  * Enumerable of identifiers for different roll types that can be made.
@@ -57,14 +58,26 @@ export class RollUtility {
      * @returns {Promise<Roll>} The roll result of the wrapper.
      */
     static async rollActorWrapper(caller, wrapper, options, id, bypass = false) {
-        const advMode = CoreUtility.eventToAdvantage(options.event);
+        const advMode = CoreUtility.eventToAdvantage(options.event);        
+
+        const bonuses = [];
+        if (options?.event?.button === CONFIG[MODULE_SHORT].situRollMouseButton && !bypass)
+        {
+            const groups = [
+                { label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.generic`), id: id ?? "generic" }
+            ]
+
+            const values = await DialogUtility.getBonusFromDialog(groups);
+            bonuses.push(...values.map(b => b.value));
+        }
 
         const params = {
             fastForward: !bypass,
             chatMessage: bypass,
             advantage: advMode > 0,
             disadvantage: advMode < 0,
-            rollMode: options?.rollMode
+            rollMode: options?.rollMode,
+            parts: bonuses
         }
 
         return id ? wrapper.call(caller, id, params) : wrapper.call(caller, params);
@@ -106,13 +119,39 @@ export class RollUtility {
             await caller.update(itemUpdates);
         }
 
+        const bonuses = [];
+        if (options?.event?.button === CONFIG[MODULE_SHORT].situRollMouseButton && !bypass)
+        {
+            const groups = [];
+
+            if (caller.hasAttack) {
+                groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.attack`), id: ROLL_TYPE.ATTACK });
+            }
+
+            if (caller.hasAbilityCheck) {
+                groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.ability`), id: ROLL_TYPE.ABILITY_TEST });
+            }
+
+            if (caller.type === ITEM_TYPE.TOOL) {
+                groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.tool`), id: ROLL_TYPE.TOOL });
+            }
+
+            if (caller.hasDamage) {
+                groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.damage`), id: ROLL_TYPE.DAMAGE });
+            }
+
+            const values = await DialogUtility.getBonusFromDialog(groups);
+            bonuses.push(...values);
+        }
+
         return wrapper.call(caller, config, {
             configureDialog,
             createMessage: false,
             advMode,
             isAltRoll,
             spellLevel: caller?.system?.level,
-            rollMode: options?.rollMode
+            rollMode: options?.rollMode,
+            bonuses
         });
     }
 
