@@ -15,7 +15,12 @@ export class SheetUtility {
         sheet?.setPosition({ height: "auto" })
     }
 
-    static async addModuleContentToSheet(sheet, protoHtml) {
+    /**
+     * Adds module content to an item sheet that is being opened.
+     * @param {Sheet} sheet The sheet instance of the sheet being constructed.
+     * @param {Object} protoHtml The html of the sheet being constructed.
+     */
+    static async addModuleContentToItemSheet(sheet, protoHtml) {
         const item = sheet?.object;
 
         if (!item || !item instanceof Item) {
@@ -52,6 +57,33 @@ export class SheetUtility {
         
         if  (sheet._tabs[0].active === MODULE_SHORT) {
             SheetUtility.setAutoHeightOnSheet(sheet);
+        }
+    }
+
+    /**
+     * Adds module content to an actor sheet that is being opened.
+     * @param {Sheet} sheet The sheet instance of the sheet being constructed.
+     * @param {Object} protoHtml The html of the sheet being constructed.
+     */
+    static async addModuleContentToActorSheet(sheet, protoHtml) {
+        const actor = sheet?.object;
+
+        if (!actor || !actor instanceof Actor) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.objectNotExpectedType`, { type: "Actor" }));
+            return;
+        }
+
+        if (actor.permission < 3) {
+            return;
+        }
+
+        let html = protoHtml;
+        if (html[0].localName !== "div") {
+            html = $(html[0].parentElement.parentElement);
+        }
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.SITU_ROLL_ENABLED)) {
+            _addSituRollListeners(actor, html);
         }
     }
 }
@@ -112,6 +144,76 @@ async function _addItemOptions(item, html) {
 	newSection.find("input[type=number]").change(() => { _activate = true; });
 	newSection.find("input[type=checkbox]").change(() => {  _activate = true; });
 	newSection.find("select").change(() => { _activate = true; });
+}
+
+/**
+ * Adds listeners in a number of locations for rolling with a situational bonus dialog.
+ * Listeners are only added in the specific location if the relevant quick roll is enabled.
+ * @param {Actor} actor The actor for which the listeners are being added.
+ * @param {Object} html The html of the sheet in which listeners are being added.
+ */
+function _addSituRollListeners(actor, html) {
+    if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) {
+        html.find(".skill-name").on("auxclick", evt => {
+            if (evt.button !== CONFIG[MODULE_SHORT].situRollMouseButton) {
+                return;
+            }
+
+            evt.preventDefault();
+            const skill = evt.currentTarget.closest("[data-key]").dataset.key;
+            return actor.rollSkill(skill, {event: evt});
+        });
+
+        html.find(".tool-name").on("auxclick", evt => {
+            if (evt.button !== CONFIG[MODULE_SHORT].situRollMouseButton) {
+                return;
+            }
+    
+            evt.preventDefault();
+            const tool = evt.currentTarget.closest("[data-key]").dataset.key;
+            return actor.rollToolCheck(tool, {event: evt});
+        });    
+    }
+
+    if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ABILITY_ENABLED)) {
+        html.find(".ability-name").on("auxclick", evt => {        
+            if (evt.button !== CONFIG[MODULE_SHORT].situRollMouseButton) {
+                return;
+            }
+
+            evt.preventDefault();
+            const ability = evt.currentTarget.parentElement.dataset.ability;
+            return actor.rollAbility(ability, {event: evt});
+        });
+    }
+
+    if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) {
+        html.find(".rollable[data-action]").on("auxclick", async evt => {
+            if (evt.button !== CONFIG[MODULE_SHORT].situRollMouseButton) {
+                return;
+            }
+
+            evt.preventDefault();
+            const button = evt.currentTarget;
+
+            if (button.dataset.action === "rollDeathSave") {
+                return actor.rollDeathSave({event: evt});
+            }
+        });
+    }
+
+    if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
+        html.find(".rollable .item-image").on("auxclick", async evt => {
+            if (evt.button !== CONFIG[MODULE_SHORT].situRollMouseButton) {
+                return;
+            }
+
+            evt.preventDefault();
+            const itemId = evt.currentTarget.closest(".item").dataset.itemId;
+            const item = actor.items.get(itemId);
+            return item.use({}, {event: evt});
+        });        
+    }
 }
 
 /**

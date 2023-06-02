@@ -9,6 +9,7 @@ import { MODULE_SHORT } from "./const.js";
  * This currently includes valid item types for roll configuration and default configuration flags.
  */
 CONFIG[MODULE_SHORT] = {
+    situRollMouseButton: 2,
     validItemTypes: [
         ITEM_TYPE.WEAPON,
         ITEM_TYPE.SPELL,
