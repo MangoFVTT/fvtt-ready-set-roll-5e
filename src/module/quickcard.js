@@ -48,6 +48,7 @@ export class QuickCard {
             html.find(".hideSave").text(CoreUtility.localize(`${MODULE_SHORT}.chat.hide`));
         }
 
+        this._setupRerollDice(html);
         this._setupActionButtons(html);
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
@@ -93,7 +94,15 @@ export class QuickCard {
      */
 	_onHoverEnd(html) {
 		html.find(".die-result-overlay-rsr").attr("style", "display: none;");
-	}
+	}    
+    
+    _setupRerollDice(html) {
+        if (true) {
+            html.find(".dice-tooltip .dice-rolls .roll").not(".discarded").not(".rerolled").addClass("rollable").click(async evt => {
+                await this._processRerollDieEvent(evt);
+            });
+        }
+    }
 
     /**
      * Adds all manual action button event handlers to a chat card.
@@ -335,6 +344,22 @@ export class QuickCard {
            if (!await this.roll.repeatRoll()) {
                 LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.cannotRepeatRoll`));
            }
+        }
+    }
+
+    async _processRerollDieEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const id = $(event.target).closest(".rsr-dual").attr('data-id');
+        const roll = $(event.target).closest(".tooltip.dice-row-item").index();
+        const part = $(event.target).closest(".tooltip-part").index() + ($(event.target).closest(".tooltip.dice-row-item").hasClass("bonus") ? 1 : 0);            
+        const die = $(event.target).index();
+
+        console.log(id, roll, part, die);
+
+        if (await this.roll.rerollDie(id, roll, part, die)) {
+            this._updateQuickCard();
         }
     }
 
