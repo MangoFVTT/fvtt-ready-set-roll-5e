@@ -207,6 +207,8 @@ export class QuickRoll {
 	 * @returns {Promise<Object>} The created update package.
 	 */
 	async toMessageUpdate() {
+		console.log(this.fields);
+
 		const update = {
 			content: await this._render(),
 			...flattenObject({ flags: duplicate(this._getFlags()) }),
@@ -347,6 +349,48 @@ export class QuickRoll {
 
 		await Promise.all(promises);
 
+		return true;
+	}
+
+	async rerollDie(targetId, targetRoll, targetPart, targetDie) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !this.hasPermission) {
+			return false;
+		}
+
+		let roll;
+		switch (targetField[0]) {
+			case FIELD_TYPE.DAMAGE:
+				roll = targetRoll === 0 ? targetField[1].baseRoll : targetField[1].critRoll;
+				break;
+			case FIELD_TYPE.ATTACK:
+			case FIELD_TYPE.CHECK:
+				roll = targetField[1].roll;
+				targetDie = targetRoll;
+				break;
+			default:
+				return false;
+		}
+
+		if (!roll) {
+			return false;
+		}
+
+		const terms = roll.terms;
+		const part = terms.filter(t => t instanceof Die)[targetPart];
+		const index = terms.indexOf(part);
+
+		terms[index] = await RollUtility.rerollSpecificDie(part, targetDie);
+
+		if (targetField[0] === FIELD_TYPE.DAMAGE) {
+			if (targetRoll === 0) {
+				targetField[1].baseRoll = Roll.fromTerms(terms);
+			} else {
+				targetField[1].critRoll = Roll.fromTerms(terms);
+			}
+		}
+		
 		return true;
 	}
 

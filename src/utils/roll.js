@@ -350,7 +350,10 @@ export class RollUtility {
      * @returns {Promise<Roll>} The upgraded multi roll from the provided roll.
      */
     static async upgradeRoll(roll, targetState, params = {}) {
-        if (!roll) return null;
+        if (!roll) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
+            return null;
+        }
 
 		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
@@ -365,6 +368,24 @@ export class RollUtility {
         d20BaseTerm.modifiers.push(targetState);
 
         return upgradedRoll;
+    }
+
+    static async rerollSpecificDie(term, targetDie) {
+        if (!term) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.termIsNullOrUndefined`));
+            return null;
+        }
+
+        if (targetDie >= term.results.length) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetDie`));
+            return null;
+        }
+
+        const rerolledDie = await new Die({ number: 1, faces: term.faces }).evaluate({ async: true });
+
+        term.results[targetDie] = foundry.utils.duplicate(rerolledDie.results[0]);
+
+        return term;
     }
 
     /**
