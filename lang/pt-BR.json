@@ -15,7 +15,7 @@
 			"enableDiceSounds.hint": "Ao emitir a mensagem de rolagem rápida, reproduzir o som de dados padrão do sistema.",
 			"enableOverlayButtons.name": "Habilitar Botões de Overlay",
 			"enableOverlayButtons.hint": "Ao emitir a mensagem de rolagem rápida, habilitar botões de overlay (passando o mouse por cima das rolagens) nas mensagens do chat que oferecerem funcionalidade adicional para a rolagem.",
-			"applyDamageTo.name": "Aplicar Opções de Dano",
+			"applyDamageTo.name": "Opções de Aplicação de Dano",
 			"alwaysApplyCrit.name": "Sempre Aplicar Dano Crítico",
 			"alwaysApplyCrit.hint": "Usando os botões de overlay de dano, sempre aplicar o dano crítico rolado (se houver). Se desativado, ao usar o botão de overlay para dano crítico será exibido um prompt permitindo que o usuário escolha.",
 			"alwaysRollMulti.name": "Sempre Rolar Múltiplos Dados",
@@ -39,10 +39,20 @@
 			"contextReplacesDamage.name": "Substituir Tipo de Dano por Contexto",
 			"contextReplacesDamage.hint": "Se um rótulo de contexto estiver no mesmo lugar que um rótulo de tipo de dano, ele o substituirá.",
 			"hideSaveDC.name": "Esconder CDs de Salvaguardas",
-			"hideSaveDC.hint": "Determina se o CD será oculto nos botões de Salvaguarda para rolagens rápidas.",
+			"hideSaveDC.hint": "Determina quando ocultar o valor da CD nos botões de salvaguarda em rolagens rápidas.",
 			"alwaysManualDamage.name": "Sempre Rolar Dano Manualmente",
 			"alwaysManualDamage.hint": "Ao emitir uma rolagem rápida, não rolar automaticamente o dano. Em vez disso, mostre um botão de dano para rolar manualmente se houver dano disponível.",
-			"applyDamageTo.hint": "Determina em quais tokens o dano é aplicado ao aplicar dano pelos botões de overlay no chat."
+			"applyDamageTo.hint": "Determina em quais tokens o dano é aplicado ao aplicar dano pelos botões de overlay no chat.",
+			"enableQuickRollDesc.name": "Habilitar Descrições por Padrão",
+			"enableQuickRollDesc.hint": "Ao gerar uma rolagem rápida, sempre mostrar a descrição por padrão. Isso pode ser alterado por item na configuração da rolagem rápida.",
+			"applyEffectsTo.name": "Opções de Aplicação de Efeito",
+			"applyEffectsTo.hint": "Determina em quais tokens os efeitos serão aplicados ao aplicar efeitos pelo botão de feitos no chat.",
+			"enableApplyEffects.name": "Habilitar Botão de Aplicar Efeito",
+			"enableApplyEffects.hint": "Ao gerar uma rolagem rápida, mostrar um botão que permite transferir os efeitos do item para atores.",
+			"enableDeathQuickRoll.name": "Habilitar Rolagens Rápidas para Salvaguardas contra a Morte",
+			"enableSituQuickRoll.name": "Habilitar Rolagens de Bônus Situacionais",
+			"enableDeathQuickRoll.hint": "Ao clicar em uma salvaguarda contra a morte, rolar diretamente para o chat em vez de usar a caixa de diálogo de rolagem padrão. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
+			"enableSituQuickRoll.hint": "Ao clicar com o botão direito em vez do esquerdo em qualquer rolagem rápida, mostrar uma caixa de diálogo que pode adicionar um bônus situacional à rolagem. Esta funcionalidade não tem efeito se a rolagem rápida estiver desativada."
 		},
 		"messages": {
 			"error": {
@@ -52,7 +62,12 @@
 				"incorrectRollType": "Não é possível rolar uma rolagem de {function} para o tipo de rolagem '{type}'.",
 				"incorrectFieldType": "Não é possível aprimorar uma rolagem do tipo '{type}' para uma rolagem múltipla.",
 				"incorrectTargetState": "Não é possível aprimorar uma rolagem para o estado alvo '{state}' porque não é um estado válido (vantagem ou desvantagem).",
-				"rollIsNullOrUndefined": "A rolagem fornecida é nula ou indefinida."
+				"rollIsNullOrUndefined": "A rolagem fornecida é nula ou indefinida.",
+				"cannotRepeatRoll": "Falha ao repetir Rolagem Rápida. Erro não especificado.",
+				"itemNotSpecified": "Nenhum identificador de item foi especificado. Especifique um item por nome ou ID.",
+				"cannotFindIdentifier": "Nenhum {type} existe com nome ou ID '{identifier}'. Especifique um {type} válido.",
+				"noSelectedActor": "Você precisa ter um ator selecionado para usar essa macro.",
+				"damageNotSpecified": "Nenhuma fórmula de dano foi fornecida. Por favor, especifique uma ou mais fórmulas para rolar como dano."
 			},
 			"warning": {
 				"emptyDamageField": "Um ou mais campos de dano neste item estão vazios! Para rolar dano, certifique-se de que todos os campos de dano estejam preenchidos."
@@ -90,7 +105,8 @@
 				"subsection": {
 					"main": "Conteúdo Principal",
 					"damage": "Rolagens de Dano",
-					"consume": "Consumíveis"
+					"consume": "Consumíveis",
+					"effects": "Efeitos Ativos"
 				},
 				"options": {
 					"description": "Descrição",
@@ -131,13 +147,24 @@
 				"healingTemp": "Clique para aplicar pontos de vida temporários ao(s) token(s) selecionado(s).",
 				"rollCrit": "Clique para rolar dano crítico.",
 				"rollAdvantage": "Clique para rolar com vantagem.",
-				"rollDisadvantage": "Clique para rolar com desvantagem."
+				"rollDisadvantage": "Clique para rolar com desvantagem.",
+				"repeat": "Clique para repetir a rolagem."
 			},
 			"critPrompt": {
 				"title": "Aplicar Dano Crítico?",
 				"yes": "Sim",
 				"no": "Não"
-			}
+			},
+			"bonus": {
+				"ability": "Bônus do Teste de Atributo",
+				"generic": "Bônus da Rolagem Rápida",
+				"attack": "Bônus da Rolagem de Ataque",
+				"tool": "Bônus do Teste de Ferramenta",
+				"damage": "Bônus da Rolagem de Dano",
+				"placeholder": "ex.: 1d4",
+				"bonus": "Bônus"
+			},
+			"effects": "Aplicar Efeitos Ativos"
 		}
 	}
 }
