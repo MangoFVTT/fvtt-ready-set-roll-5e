@@ -4,14 +4,14 @@
     {{/if}}
     <div class="dice-result">
 		<div class="dice-formula dice-tooltip">{{formula}}</div>
-		<div class="dice-row rsr-rolls">
+		<div class="dice-row tooltips rsr-rolls">
 			{{#each tooltips}}
-			<div class="tooltip dual-left dice-row-item">{{{this}}}</div>
+			<div class="tooltip dice-row-item dual-left">{{{this}}}</div>
 			{{/each}}	
 		</div>
-		<div class="dice-row rsr-rolls">
+		<div class="dice-row tooltips rsr-rolls">
 			{{#if bonusTooltip}}
-			<div class="tooltip dice-row-item">{{{bonusTooltip}}}</div>
+			<div class="tooltip dice-row-item bonus">{{{bonusTooltip}}}</div>
 			{{/if}}	
 		</div>
 		<div class="dice-row rsr-totals">
