@@ -96,6 +96,10 @@ export class QuickCard {
 		html.find(".die-result-overlay-rsr").attr("style", "display: none;");
 	}    
     
+    /**
+     * Adds all dice reroll event handlers to a chat card.
+     * @param {JQuery} html The object to add reroll handlers to.
+     */
     _setupRerollDice(html) {
         if (SettingsUtility.getSettingValue(SETTING_NAMES.DICE_REROLL_ENABLED)) {
             html.find(".dice-tooltip .dice-rolls .roll").not(".discarded").not(".rerolled").addClass("rollable").click(async evt => {
