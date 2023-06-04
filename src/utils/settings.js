@@ -17,6 +17,7 @@ export const SETTING_NAMES = {
     QUICK_ROLL_DESC_ENABLED: "enableQuickRollDesc",
     D20_ICONS_ENABLED: "enableD20Icons",
     DICE_SOUNDS_ENABLED: "enableDiceSounds",
+    DICE_REROLL_ENABLED: "enableDiceReroll",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     APPLY_EFFECTS_ENABLED: "enableApplyEffects",
     ALWAYS_APPLY_CRIT: "alwaysApplyCrit",
@@ -98,13 +99,14 @@ export class SettingsUtility {
             });
         });
 
-        // OVERLAY BUTTON OPTIONS
-        const overlayOptions = [
+        // CHAT CARD OPTIONS
+        const chatCardOptions = [
+            { name: SETTING_NAMES.DICE_REROLL_ENABLED, default: true },
             { name: SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, default: true },
             { name: SETTING_NAMES.ALWAYS_APPLY_CRIT, default: true }
         ]        
 
-        overlayOptions.forEach(option => {
+        chatCardOptions.forEach(option => {
             game.settings.register(MODULE_NAME, option.name, {
                 name: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.name`),
                 hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${option.name}.hint`),
@@ -131,6 +133,7 @@ export class SettingsUtility {
             }
         });
         
+        // EFFECTS OPTIONS
         if (CoreUtility.hasDAE()) {
             game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_ENABLED, {
                 name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.name`),
@@ -158,6 +161,7 @@ export class SettingsUtility {
             });
         }
 
+        // INTERFACE OPTIONS
         game.settings.register(MODULE_NAME, SETTING_NAMES.SHOW_SKILL_ABILITIES, {
 			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.name`),
 			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.SHOW_SKILL_ABILITIES}.hint`),
@@ -186,7 +190,7 @@ export class SettingsUtility {
 			default: true
 		});
         
-        // PLACEMENT SETTINGS        
+        // PLACEMENT OPTIONS
 		const placementOptions = [
             SETTING_NAMES.PLACEMENT_DAMAGE_TITLE,
             SETTING_NAMES.PLACEMENT_DAMAGE_CONTEXT,

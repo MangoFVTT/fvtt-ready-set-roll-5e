@@ -97,7 +97,7 @@ export class QuickCard {
 	}    
     
     _setupRerollDice(html) {
-        if (true) {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.DICE_REROLL_ENABLED)) {
             html.find(".dice-tooltip .dice-rolls .roll").not(".discarded").not(".rerolled").addClass("rollable").click(async evt => {
                 await this._processRerollDieEvent(evt);
             });
