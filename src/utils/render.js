@@ -199,14 +199,15 @@ async function _renderMultiRoll(renderData = {}) {
     const bonusRoll = (bonusTerms && bonusTerms.length > 0) ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
+
     for (let i = 0; i < d20Rolls.results.length; i++) {
         let tmpResults = [];
         tmpResults.push(d20Rolls.results[i]);
 
-        if (roll.options.halflingLucky && d20Rolls.results[i].result === 1) {
+        while (d20Rolls.results[i].rerolled) {
             i++;
             tmpResults.push(d20Rolls.results[i]);
-        }        
+        }
         
         const critOptions = { 
             critThreshold: roll.options.critical,

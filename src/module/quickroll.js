@@ -350,6 +350,57 @@ export class QuickRoll {
 		return true;
 	}
 
+	/**
+	 * Rerolls a specific die inside a quick roll.
+	 * @param {Number} targetId The index of the roll field being rerolled.
+	 * @param {Number} targetRoll The index of the specific roll of the field being rerolled.
+	 * @param {Number} targetPart The index of the specific part of the roll being rerolled.
+	 * @param {Number} targetDie The index of the specific die of the part being rerolled.
+	 * @returns {Boolean} Whether or not the reroll was succesful. 
+	 */
+	async rerollDie(targetId, targetRoll, targetPart, targetDie) {
+		const targetField = this.fields[targetId];
+
+		if (!targetField || !this.hasPermission) {
+			return false;
+		}
+
+		let roll;
+		switch (targetField[0]) {
+			case FIELD_TYPE.DAMAGE:
+				roll = targetRoll === 0 ? targetField[1].baseRoll : targetField[1].critRoll;
+				break;
+			case FIELD_TYPE.ATTACK:
+			case FIELD_TYPE.CHECK:
+				roll = targetField[1].roll;
+				const dice = roll.terms[0].results.filter(r => r.active);
+				targetDie = roll.terms[0].results.indexOf(dice[targetRoll]);
+				break;
+			default:
+				return false;
+		}
+
+		if (!roll) {
+			return false;
+		}		
+
+		const terms = roll.terms;
+		const part = terms.filter(t => t instanceof Die)[targetPart];
+		const index = terms.indexOf(part);
+
+		terms[index] = await RollUtility.rerollSpecificDie(part, targetDie);
+
+		if (targetField[0] === FIELD_TYPE.DAMAGE) {
+			if (targetRoll === 0) {
+				targetField[1].baseRoll = Roll.fromTerms(terms);
+			} else {
+				targetField[1].critRoll = Roll.fromTerms(terms);
+			}
+		}
+		
+		return true;
+	}
+
     /**
 	 * Renders HTML templates for the provided fields and combines them into a card.
 	 * @returns {Promise<string>} Combined HTML chat data for all the roll fields.
