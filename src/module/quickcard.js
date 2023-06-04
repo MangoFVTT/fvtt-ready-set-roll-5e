@@ -351,6 +351,11 @@ export class QuickCard {
         }
     }
 
+    /**
+     * Processes and handles a dice reroll click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
     async _processRerollDieEvent(event) {
         event.preventDefault();
         event.stopPropagation();

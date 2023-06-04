@@ -350,6 +350,14 @@ export class QuickRoll {
 		return true;
 	}
 
+	/**
+	 * Rerolls a specific die inside a quick roll.
+	 * @param {Number} targetId The index of the roll field being rerolled.
+	 * @param {Number} targetRoll The index of the specific roll of the field being rerolled.
+	 * @param {Number} targetPart The index of the specific part of the roll being rerolled.
+	 * @param {Number} targetDie The index of the specific die of the part being rerolled.
+	 * @returns {Boolean} Whether or not the reroll was succesful. 
+	 */
 	async rerollDie(targetId, targetRoll, targetPart, targetDie) {
 		const targetField = this.fields[targetId];
 

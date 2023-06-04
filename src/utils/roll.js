@@ -370,6 +370,12 @@ export class RollUtility {
         return upgradedRoll;
     }
 
+    /**
+     * Rerolls a specific die result inside a given term.
+     * @param {Die} term The die term containing the die being rerolled.
+     * @param {Number} targetDie The index of the specific die of the term being rerolled.
+     * @returns 
+     */
     static async rerollSpecificDie(term, targetDie) {
         if (!term) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.termIsNullOrUndefined`));
