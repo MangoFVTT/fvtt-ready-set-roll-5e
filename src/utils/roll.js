@@ -382,8 +382,10 @@ export class RollUtility {
         }
 
         const rerolledDie = await new Die({ number: 1, faces: term.faces }).evaluate({ async: true });
-
-        term.results[targetDie] = foundry.utils.duplicate(rerolledDie.results[0]);
+        
+        term.results[targetDie].rerolled = true;
+        term.results[targetDie].active = false;
+        term.results.splice(targetDie + 1, 0, foundry.utils.duplicate(rerolledDie.results[0]));
 
         return term;
     }

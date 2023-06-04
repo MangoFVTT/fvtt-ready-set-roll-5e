@@ -356,8 +356,6 @@ export class QuickCard {
         const part = $(event.target).closest(".tooltip-part").index() + ($(event.target).closest(".tooltip.dice-row-item").hasClass("bonus") ? 1 : 0);            
         const die = $(event.target).index();
 
-        console.log(id, roll, part, die);
-
         if (await this.roll.rerollDie(id, roll, part, die)) {
             this._updateQuickCard();
         }

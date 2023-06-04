@@ -207,8 +207,6 @@ export class QuickRoll {
 	 * @returns {Promise<Object>} The created update package.
 	 */
 	async toMessageUpdate() {
-		console.log(this.fields);
-
 		const update = {
 			content: await this._render(),
 			...flattenObject({ flags: duplicate(this._getFlags()) }),
@@ -367,7 +365,8 @@ export class QuickRoll {
 			case FIELD_TYPE.ATTACK:
 			case FIELD_TYPE.CHECK:
 				roll = targetField[1].roll;
-				targetDie = targetRoll;
+				const dice = roll.terms[0].results.filter(r => r.active);
+				targetDie = roll.terms[0].results.indexOf(dice[targetRoll]);
 				break;
 			default:
 				return false;
@@ -375,7 +374,7 @@ export class QuickRoll {
 
 		if (!roll) {
 			return false;
-		}
+		}		
 
 		const terms = roll.terms;
 		const part = terms.filter(t => t instanceof Die)[targetPart];
