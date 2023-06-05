@@ -11,19 +11,28 @@ import { QuickRoll } from "./quickroll.js";
 export class QuickCard {
     _applyDamageToTargeted;
     _applyDamageToSelected;
+    _prioritiseDamageTargeted;
+    _prioritiseDamageSelected;
+
     _applyEffectsToTargeted;
     _applyEffectsToSelected;
+    _prioritiseEffectsTargeted;
+    _prioritiseEffectsSelected;
 
     constructor (message, html) {
         const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        this._applyDamageToTargeted = applyDamageOption === 1 || applyDamageOption === 2;
-        this._applyDamageToSelected = applyDamageOption === 0 || applyDamageOption === 2;
+        this._applyDamageToTargeted = applyDamageOption === 1 || applyDamageOption >= 2;
+        this._applyDamageToSelected = applyDamageOption === 0 || applyDamageOption >= 2;
+        this._prioritiseDamageTargeted = applyDamageOption === 4;
+        this._prioritiseDamageSelected = applyDamageOption === 3;
 
         if (CoreUtility.hasDAE())
         {
             const applyEffectsOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_TO);
-            this._applyEffectsToTargeted = applyEffectsOption === 1 || applyEffectsOption === 2;
-            this._applyEffectsToSelected = applyEffectsOption === 0 || applyEffectsOption === 2;
+            this._applyEffectsToTargeted = applyEffectsOption === 1 || applyEffectsOption >= 2;
+            this._applyEffectsToSelected = applyEffectsOption === 0 || applyEffectsOption >= 2;
+            this._prioritiseEffectsTargeted = applyEffectsOption === 4;
+            this._prioritiseEffectsSelected = applyEffectsOption === 3;
         }
 
         this.updateBinding(message, html);
@@ -243,8 +252,17 @@ export class QuickCard {
         const action = button.dataset.rsr;
 
         if (action === "effects-rsr") {
-            const selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
-            const targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
+            let selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
+            let targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
+
+            if (this._prioritiseEffectsSelected && selectTokens.length > 0) {
+                targetTokens = [];
+            }
+
+            if (this._prioritiseEffectsTargeted && targetTokens.size > 0) {
+                selectTokens = [];
+            }
+
             const targets = new Set([...selectTokens, ...targetTokens]);
 
             window.DAE.doEffects(this.roll.item, true, targets, {
@@ -316,8 +334,17 @@ export class QuickCard {
             damage = await this._resolveCritDamage(Number(damage), Number(crit), dialogPosition);
         }
 
-        const selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
-        const targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
+        let selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
+        let targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
+
+        if (this._prioritiseDamageSelected && selectTokens.length > 0) {
+            targetTokens = [];
+        }
+
+        if (this._prioritiseDamageTargeted && targetTokens.size > 0) {
+            selectTokens = [];
+        }
+
         const targets = new Set([...selectTokens, ...targetTokens]);
 
         await Promise.all(Array.from(targets).map( t => {
