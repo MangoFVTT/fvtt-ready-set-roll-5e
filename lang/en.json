@@ -91,7 +91,9 @@
             "apply": {
                 "0": "Apply to Selected Tokens",
                 "1": "Apply to Targeted Tokens",
-                "2": "Apply to Both"
+                "2": "Apply to Both",
+                "3": "Prioritise Selected Tokens",
+                "4": "Prioritise Targeted Tokens"
             },
             "hideSaveDC": {
                 "0": "Never",

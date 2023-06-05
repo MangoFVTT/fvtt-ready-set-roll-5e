@@ -129,7 +129,9 @@ export class SettingsUtility {
             choices: {
                 0: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.0`),
                 1: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.1`),
-                2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`)
+                2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`),
+                3: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.3`),
+                4: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.4`)
             }
         });
         
@@ -156,7 +158,9 @@ export class SettingsUtility {
                 choices: {
                     0: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.0`),
                     1: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.1`),
-                    2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`)
+                    2: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.2`),
+                    3: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.3`),
+                    4: CoreUtility.localize(`${MODULE_SHORT}.choices.apply.4`)
                 }
             });
         }
