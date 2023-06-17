@@ -308,7 +308,9 @@ export class ItemUtility {
  */
 function _getConsumeTargetFromItem(item) {
     if (item.system.consume.type === "ammo") {
-        return item.actor.items.get(item.system.consume.target);
+        const target = item.actor.items.get(item.system.consume.target);
+        ItemUtility.ensureFlagsOnitem(target);
+        return target;
     }
 
     return undefined;
