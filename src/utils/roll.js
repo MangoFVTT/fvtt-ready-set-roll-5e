@@ -136,7 +136,7 @@ export class RollUtility {
                 groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.tool`), id: ROLL_TYPE.TOOL });
             }
 
-            if (caller.hasDamage && !SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
+            if (caller.hasDamage && SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE) === 0) {
                 groups.push({ label: CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.damage`), id: ROLL_TYPE.DAMAGE });
             }
 
@@ -350,7 +350,10 @@ export class RollUtility {
      * @returns {Promise<Roll>} The upgraded multi roll from the provided roll.
      */
     static async upgradeRoll(roll, targetState, params = {}) {
-        if (!roll) return null;
+        if (!roll) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
+            return null;
+        }
 
 		if (targetState !== ROLL_STATE.ADV && targetState !== ROLL_STATE.DIS) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
@@ -365,6 +368,32 @@ export class RollUtility {
         d20BaseTerm.modifiers.push(targetState);
 
         return upgradedRoll;
+    }
+
+    /**
+     * Rerolls a specific die result inside a given term.
+     * @param {Die} term The die term containing the die being rerolled.
+     * @param {Number} targetDie The index of the specific die of the term being rerolled.
+     * @returns 
+     */
+    static async rerollSpecificDie(term, targetDie) {
+        if (!term) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.termIsNullOrUndefined`));
+            return null;
+        }
+
+        if (targetDie >= term.results.length) {
+			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetDie`));
+            return null;
+        }
+
+        const rerolledDie = await new Die({ number: 1, faces: term.faces }).evaluate({ async: true });
+        
+        term.results[targetDie].rerolled = true;
+        term.results[targetDie].active = false;
+        term.results.splice(targetDie + 1, 0, foundry.utils.duplicate(rerolledDie.results[0]));
+
+        return term;
     }
 
     /**

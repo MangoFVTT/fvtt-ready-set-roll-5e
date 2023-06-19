@@ -90,7 +90,7 @@ export class SheetUtility {
 
 /**
  * Adds an item options tab to the provided item sheet.
- * @param {Object} html The html data container of the sheet.
+ * @param {JQuery} html The html data container of the sheet.
  * @private
  */
 function _addItemOptionsTab(html) {
@@ -103,7 +103,7 @@ function _addItemOptionsTab(html) {
 /**
  * Adds roll configuration UI for a specific item sheet.
  * @param {Item} item The item to whom the sheet belongs.
- * @param {object} html The html data container of the sheet.
+ * @param {JQuery} html The html data container of the sheet.
  * @private
  */
 async function _addItemOptions(item, html) {
@@ -150,7 +150,7 @@ async function _addItemOptions(item, html) {
  * Adds listeners in a number of locations for rolling with a situational bonus dialog.
  * Listeners are only added in the specific location if the relevant quick roll is enabled.
  * @param {Actor} actor The actor for which the listeners are being added.
- * @param {Object} html The html of the sheet in which listeners are being added.
+ * @param {JQuery} html The html of the sheet in which listeners are being added.
  */
 function _addSituRollListeners(actor, html) {
     if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) {
@@ -219,7 +219,7 @@ function _addSituRollListeners(actor, html) {
 /**
  * Adds context text fields to an item sheet next to all damage fields and the other formula field.
  * @param {Item} item The item to whom the sheet belongs.
- * @param {object} html The html data container of the sheet.
+ * @param {JQuery} html The html data container of the sheet.
  * @private 
  */
 function _addDamageContextFields(item, html) {

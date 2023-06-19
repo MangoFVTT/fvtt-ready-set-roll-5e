@@ -18,7 +18,9 @@
             "enableD20Icons.name": "Show D20 Rolls for Quick Rolls",
             "enableD20Icons.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
             "enableDiceSounds.name": "Enable Dice Sounds for Quick Rolls",
-            "enableDiceSounds.hint": "When outputting a quick roll, play the default system dice-rolling sound.",
+            "enableDiceSounds.hint": "When outputting a quick roll, play the default system dice-rolling sound.",            
+            "enableDiceReroll.name": "Enable Dice Rerolling",
+            "enableDiceReroll.hint": "When outputting a quick roll, enable the ability to click a specific die in the chat message tooltip to reroll that die in place.",
             "enableOverlayButtons.name": "Enable Overlay Buttons",
             "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
             "applyDamageTo.name": "Apply Damage Options",
@@ -31,8 +33,8 @@
             "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
-            "alwaysManualDamage.name": "Always Roll Damage Manually",
-            "alwaysManualDamage.hint": "When outputting a quick roll, do not quick roll damage. Instead, show a damage button to manually roll if there is damage available.",
+            "manualDamageMode.name": "Roll Damage Manually",
+            "manualDamageMode.hint": "When outputting a quick roll, do not quick roll damage. Instead, show a damage button to manually roll if there is damage available.",
             "showSkillAbilities.name": "Show Ability Names for Skills",
             "showSkillAbilities.hint": "When outputting a skill quick roll, display the name of the ability used next to the skill name.",
             "rollModifierMode.name": "Roll Modifier Keys",
@@ -61,8 +63,10 @@
                 "objectNotExpectedType": "Data object did not match the expected type. Expected type '{type}'.",
                 "incorrectRollType": "Cannot roll an {function} roll for roll type '{type}'.",
                 "incorrectFieldType": "Cannot upgrade a roll of type '{type}' to a multi roll.",
-                "incorrectTargetState": "Cannot ugprade a roll to target state '{state}' because it is not a valid state (advantage or disadvantage).",
+                "incorrectTargetState": "Cannot ugprade a roll to target state '{state}' because it is not a valid state (advantage or disadvantage).",                
+                "incorrectTargetDie": "Cannot reroll a die index that is outside the possible list of dice.",
                 "rollIsNullOrUndefined": "The given roll is null or undefined.",
+                "termIsNullOrUndefined": "The given term is null or undefined.",
                 "itemNotSpecified": "No item identifier was specified. Please specify an item by name or ID.",
                 "cannotFindIdentifier": "No {type} exists with name or ID '{identifier}'. Please specify a valid {type}.",
                 "noSelectedActor": "You must have an actor selected to use this macro.",
@@ -84,10 +88,17 @@
                 "2": "Below & Inside",
                 "3": "Below & Outside"
             },
+            "manual": {
+                "0": "Never",
+                "1": "Attack Rolls Only",
+                "2": "Always"
+            },
             "apply": {
                 "0": "Apply to Selected Tokens",
                 "1": "Apply to Targeted Tokens",
-                "2": "Apply to Both"
+                "2": "Apply to Both",
+                "3": "Prioritise Selected Tokens",
+                "4": "Prioritise Targeted Tokens"
             },
             "hideSaveDC": {
                 "0": "Never",

@@ -11,19 +11,28 @@ import { QuickRoll } from "./quickroll.js";
 export class QuickCard {
     _applyDamageToTargeted;
     _applyDamageToSelected;
+    _prioritiseDamageTargeted;
+    _prioritiseDamageSelected;
+
     _applyEffectsToTargeted;
     _applyEffectsToSelected;
+    _prioritiseEffectsTargeted;
+    _prioritiseEffectsSelected;
 
     constructor (message, html) {
         const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        this._applyDamageToTargeted = applyDamageOption === 1 || applyDamageOption === 2;
-        this._applyDamageToSelected = applyDamageOption === 0 || applyDamageOption === 2;
+        this._applyDamageToTargeted = applyDamageOption === 1 || applyDamageOption >= 2;
+        this._applyDamageToSelected = applyDamageOption === 0 || applyDamageOption >= 2;
+        this._prioritiseDamageTargeted = applyDamageOption === 4;
+        this._prioritiseDamageSelected = applyDamageOption === 3;
 
         if (CoreUtility.hasDAE())
         {
             const applyEffectsOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_TO);
-            this._applyEffectsToTargeted = applyEffectsOption === 1 || applyEffectsOption === 2;
-            this._applyEffectsToSelected = applyEffectsOption === 0 || applyEffectsOption === 2;
+            this._applyEffectsToTargeted = applyEffectsOption === 1 || applyEffectsOption >= 2;
+            this._applyEffectsToSelected = applyEffectsOption === 0 || applyEffectsOption >= 2;
+            this._prioritiseEffectsTargeted = applyEffectsOption === 4;
+            this._prioritiseEffectsSelected = applyEffectsOption === 3;
         }
 
         this.updateBinding(message, html);
@@ -48,6 +57,7 @@ export class QuickCard {
             html.find(".hideSave").text(CoreUtility.localize(`${MODULE_SHORT}.chat.hide`));
         }
 
+        this._setupRerollDice(html);
         this._setupActionButtons(html);
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
@@ -93,7 +103,19 @@ export class QuickCard {
      */
 	_onHoverEnd(html) {
 		html.find(".die-result-overlay-rsr").attr("style", "display: none;");
-	}
+	}    
+    
+    /**
+     * Adds all dice reroll event handlers to a chat card.
+     * @param {JQuery} html The object to add reroll handlers to.
+     */
+    _setupRerollDice(html) {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.DICE_REROLL_ENABLED)) {
+            html.find(".dice-tooltip .dice-rolls .roll").not(".discarded").not(".rerolled").addClass("rollable").click(async evt => {
+                await this._processRerollDieEvent(evt);
+            });
+        }
+    }
 
     /**
      * Adds all manual action button event handlers to a chat card.
@@ -101,7 +123,7 @@ export class QuickCard {
      * @param {JQuery} html The object to add button handlers to.
      */
     _setupActionButtons(html) {        
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE) > 0) {
             html.find(".rsr-damage-buttons button").click(async evt => {
                 await this._processDamageButtonEvent(evt);
             });
@@ -230,8 +252,17 @@ export class QuickCard {
         const action = button.dataset.rsr;
 
         if (action === "effects-rsr") {
-            const selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
-            const targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
+            let selectTokens = this._applyEffectsToSelected ? canvas.tokens.controlled : [];
+            let targetTokens = this._applyEffectsToTargeted ? game.user.targets : [];
+
+            if (this._prioritiseEffectsSelected && selectTokens.length > 0) {
+                targetTokens = [];
+            }
+
+            if (this._prioritiseEffectsTargeted && targetTokens.size > 0) {
+                selectTokens = [];
+            }
+
             const targets = new Set([...selectTokens, ...targetTokens]);
 
             window.DAE.doEffects(this.roll.item, true, targets, {
@@ -303,8 +334,17 @@ export class QuickCard {
             damage = await this._resolveCritDamage(Number(damage), Number(crit), dialogPosition);
         }
 
-        const selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
-        const targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
+        let selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
+        let targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
+
+        if (this._prioritiseDamageSelected && selectTokens.length > 0) {
+            targetTokens = [];
+        }
+
+        if (this._prioritiseDamageTargeted && targetTokens.size > 0) {
+            selectTokens = [];
+        }
+
         const targets = new Set([...selectTokens, ...targetTokens]);
 
         await Promise.all(Array.from(targets).map( t => {
@@ -335,6 +375,25 @@ export class QuickCard {
            if (!await this.roll.repeatRoll()) {
                 LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.cannotRepeatRoll`));
            }
+        }
+    }
+
+    /**
+     * Processes and handles a dice reroll click event.
+     * @param {Event} event The originating event of the button click.
+     * @private
+     */
+    async _processRerollDieEvent(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const id = $(event.target).closest(".rsr-dual").attr('data-id');
+        const roll = $(event.target).closest(".tooltip.dice-row-item").index();
+        const part = $(event.target).closest(".tooltip-part").index() + ($(event.target).closest(".tooltip.dice-row-item").hasClass("bonus") ? 1 : 0);            
+        const die = $(event.target).index();
+
+        if (await this.roll.rerollDie(id, roll, part, die)) {
+            this._updateQuickCard();
         }
     }
 

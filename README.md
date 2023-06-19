@@ -62,10 +62,16 @@ The following modules have been verified as compatible from the specified module
 
 ![retroactiveoverlay](https://user-images.githubusercontent.com/110994627/189863316-90a483e8-b35b-4bc5-905a-ca7d0e2ea80c.gif)
 
+### Individual Dice Rerolling
+- If enabled via the module settings, individual dice rolls in quick rolls can be rerolled by clicking on that individual dice within the chat card.
+- Rerolling dice will automatically live edit the quick roll's chat card, displaying the new rolls and roll totals alongside the already existing dice.
+
+![dicereroll](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d0c16a57-e41e-49df-b88f-464b152d1658)
+
 ### Apply Individual Damage
 - If enabled via the module settings, each damage field in a quick roll chat card can apply damage or healing to selected or targeted tokens via overlay buttons. This extends core system behaviour (applying damage via context menus) to allow for the application of each damage field individually instead of as a single whole.
 - Damage fields can be applied in a specific manner (damage or healing) regardless of the actual damage type. This is intended to allow Players or GMs to manually decide what to do with the damage field in the event of edge cases (such as a specific damage type healing instead of doing damage for a particular creature).
-- Applying critical damage to a token will display a prompt allowing for critical damage to be ignored if desired. This can be disabled via a setting to always apply critical damage.
+- Applying critical damage to a token will display a prompt allowing for critical damage to be ignored if desired. This can be bypassed via a setting to always apply critical damage.
 
 ![damageoverlay](https://user-images.githubusercontent.com/110994627/189862751-41c7e9b3-33a1-49bf-a55a-32f6681954d3.gif)
 
