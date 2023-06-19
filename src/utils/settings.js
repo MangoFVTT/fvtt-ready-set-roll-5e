@@ -33,7 +33,7 @@ export const SETTING_NAMES = {
     HIDE_SAVE_DC: "hideSaveDC",
     SHOW_SKILL_ABILITIES: "showSkillAbilities",
     ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti",
-    ALWAYS_MANUAL_DAMAGE: "alwaysManualDamage"
+    MANUAL_DAMAGE_MODE: "manualDamageMode"
 }
 
 /**
@@ -84,8 +84,7 @@ export class SettingsUtility {
             { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.SITU_ROLL_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.QUICK_ROLL_DESC_ENABLED, default: false, scope: "world" },
-            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client"  },
-            { name: SETTING_NAMES.ALWAYS_MANUAL_DAMAGE, default: false, scope: "client"  }
+            { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client"  }
         ];
 
         extraRollOptions.forEach(option => {
@@ -97,6 +96,20 @@ export class SettingsUtility {
                 type: Boolean,
                 default: option.default,
             });
+        });
+
+        game.settings.register(MODULE_NAME, SETTING_NAMES.MANUAL_DAMAGE_MODE, {
+            name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.MANUAL_DAMAGE_MODE}.name`),
+            hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.MANUAL_DAMAGE_MODE}.hint`),
+            scope: "client",
+            config: true,
+            type: Number,
+            default: 0,
+            choices: {
+                0: CoreUtility.localize(`${MODULE_SHORT}.choices.manual.0`),
+                1: CoreUtility.localize(`${MODULE_SHORT}.choices.manual.1`),
+                2: CoreUtility.localize(`${MODULE_SHORT}.choices.manual.2`)
+            }
         });
 
         // CHAT CARD OPTIONS
