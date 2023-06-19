@@ -37,7 +37,8 @@ export class ItemUtility {
         ItemUtility.ensureFlagsOnitem(item);
         ItemUtility.ensureItemParams(item, params);
         
-        const manualDamage = SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE);
+        const manualDamageMode = SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE);
+        const manualDamage = manualDamageMode === 2 || (manualDamageMode === 1 && item.hasAttack);
         const applyEffects = CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED);
         const chatData = await item.getChatData();
         let fields = [];

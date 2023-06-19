@@ -123,7 +123,7 @@ export class QuickCard {
      * @param {JQuery} html The object to add button handlers to.
      */
     _setupActionButtons(html) {        
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_MANUAL_DAMAGE)) {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE) > 0) {
             html.find(".rsr-damage-buttons button").click(async evt => {
                 await this._processDamageButtonEvent(evt);
             });
