@@ -430,21 +430,10 @@ export class QuickCard {
         event.stopPropagation();
 
         // Retrieve the proper damage thats supposed to be applied via this set of buttons.
-        const modifier = $(event.target).closest("button").attr('data-modifier');
-        const damageElement = $(event.target.parentNode.parentNode.parentNode.parentNode.parentNode);
-        const cardData = $(event.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode).data();
-        let damage = damageElement.find('.rsr-base-die').text();
-        let type   = damageElement.find('.rsr5e-roll-label').text().toLowerCase();
+        const modifier = $(event.target).closest('button').attr('data-modifier');        
+        const { damage, type } = await this._resolveTotalDamage(event);
 
-        if (damageElement.find('.rsr-extra-die').length > 0) {
-            const crit = damageElement.find('.rsr-extra-die').text();
-            const dialogPosition = {
-                x: event.originalEvent.screenX,
-                y: event.originalEvent.screenY
-            };
-
-            damage = await this._resolveCritDamage(Number(damage), Number(crit), dialogPosition);
-        }
+        console.log(damage, type);
 
         let selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
         let targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
@@ -462,7 +451,7 @@ export class QuickCard {
         await Promise.all(Array.from(targets).map( t => {
             const target = t.actor;
 
-            damage = this._calculateDamageResistances(target, cardData, damage, type);
+            //damage = this._calculateDamageResistances(target, cardData, damage, type);
 
             return isTempHP ? target.applyTempHP(damage) : target.applyDamage(damage, modifier);
         }));
@@ -514,22 +503,31 @@ export class QuickCard {
 
     /**
      * Displays a prompt allowing the user to choose if they want to apply critical damage in a field or not.
-     * @param {Number} damage The value of the base damage of a field.
-     * @param {Number} crit The value of the crit damage of a field.
-     * @param {Object} position A vector indicating the position of the originating event.
+     * @param {Event} event The originating event of the button click.
      * @returns {Promise<Number>|Number} The resolved final damage value depending on the user's choices.
      * @private
      */
-    async _resolveCritDamage(damage, crit, position) {
-		if (damage && crit) {
+    async _resolveTotalDamage(event) {
+        const damageElement = $(event.target).closest('.dice-row').find('.rsr-damage');
+        const baseDmg = Number(damageElement.find('.rsr-base-die').attr('data-value'));
+        const critDmg = Number(damageElement.find('.rsr-extra-die').attr('data-value'));
+        const type = damageElement.attr('data-damagetype').toLowerCase();
+
+        if (!baseDmg) {
+            LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.damageIsNullOrUndefined`));
+            return { damage: undefined, type };
+        }
+        
+        let total = baseDmg;
+
+        if (critDmg) {
             if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_APPLY_CRIT)) {
-                return damage + crit;
-            }
-            else {
-                return await new Promise(async (resolve, reject) => {
+                total += critDmg;
+            } else {
+                total += await new Promise(async (resolve, reject) => {
                     const options = {
-                        left: position.x,
-                        top: position.y,
+                        left: damageElement.offset().left + (damageElement.width() - 200)/2,
+                        top: damageElement.offset().top + damageElement.height() + 5,
                         width: 100
                     };
     
@@ -540,12 +538,12 @@ export class QuickCard {
                             one: {
                                 icon: '<i class="fas fa-check"></i>',
                                 label: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.yes`),
-                                callback: () => { resolve(damage + crit); }
+                                callback: () => { resolve(critDmg); }
                             },
                             two: {
                                 icon: '<i class="fas fa-times"></i>',
                                 label: CoreUtility.localize(`${MODULE_SHORT}.chat.critPrompt.no`),
-                                callback: () => { resolve(damage); }
+                                callback: () => { resolve(0); }
                             }
                         },
                         default: "two"
@@ -554,9 +552,9 @@ export class QuickCard {
                     new Dialog(data, options).render(true);
                 });
             }
-		}
+        }
 
-		return damage || crit;
+		return { damage: total, type};
 	}
 
     /**
