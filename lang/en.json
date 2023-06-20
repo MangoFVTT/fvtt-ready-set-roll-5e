@@ -31,6 +31,8 @@
             "applyEffectsTo.hint": "Determines which tokens effects are applied to when applying effects via the effects chat button.",
             "alwaysApplyCrit.name": "Always Apply Critical Damage",
             "alwaysApplyCrit.hint": "When using damage overlay buttons, always apply the rolled critical damage (if any). If turned off, using an overlay button for critical damage will display a prompt allowing the user to choose.",
+            "applyDamageMods.name": "Automate Damage Modifiers",
+            "applyDamageMods.hint": "When using damage overlay buttons, apply modifiers such as resistances or immunities to the damage per target. If turned off, the raw damage value will be used without modification.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
             "manualDamageMode.name": "Roll Damage Manually",
