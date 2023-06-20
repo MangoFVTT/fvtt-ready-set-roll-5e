@@ -143,7 +143,9 @@ export class QuickCard {
      * vulnerabilities and immunities, in addition to bypass check.
      */
     _calculateDamageResistances(target, cardData, damage, type){
-        const item = game.actors.get(cardData.actorId).items.get(cardData.itemId);
+        const actor = game.actors.get(cardData.actorId);
+        const item = actor.items.get(cardData.itemId);
+        const allItems = actor.items;
         const itemProperties = item.system.properties;
 
         const vulnerabilities = target.system.traits.dv;
@@ -151,6 +153,16 @@ export class QuickCard {
         const immunities      = target.system.traits.di;
 
         let bypasses = false;
+
+        allItems.forEach(function(i){
+            let featName = i.name.toLowerCase();
+            if(i.type == 'feat' &&  featName.includes('heavy armor master')){
+                damage = damage - 3;
+                if(damage == 0){
+                    damage += 1;
+                };
+            };
+        });
 
         if(vulnerabilities.value.size > 0){
             vulnerabilities.value.forEach(function(v){ 
