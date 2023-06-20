@@ -21,6 +21,7 @@ export const SETTING_NAMES = {
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     APPLY_EFFECTS_ENABLED: "enableApplyEffects",
     ALWAYS_APPLY_CRIT: "alwaysApplyCrit",
+    APPLY_DAMAGE_MODS: "applyDamageMods",
     APPLY_DAMAGE_TO: "applyDamageTo",
     APPLY_EFFECTS_TO: "applyEffectsTo",
     PLACEMENT_ROLL_TITLE: "placementRollTitle",
@@ -116,7 +117,8 @@ export class SettingsUtility {
         const chatCardOptions = [
             { name: SETTING_NAMES.DICE_REROLL_ENABLED, default: true },
             { name: SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, default: true },
-            { name: SETTING_NAMES.ALWAYS_APPLY_CRIT, default: true }
+            { name: SETTING_NAMES.ALWAYS_APPLY_CRIT, default: true },
+            { name: SETTING_NAMES.APPLY_DAMAGE_MODS, default: false },
         ]        
 
         chatCardOptions.forEach(option => {
