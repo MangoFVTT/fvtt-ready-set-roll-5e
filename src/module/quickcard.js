@@ -139,6 +139,104 @@ export class QuickCard {
     }
 
     /**
+     * Process for damage calculation dependent on resistances,
+     * vulnerabilities and immunities, in addition to bypass check.
+     */
+    _calculateDamageResistances(target, cardData, damage, type){
+        const item = game.actors.get(cardData.actorId).items.get(cardData.itemId);
+        const itemProperties = item.system.properties;
+
+        const vulnerabilities = target.system.traits.dv;
+        const resistances     = target.system.traits.dr;
+        const immunities      = target.system.traits.di;
+
+        let bypasses = false;
+
+        if(vulnerabilities.value.size > 0){
+            vulnerabilities.value.forEach(function(v){ 
+                if(type.includes(v)) { 
+                    if( vulnerabilities.bypasses.size > 0 ){
+                        vulnerabilities.bypasses.forEach(function(b){
+                            if(item.type == 'weapon'){
+                                if(itemProperties[b]){ 
+                                    bypasses = true;
+                                    return;
+                                };
+                            } else if(item.type == 'spell') {
+                                if(b == 'mgc'){
+                                    bypasses = true;
+                                    return;
+                                }
+                            }
+                        });
+                    };
+                    if(bypasses) { 
+                        bypasses = false; 
+                        return; 
+                    };
+                    damage = damage * 2;
+                };
+            });
+        };
+
+        if(resistances.value.size > 0){
+            resistances.value.forEach(function(r){ 
+                if(type.includes(r)) { 
+                    if( resistances.bypasses.size > 0 ){
+                        resistances.bypasses.forEach(function(b){
+                            if(item.type == 'weapon'){
+                                if(itemProperties[b]){ 
+                                    bypasses = true;
+                                    return;
+                                };
+                            } else if(item.type == 'spell') {
+                                if(b == 'mgc'){
+                                    bypasses = true;
+                                    return;
+                                }
+                            }
+                        });
+                    };
+                    if(bypasses) { 
+                        bypasses = false; 
+                        return; 
+                    };
+                    damage = Math.floor(damage / 2);
+                    damage = ((damage == 0) ? 1 : damage);
+                } ;
+            });
+        };
+
+        if(immunities.value.size > 0){
+            immunities.value.forEach(function(i){
+                if( immunities.bypasses.size > 0 ){
+                    immunities.bypasses.forEach(function(b){
+                        if(item.type == 'weapon'){
+                            if(itemProperties[b]){ 
+                                bypasses = true;
+                                return;
+                            };
+                        } else if(item.type == 'spell') {
+                            if(b == 'mgc'){
+                                bypasses = true;
+                                return;
+                            }
+                        }
+                    });
+                };
+                if(bypasses) { 
+                    bypasses = false; 
+                    return; 
+                };
+                if(type.includes(i)) {
+                    damage = 0;
+                };
+            });
+        };
+        return damage;
+    }
+
+    /**
      * Adds all overlay buttons to a chat card.
      * @param {JQuery} html The object to add overlay buttons to.
      * @private
@@ -321,8 +419,10 @@ export class QuickCard {
 
         // Retrieve the proper damage thats supposed to be applied via this set of buttons.
         const modifier = $(event.target).closest("button").attr('data-modifier');
-        const damageElement = $(event.target.parentNode.parentNode.parentNode.parentNode);
+        const damageElement = $(event.target.parentNode.parentNode.parentNode.parentNode.parentNode);
+        const cardData = $(event.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode).data();
         let damage = damageElement.find('.rsr-base-die').text();
+        let type   = damageElement.find('.rsr5e-roll-label').text().toLowerCase();
 
         if (damageElement.find('.rsr-extra-die').length > 0) {
             const crit = damageElement.find('.rsr-extra-die').text();
@@ -349,6 +449,9 @@ export class QuickCard {
 
         await Promise.all(Array.from(targets).map( t => {
             const target = t.actor;
+
+            damage = this._calculateDamageResistances(target, cardData, damage, type);
+
             return isTempHP ? target.applyTempHP(damage) : target.applyDamage(damage, modifier);
         }));
 
