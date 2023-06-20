@@ -319,11 +319,9 @@ export class QuickCard {
         event.preventDefault();
         event.stopPropagation();
 
-        // Retrieve the proper damage thats supposed to be applied via this set of buttons.
-        const modifier = $(event.target).closest('button').attr('data-modifier');        
-        const { damage, type } = await this._resolveTotalDamage(event);
-
-        console.log(damage, type);
+        // Retrieve the total damage, damage type, and damage modifier to be applied by this particular button.
+        const modifier = $(event.target).closest('button').attr('data-modifier');
+        let { damage, type } = await this._resolveTotalDamage(event);
 
         let selectTokens = this._applyDamageToSelected ? canvas.tokens.controlled : [];
         let targetTokens = this._applyDamageToTargeted ? game.user.targets : [];
@@ -338,11 +336,13 @@ export class QuickCard {
 
         const targets = new Set([...selectTokens, ...targetTokens]);
 
-        await Promise.all(Array.from(targets).map( t => {
+        await Promise.all(Array.from(targets).map(t => {
             const target = t.actor;
 
-            //damage = this._calculateDamageResistances(target, cardData, damage, type);
-
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_MODS)) {
+                damage = CoreUtility.resolveDamageModifiers(target, damage, type, this.roll.item);
+            }
+            
             return isTempHP ? target.applyTempHP(damage) : target.applyDamage(damage, modifier);
         }));
 
