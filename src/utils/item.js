@@ -257,19 +257,22 @@ export class ItemUtility {
         if (CONFIG[MODULE_SHORT].flags[item.type].quickDamage) {
             let newQuickDamageValues = [];
             let newQuickDamageAltValues = [];
+            let newQuickDamageContexts = [];
 
             // Make quick damage flags if they don't exist
             if (!moduleFlags.quickDamage) {
-                moduleFlags.quickDamage = { type: "Array", value: [], altValue: [] };
+                moduleFlags.quickDamage = { type: "Array", value: [], altValue: [], context: [] };
             }
 
             for (let i = 0; i < item.system.damage?.parts.length; i++) {
                 newQuickDamageValues[i] = moduleFlags.quickDamage.value[i] ?? true;
                 newQuickDamageAltValues[i] = moduleFlags.quickDamage.altValue[i] ?? true;
+                newQuickDamageContexts[i] = moduleFlags.quickDamage.context[i] ?? "";
             }
 
             moduleFlags.quickDamage.value = newQuickDamageValues;
             moduleFlags.quickDamage.altValue = newQuickDamageAltValues;
+            moduleFlags.quickDamage.context = newQuickDamageContexts;
         }
 
         // If quick effects flags should exist, update them based on which effects are active
@@ -279,7 +282,7 @@ export class ItemUtility {
             let newQuickEffectContexts = [];
 
             if (!moduleFlags.quickEffects) {
-                moduleFlags.quickEffects = { type: "Array", value: [], altValue: [] };
+                moduleFlags.quickEffects = { type: "Array", value: [], altValue: [], context: [] };
             }
 
             const activeEffects = item.collections.effects.filter((effect) => !effect.disabled);
