@@ -1,4 +1,5 @@
 import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
+import { ITEM_TYPE } from "./item.js";
 import { LogUtility } from "./log.js";
 import { SettingsUtility, SETTING_NAMES } from "./settings.js";
 
@@ -78,7 +79,77 @@ export class CoreUtility {
 
         LogUtility.logError("Failed to resolve data object as an Actor or an Item.", { ui: false });
         return {};
-	}
+	}    
+
+    /**
+     * Resolves modifiers (e.g. resistances, immunities, etc.) for a given damage total.
+     * @param {Actor} target The target actor to whom the damage is applied.
+     * @param {Number} damage The initial damage total being applied.
+     * @param {String} type The type of the damage being applied.
+     * @param {Item} item The originating item of the damage.
+     * @returns {Number} The modified damage total to apply.
+     */
+    static resolveDamageModifiers(target, damage, type, item) {
+        let result = damage;
+
+        const dv = target.system.traits.dv;
+        const dr = target.system.traits.dr;
+        const di = target.system.traits.di;
+
+        result = CoreUtility.resolveDamageFeats(target, result, type, item);
+        result = CoreUtility.resolveDamageTrait(dv, 2, result, type, item);
+        result = CoreUtility.resolveDamageTrait(dr, 0.5, result, type, item);
+        result = CoreUtility.resolveDamageTrait(di, 0, result, type, item);
+
+        return result < 0 ? 1 : Math.floor(result);
+    }
+
+    /**
+     * Resolves modifiers from Feats for a given damage total.
+     * @param {Actor} target The target actor to whom the damage is applied.
+     * @param {Number} damage The initial damage total being applied.
+     * @param {String} type The type of the damage being applied.
+     * @param {Item} item The originating item of the damage.
+     * @returns {Number} The modified damage total to apply.
+     */
+    static resolveDamageFeats(target, damage, type, item) {
+        let result = damage;
+
+        // FEAT: HEAVY ARMOR MASTER
+        const heavyArmorMaster = target.items.some(i => i.type === ITEM_TYPE.FEATURE && i.name.toLowerCase().includes('heavy armor master'));
+
+        if (heavyArmorMaster && !item.system.properties.mgc && CONFIG.DND5E.physicalDamageTypes[type]) {
+            result -= 3;
+        }
+
+        return result;
+    }
+
+    /**
+     * Resolves modifiers from specific traits (e.g. resistance) for a given damage total.
+     * @param {Object} trait The trait object to resolve.
+     * @param {Number} multiplier The applied mutiplier for this trait.
+     * @param {Number} damage The initial damage total being applied.
+     * @param {String} type The type of the damage being applied.
+     * @param {Item} item The originating item of the damage.
+     * @returns {Number} The modified damage total to apply.
+     */
+    static resolveDamageTrait(trait, multiplier, damage, type, item) {
+        let result = damage;
+        let bypass = false;
+
+        if (trait?.bypasses && trait.bypasses.size > 0 && CONFIG.DND5E.physicalDamageTypes[type]) {
+            trait.bypasses.forEach(b => {
+                bypass ||= item.system.properties[b] ?? false;
+            });
+        }
+
+        if (trait?.value && trait.value.has(type) && !bypass) {
+            result *= multiplier;
+        }
+
+        return result;
+    }
 
     /**
      * Lock variable to prevent multiple roll sounds from playing simultaneously.
