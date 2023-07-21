@@ -339,7 +339,7 @@ export class QuickCard {
         await Promise.all(Array.from(targets).map(t => {
             const target = t.actor;
 
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_MODS)) {
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_MODS) && !isTempHP && modifier > 0) {
                 damage = CoreUtility.resolveDamageModifiers(target, damage, type, this.roll.item);
             }
             

@@ -118,8 +118,10 @@ export class CoreUtility {
         // FEAT: HEAVY ARMOR MASTER
         const heavyArmorMaster = target.items.some(i => i.type === ITEM_TYPE.FEATURE && i.name.toLowerCase().includes('heavy armor master'));
 
-        if (heavyArmorMaster && !item.system.properties.mgc && CONFIG.DND5E.physicalDamageTypes[type]) {
-            result -= 3;
+        if (heavyArmorMaster) {
+            if (item.type === ITEM_TYPE.WEAPON && !item.system?.properties?.mgc && CONFIG.DND5E.physicalDamageTypes[type]) {
+                result -= 3;
+            }
         }
 
         return result;
