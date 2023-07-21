@@ -52,7 +52,13 @@
 			"enableDeathQuickRoll.name": "Habilitar Rolagens Rápidas para Salvaguardas contra a Morte",
 			"enableSituQuickRoll.name": "Habilitar Rolagens de Bônus Situacionais",
 			"enableDeathQuickRoll.hint": "Ao clicar em uma salvaguarda contra a morte, rolar diretamente para o chat em vez de usar a caixa de diálogo de rolagem padrão. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
-			"enableSituQuickRoll.hint": "Ao clicar com o botão direito em vez do esquerdo em qualquer rolagem rápida, mostrar uma caixa de diálogo que pode adicionar um bônus situacional à rolagem. Esta funcionalidade não tem efeito se a rolagem rápida estiver desativada."
+			"enableSituQuickRoll.hint": "Ao clicar com o botão direito em vez do esquerdo em qualquer rolagem rápida, mostrar uma caixa de diálogo que pode adicionar um bônus situacional à rolagem. Esta funcionalidade não tem efeito se a rolagem rápida estiver desativada.",
+			"applyDamageMods.name": "Automatizar Modificadores de Dano",
+			"applyDamageMods.hint": "Ao usar os botões de overlay de dano, aplicar modificadores como resistências e imunidades ao dano por alvo. Se desativado, o valor bruto de dano será usado sem modificação.",
+			"enableDiceReroll.name": "Habilitar Rerrolagem de Dados",
+			"enableDiceReroll.hint": "Ao gerar uma rolagem rápida, habilitar a possibilidade de clicar em um dado específico nos detalhes da rolagem para rolar novamente aquele dado.",
+			"manualDamageMode.name": "Rolar Dano Manualmente",
+			"manualDamageMode.hint": "Ao emitir a mensagem de rolagem rápida, não rolar o dano junto. Em vez disso, mostrar um botão de dano para rolar manualmente se houver dano configurado."
 		},
 		"messages": {
 			"error": {
@@ -67,7 +73,10 @@
 				"itemNotSpecified": "Nenhum identificador de item foi especificado. Especifique um item por nome ou ID.",
 				"cannotFindIdentifier": "Nenhum {type} existe com nome ou ID '{identifier}'. Especifique um {type} válido.",
 				"noSelectedActor": "Você precisa ter um ator selecionado para usar essa macro.",
-				"damageNotSpecified": "Nenhuma fórmula de dano foi fornecida. Por favor, especifique uma ou mais fórmulas para rolar como dano."
+				"damageNotSpecified": "Nenhuma fórmula de dano foi fornecida. Por favor, especifique uma ou mais fórmulas para rolar como dano.",
+				"termIsNullOrUndefined": "O termo fornecido é nulo ou indefinido.",
+				"damageIsNullOrUndefined": "O valor de dano a aplicar é nulo ou indefinido.",
+				"incorrectTargetDie": "Não é possível rolar novamente um indicador de dado que está fora da lista possível de dados."
 			},
 			"warning": {
 				"emptyDamageField": "Um ou mais campos de dano neste item estão vazios! Para rolar dano, certifique-se de que todos os campos de dano estejam preenchidos."
@@ -92,7 +101,14 @@
 			"apply": {
 				"1": "Aplicar em Tokens que são Alvos",
 				"2": "Aplicar em Ambos",
-				"0": "Aplicar em Tokens Selecionados"
+				"0": "Aplicar em Tokens Selecionados",
+				"3": "Priorizar Tokens Selecionados",
+				"4": "Priorizar Tokens Marcados como Alvo"
+			},
+			"manual": {
+				"2": "Sempre",
+				"1": "Somente Jogadas de Ataque",
+				"0": "Nunca"
 			}
 		},
 		"sheet": {
