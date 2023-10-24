@@ -218,9 +218,9 @@ export class RollUtility {
 		}
 
         const ability = CONFIG.DND5E.abilities[abilityId];
-        options.img = tool.img;
 
         const title = `${tool.name}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
+        options.img = tool.img;
 
         return _getActorRoll(actor, title, roll, ROLL_TYPE.TOOL, options);
     }
