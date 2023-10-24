@@ -204,7 +204,11 @@ async function _renderMultiRoll(renderData = {}) {
         let tmpResults = [];
         tmpResults.push(d20Rolls.results[i]);
 
-        while (d20Rolls.results[i].rerolled) {
+        while (d20Rolls?.results[i]?.rerolled && !d20Rolls?.results[i]?.count) {
+            if ((i + 1) >= d20Rolls.results.length) {
+                break;
+            }
+
             i++;
             tmpResults.push(d20Rolls.results[i]);
         }

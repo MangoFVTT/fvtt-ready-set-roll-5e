@@ -80,6 +80,18 @@ export class HooksUtility {
                 { recursive: false }
             );
 
+            const combinedToolIds = foundry.utils.mergeObject(
+                foundry.utils.duplicate(CONFIG.DND5E.toolIds),
+                foundry.utils.duplicate(CONFIG.DND5E.vehicleTypes),
+                { recursive: false }
+            );
+
+            CONFIG[MODULE_SHORT].combinedToolTypes = foundry.utils.mergeObject(
+                combinedToolIds,
+                foundry.utils.duplicate(CONFIG.DND5E.toolProficiencies),
+                { recursive: false }
+            );
+
             if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
                 HooksUtility.registerSheetHooks();
                 HooksUtility.registerItemHooks();

@@ -215,7 +215,7 @@ export class ItemUtility {
         params.isAltRoll = params?.isAltRoll ?? false;
         params.damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", params.isAltRoll);
         params.effectFlags = ItemUtility.getFlagValueFromItem(item, "quickEffects", params.isAltRoll);
-        params.versatile = ItemUtility.getFlagValueFromItem(item, "quickVersatile", params.isAltRoll);
+        params.versatile = item.isVersatile ? ItemUtility.getFlagValueFromItem(item, "quickVersatile", params.isAltRoll) : false;
         params.elvenAccuracy = (item.actor?.flags?.dnd5e?.elvenAccuracy && 
             CONFIG.DND5E.characterFlags.elvenAccuracy.abilities.includes(item.abilityMod)) || undefined
     }
