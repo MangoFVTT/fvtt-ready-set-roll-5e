@@ -199,13 +199,20 @@ export class RollUtility {
     static async rollTool(actor, toolId, roll, options = {}) {        
         LogUtility.log(`Quick rolling tool check from Actor '${actor.name}'.`);
 
-        if (!(toolId in CONFIG.DND5E.toolIds)) {
+        if (!(toolId in CONFIG[MODULE_SHORT].combinedToolTypes)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Tool", label: toolId, dictionary: "CONFIG.DND5E.toolIds" }));
+                { type: "Tool", label: toolId, dictionary: "CONFIG.DND5E.toolIds, CONFIG.DND5E.toolProficiencies, or CONFIG.DND5E.vehicleTypes" }));
             return null;
 		}
 
-        const tool = CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]);
+        let tool;
+        if (toolId in CONFIG.DND5E.toolIds) {
+            tool = CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]);
+            options.img = tool.img;
+        } else {
+            tool = { name: CONFIG[MODULE_SHORT].combinedToolTypes[toolId] };
+        }
+
         const abilityId = options.ability || (actor.system.tools[toolId]?.ability ?? "int");
 
         if (!(abilityId in CONFIG.DND5E.abilities)) {
@@ -217,7 +224,6 @@ export class RollUtility {
         const ability = CONFIG.DND5E.abilities[abilityId];
 
         const title = `${tool.name}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
-        options.img = tool.img;
 
         return _getActorRoll(actor, title, roll, ROLL_TYPE.TOOL, options);
     }
