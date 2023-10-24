@@ -205,13 +205,9 @@ export class RollUtility {
             return null;
 		}
 
-        let tool;
-        if (toolId in CONFIG.DND5E.toolIds) {
-            tool = CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]);
-            options.img = tool.img;
-        } else {
-            tool = { name: CONFIG[MODULE_SHORT].combinedToolTypes[toolId] };
-        }
+        const tool = toolId in CONFIG.DND5E.toolIds 
+            ? CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]) 
+            : { name: CONFIG[MODULE_SHORT].combinedToolTypes[toolId] };
 
         const abilityId = options.ability || (actor.system.tools[toolId]?.ability ?? "int");
 
@@ -222,6 +218,7 @@ export class RollUtility {
 		}
 
         const ability = CONFIG.DND5E.abilities[abilityId];
+        options.img = tool.img;
 
         const title = `${tool.name}${SettingsUtility.getSettingValue(SETTING_NAMES.SHOW_SKILL_ABILITIES) ? ` (${ability.label})` : ""}`;
 
