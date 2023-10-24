@@ -199,13 +199,16 @@ export class RollUtility {
     static async rollTool(actor, toolId, roll, options = {}) {        
         LogUtility.log(`Quick rolling tool check from Actor '${actor.name}'.`);
 
-        if (!(toolId in CONFIG.DND5E.toolIds)) {
+        if (!(toolId in CONFIG[MODULE_SHORT].combinedToolTypes)) {
             LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.labelNotInDictionary`,
-                { type: "Tool", label: toolId, dictionary: "CONFIG.DND5E.toolIds" }));
+                { type: "Tool", label: toolId, dictionary: "CONFIG.DND5E.toolIds, CONFIG.DND5E.toolProficiencies, or CONFIG.DND5E.vehicleTypes" }));
             return null;
 		}
 
-        const tool = CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]);
+        const tool = toolId in CONFIG.DND5E.toolIds 
+            ? CoreUtility.getBaseItemIndex(CONFIG.DND5E.toolIds[toolId]) 
+            : { name: CONFIG[MODULE_SHORT].combinedToolTypes[toolId] };
+
         const abilityId = options.ability || (actor.system.tools[toolId]?.ability ?? "int");
 
         if (!(abilityId in CONFIG.DND5E.abilities)) {
