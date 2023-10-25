@@ -170,8 +170,23 @@ export class ItemUtility {
      * @returns 
      */
     static getDamageContextFromItem(item, index) {
-        if (item?.flags[MODULE_SHORT].quickDamage) {          
-            return item.flags[MODULE_SHORT].quickDamage.context[index] ?? CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
+        if (item?.flags[MODULE_SHORT].quickDamage) {
+            const consumeTarget = _getConsumeTargetFromItem(item);
+
+            const itemPartsCount = item.system.damage.parts.length;
+            const ammoPartsCount = consumeTarget?.system.damage.parts.length ?? 0;
+
+            console.log(itemPartsCount, ammoPartsCount);
+            
+            if (index < itemPartsCount) {
+                return item.flags[MODULE_SHORT].quickDamage.context[index];
+            }
+
+            if (index < (itemPartsCount + ammoPartsCount)) {
+                return consumeTarget?.name;
+            }
+
+            return CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
         }
 
         return undefined;
@@ -504,8 +519,17 @@ async function _addFieldDamage(fields, item, params) {
         const ammoDamageBackup = item._ammo ? foundry.utils.duplicate(item._ammo?.system?.damage) : null;
         if (item._ammo && ItemUtility.getFlagValueFromItem(item._ammo, "quickVersatile", params.isAltRoll)) {
             item._ammo.system.damage.parts[0][0] = item._ammo.system.damage.versatile;
-        }        
+        }
+        
+        const damageParts = [ ...item.system.damage.parts ];
+        if (item._ammo) {
+            damageParts.push(...item._ammo.system.damage.parts);
+        }
+
         const bonuses = params?.bonuses?.filter(b => b.id === ROLL_TYPE.DAMAGE && b.value !== '').map(b => b.value);
+        if (bonuses && bonuses.length > 0) {
+            damageParts.push(...bonuses.map(b => [ b, '' ]));
+        }
 
         const roll = await item.rollDamage({
             critical: false,
@@ -521,11 +545,6 @@ async function _addFieldDamage(fields, item, params) {
         // Restore ammo damage post rolling.
         if (ammoDamageBackup) {
             _getConsumeTargetFromItem(item).system.damage = ammoDamageBackup;
-        }
-
-        const damageParts = [ ...item.system.damage.parts ];
-        if (bonuses && bonuses.length > 0) {
-            damageParts.push(...bonuses.map(b => [ b, '' ]));
         }
 
         let damageTermGroups = [];
