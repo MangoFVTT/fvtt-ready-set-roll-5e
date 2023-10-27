@@ -20,6 +20,7 @@ export const SETTING_NAMES = {
     DICE_REROLL_ENABLED: "enableDiceReroll",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     APPLY_EFFECTS_ENABLED: "enableApplyEffects",
+    ALLOW_SELFAPPLY_EFFECTS: "enableSelfApplyEffects",
     ALWAYS_APPLY_CRIT: "alwaysApplyCrit",
     APPLY_DAMAGE_MODS: "applyDamageMods",
     APPLY_DAMAGE_TO: "applyDamageTo",
@@ -160,7 +161,17 @@ export class SettingsUtility {
                 type: Boolean,
                 default: false,
                 requiresReload: true
-            });        
+            });
+            
+            game.settings.register(MODULE_NAME, SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS, {
+                name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS}.name`),
+                hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS}.hint`),
+                scope: "world",
+                config: true,
+                type: Boolean,
+                default: false,
+                requiresReload: true
+            });  
             
             game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_TO, {
                 name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_TO}.name`),

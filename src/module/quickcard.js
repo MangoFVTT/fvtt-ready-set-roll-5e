@@ -268,6 +268,13 @@ export class QuickCard {
             window.DAE.doEffects(this.roll.item, true, targets, {
                 effectsToApply: this.roll.effectsToApply
             });
+
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS)) {
+                window.DAE.doEffects(this.roll.item, true, [this.roll.actor], {
+                    effectsToApply: this.roll.effectsToApply,
+                    selfEffects: "selfEffectsAll"
+                })
+            }
         }
     }
 

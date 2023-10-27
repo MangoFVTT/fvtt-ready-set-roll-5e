@@ -27,6 +27,8 @@
             "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons.",
             "enableApplyEffects.name": "Enable Apply Effects Button",
             "enableApplyEffects.hint": "When outputting a quick roll, show a button allowing the transfer of item effects to actors.",
+            "enableSelfApplyEffects.name": "Enable DAE Self-Targeting options (Experimental)",
+            "enableSelfApplyEffects.hint": "When the 'Apply Effects' button is clicked it will attempt to respect DAEs 'Apply to Self...' options",
             "applyEffectsTo.name": "Apply Effects Options",
             "applyEffectsTo.hint": "Determines which tokens effects are applied to when applying effects via the effects chat button.",
             "alwaysApplyCrit.name": "Always Apply Critical Damage",
