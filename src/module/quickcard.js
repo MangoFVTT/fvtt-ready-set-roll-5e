@@ -266,14 +266,16 @@ export class QuickCard {
             const targets = new Set([...selectTokens, ...targetTokens]);
 
             window.DAE.doEffects(this.roll.item, true, targets, {
-                effectsToApply: this.roll.effectsToApply
+                effectsToApply: this.roll.effectsToApply,
+                spellLevel: this.roll.params.slotLevel
             });
 
             if (SettingsUtility.getSettingValue(SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS)) {
                 window.DAE.doEffects(this.roll.item, true, [this.roll.actor], {
                     effectsToApply: this.roll.effectsToApply,
-                    selfEffects: "selfEffectsAll"
-                })
+                    selfEffects: "selfEffectsAll",
+                    spellLevel: this.roll.params.slotLevel
+                });
             }
         }
     }
