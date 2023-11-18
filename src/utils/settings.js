@@ -168,9 +168,14 @@ export class SettingsUtility {
                 hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS}.hint`),
                 scope: "world",
                 config: true,
-                type: Boolean,
-                default: false,
-                requiresReload: true
+                type: String,
+                default: "none",
+                requiresReload: true,
+                choices: {
+                    "none": "None",
+                    "selfEffectsAll": "Self Effects All",
+                    "selfEffectsAlways": "Self Effects Always"
+                }
             });  
             
             game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_TO, {

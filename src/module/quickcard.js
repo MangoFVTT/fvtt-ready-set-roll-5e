@@ -270,10 +270,11 @@ export class QuickCard {
                 spellLevel: this.roll.params.slotLevel
             });
 
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS)) {
+            const selfApply = SettingsUtility.getSettingValue(SETTING_NAMES.ALLOW_SELFAPPLY_EFFECTS);
+            if (selfApply !== "none") {
                 window.DAE.doEffects(this.roll.item, true, [this.roll.actor], {
                     effectsToApply: this.roll.effectsToApply,
-                    selfEffects: "selfEffectsAll",
+                    selfEffects: selfApply,
                     spellLevel: this.roll.params.slotLevel
                 });
             }
