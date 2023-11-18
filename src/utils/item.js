@@ -135,14 +135,14 @@ export class ItemUtility {
         if (item?.hasQuantity && item?.flags[MODULE_SHORT].consumeQuantity) {
             config.consumeQuantity = item.flags[MODULE_SHORT].consumeQuantity[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasUses && item?.flags[MODULE_SHORT].consumeUses) {
+        if (item?.hasLimitedUses && item?.flags[MODULE_SHORT].consumeUses) {
             config.consumeUsage = item.flags[MODULE_SHORT].consumeUses[isAltRoll ? "altValue" : "value"];
-        }
-        if (item?.hasResource && item?.flags[MODULE_SHORT].consumeResource) {
-            config.consumeResource = item.flags[MODULE_SHORT].consumeResource[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasRecharge && item?.flags[MODULE_SHORT].consumeRecharge) {
             config.consumeRecharge = item.flags[MODULE_SHORT].consumeRecharge[isAltRoll ? "altValue" : "value"];
+        }
+        if ((item?.hasResource || item?.hasAmmo) && item?.flags[MODULE_SHORT].consumeResource) {
+            config.consumeResource = item.flags[MODULE_SHORT].consumeResource[isAltRoll ? "altValue" : "value"];
         }
 
         return config;
@@ -175,8 +175,6 @@ export class ItemUtility {
 
             const itemPartsCount = item.system.damage.parts.length;
             const ammoPartsCount = consumeTarget?.system.damage.parts.length ?? 0;
-
-            console.log(itemPartsCount, ammoPartsCount);
             
             if (index < itemPartsCount) {
                 return item.flags[MODULE_SHORT].quickDamage.context[index];
@@ -206,12 +204,8 @@ export class ItemUtility {
         if (item.type !== ITEM_TYPE.SPELL) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);
-            // For items with "Limited Uses" configured
-            item.hasUses = item.type !== ITEM_TYPE.SPELL && !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
-            // For items with "Resource Consumption" configured
-            item.hasResource = item.type !== ITEM_TYPE.SPELL && !!(item.system.consume?.target);
             // For abilities with "Action Recharge" configured
-            item.hasRecharge = item.type !== ITEM_TYPE.SPELL && !!(item.system.recharge?.value);
+            item.hasRecharge = !!(item.system.recharge?.value);
         }
 
         if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
