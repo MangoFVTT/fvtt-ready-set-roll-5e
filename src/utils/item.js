@@ -135,14 +135,14 @@ export class ItemUtility {
         if (item?.hasQuantity && item?.flags[MODULE_SHORT].consumeQuantity) {
             config.consumeQuantity = item.flags[MODULE_SHORT].consumeQuantity[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasUses && item?.flags[MODULE_SHORT].consumeUses) {
+        if (item?.hasLimitedUses && item?.flags[MODULE_SHORT].consumeUses) {
             config.consumeUsage = item.flags[MODULE_SHORT].consumeUses[isAltRoll ? "altValue" : "value"];
-        }
-        if (item?.hasResource && item?.flags[MODULE_SHORT].consumeResource) {
-            config.consumeResource = item.flags[MODULE_SHORT].consumeResource[isAltRoll ? "altValue" : "value"];
         }
         if (item?.hasRecharge && item?.flags[MODULE_SHORT].consumeRecharge) {
             config.consumeRecharge = item.flags[MODULE_SHORT].consumeRecharge[isAltRoll ? "altValue" : "value"];
+        }
+        if ((item?.hasResource || item?.hasAmmo) && item?.flags[MODULE_SHORT].consumeResource) {
+            config.consumeResource = item.flags[MODULE_SHORT].consumeResource[isAltRoll ? "altValue" : "value"];
         }
 
         return config;
@@ -170,8 +170,21 @@ export class ItemUtility {
      * @returns 
      */
     static getDamageContextFromItem(item, index) {
-        if (item?.flags[MODULE_SHORT].quickDamage) {          
-            return item.flags[MODULE_SHORT].quickDamage.context[index] ?? CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
+        if (item?.flags[MODULE_SHORT].quickDamage) {
+            const consumeTarget = _getConsumeTargetFromItem(item);
+
+            const itemPartsCount = item.system.damage.parts.length;
+            const ammoPartsCount = consumeTarget?.system.damage.parts.length ?? 0;
+            
+            if (index < itemPartsCount) {
+                return item.flags[MODULE_SHORT].quickDamage.context[index];
+            }
+
+            if (index < (itemPartsCount + ammoPartsCount)) {
+                return consumeTarget?.name;
+            }
+
+            return CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
         }
 
         return undefined;
@@ -191,12 +204,8 @@ export class ItemUtility {
         if (item.type !== ITEM_TYPE.SPELL) {
             // For items with quantity (weapons, tools, consumables...)
             item.hasQuantity = ("quantity" in item.system);
-            // For items with "Limited Uses" configured
-            item.hasUses = item.type !== ITEM_TYPE.SPELL && !!(item.system.uses?.value || item.system.uses?.max || item.system.uses?.per);
-            // For items with "Resource Consumption" configured
-            item.hasResource = item.type !== ITEM_TYPE.SPELL && !!(item.system.consume?.target);
             // For abilities with "Action Recharge" configured
-            item.hasRecharge = item.type !== ITEM_TYPE.SPELL && !!(item.system.recharge?.value);
+            item.hasRecharge = !!(item.system.recharge?.value);
         }
 
         if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
@@ -504,8 +513,17 @@ async function _addFieldDamage(fields, item, params) {
         const ammoDamageBackup = item._ammo ? foundry.utils.duplicate(item._ammo?.system?.damage) : null;
         if (item._ammo && ItemUtility.getFlagValueFromItem(item._ammo, "quickVersatile", params.isAltRoll)) {
             item._ammo.system.damage.parts[0][0] = item._ammo.system.damage.versatile;
-        }        
+        }
+        
+        const damageParts = [ ...item.system.damage.parts ];
+        if (item._ammo) {
+            damageParts.push(...item._ammo.system.damage.parts);
+        }
+
         const bonuses = params?.bonuses?.filter(b => b.id === ROLL_TYPE.DAMAGE && b.value !== '').map(b => b.value);
+        if (bonuses && bonuses.length > 0) {
+            damageParts.push(...bonuses.map(b => [ b, '' ]));
+        }
 
         const roll = await item.rollDamage({
             critical: false,
@@ -521,11 +539,6 @@ async function _addFieldDamage(fields, item, params) {
         // Restore ammo damage post rolling.
         if (ammoDamageBackup) {
             _getConsumeTargetFromItem(item).system.damage = ammoDamageBackup;
-        }
-
-        const damageParts = [ ...item.system.damage.parts ];
-        if (bonuses && bonuses.length > 0) {
-            damageParts.push(...bonuses.map(b => [ b, '' ]));
         }
 
         let damageTermGroups = [];
@@ -549,10 +562,11 @@ async function _addFieldDamage(fields, item, params) {
         }
 
         for (const [i, group] of damageTermGroups.entries()) {
-            const baseRoll = Roll.fromTerms(group.terms);
-            
+            let baseRoll = Roll.fromTerms(group.terms);            
             let critRoll = null;
+
             if (params?.isCrit) {
+                baseRoll = await RollUtility.getCritBaseRoll(baseRoll, i, item.getRollData(), roll.options);
                 critRoll = await RollUtility.getCritRoll(baseRoll, i, item.getRollData(), roll.options);
             }
 
