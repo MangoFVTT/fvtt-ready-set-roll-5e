@@ -120,7 +120,7 @@ async function _addItemOptions(item, html) {
         hasFlavor: item.system.chatFlavor && item.system.chatFlavor !== "",
         hasDamage: item.hasDamage,
         hasEffects: item.hasEffects,
-        hasConsume: item.hasQuantity || item.hasLimitedUses || item.hasResource || item.hasAmmo || item.hasRecharge,
+        hasConsume: item.hasQuantity || item.hasLimitedUses || item.hasResource || item.hasAmmo,
         hasQuantity: item.hasQuantity,
         hasLimitedUses: item.hasLimitedUses,
         hasResource: item.hasResource || item.hasAmmo,

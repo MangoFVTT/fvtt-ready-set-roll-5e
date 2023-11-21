@@ -171,16 +171,16 @@
 			<div class="rsr5e-options-box">
 				<li class="rsr5e-options-container flexrow">
 					{{#if hasQuantity}}
-					<label class="checkbox">
-						<input
-							type="checkbox"
-							name="flags.rsr5e.consumeQuantity.value"
-							value="flags.rsr5e.consumeQuantity.value"
-							data-dtype="{{flags.rsr5e.consumeQuantity.type}}"
-							{{checked flags.rsr5e.consumeQuantity.value}}
-						/>
-						{{localize "rsr5e.sheet.tab.options.quantity"}}
-					</label>
+						<label class="checkbox">
+							<input
+								type="checkbox"
+								name="flags.rsr5e.consumeQuantity.value"
+								value="flags.rsr5e.consumeQuantity.value"
+								data-dtype="{{flags.rsr5e.consumeQuantity.type}}"
+								{{checked flags.rsr5e.consumeQuantity.value}}
+							/>
+							{{localize "rsr5e.sheet.tab.options.quantity"}}
+						</label>
 					{{/if}}
 					{{#if hasLimitedUses}}
 						<label class="checkbox">
@@ -191,7 +191,11 @@
 								data-dtype="{{flags.rsr5e.consumeUses.type}}"
 								{{checked flags.rsr5e.consumeUses.value}}
 							/>
-							{{localize "rsr5e.sheet.tab.options.uses"}}
+							{{#if hasRecharge}}
+								{{localize "rsr5e.sheet.tab.options.recharge"}}
+							{{else}}
+								{{localize "rsr5e.sheet.tab.options.uses"}}
+							{{/if}}
 						</label>
 					{{/if}}
 					{{#if hasResource}}
@@ -204,18 +208,6 @@
 								{{checked flags.rsr5e.consumeResource.value}}
 							/>
 							{{localize "rsr5e.sheet.tab.options.resource"}}
-						</label>
-					{{/if}}
-					{{#if hasRecharge}}
-						<label class="checkbox">
-							<input
-								type="checkbox"
-								name="flags.rsr5e.consumeRecharge.value"
-								value="flags.rsr5e.consumeRecharge.value"
-								data-dtype="{{flags.rsr5e.consumeRecharge.type}}"
-								{{checked flags.rsr5e.consumeRecharge.value}}
-							/>
-							{{localize "rsr5e.sheet.tab.options.recharge"}}
 						</label>
 					{{/if}}
 				</li>
@@ -417,7 +409,11 @@
 								data-dtype="{{flags.rsr5e.consumeUses.type}}"
 								{{checked flags.rsr5e.consumeUses.altValue}}
 							/>
-							{{localize "rsr5e.sheet.tab.options.uses"}}
+							{{#if hasRecharge}}
+								{{localize "rsr5e.sheet.tab.options.recharge"}}
+							{{else}}
+								{{localize "rsr5e.sheet.tab.options.uses"}}
+							{{/if}}
 						</label>
 					{{/if}}
 					{{#if hasResource}}
@@ -430,18 +426,6 @@
 								{{checked flags.rsr5e.consumeResource.altValue}}
 							/>
 							{{localize "rsr5e.sheet.tab.options.resource"}}
-						</label>
-					{{/if}}
-					{{#if hasRecharge}}
-						<label class="checkbox">
-							<input
-								type="checkbox"
-								name="flags.rsr5e.consumeRecharge.altValue"
-								value="flags.rsr5e.consumeRecharge.altValue"
-								data-dtype="{{flags.rsr5e.consumeRecharge.type}}"
-								{{checked flags.rsr5e.consumeRecharge.altValue}}
-							/>
-							{{localize "rsr5e.sheet.tab.options.recharge"}}
 						</label>
 					{{/if}}
 				</li>
