@@ -124,6 +124,7 @@ async function _addItemOptions(item, html) {
         hasQuantity: item.hasQuantity,
         hasLimitedUses: item.hasLimitedUses,
         hasResource: item.hasResource || item.hasAmmo,
+        hasRecharge: item.hasRecharge,
         hasOther: item.system.formula ? true : false,
         isAttack: item.hasAttack,
         isSave: item.hasSave,
