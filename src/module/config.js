@@ -96,8 +96,7 @@ CONFIG[MODULE_SHORT] = {
             quickOther: { type: "Boolean", value: true, altValue: true, context: "" },            
             consumeQuantity: { type: "Boolean", value: true, altValue: true },
             consumeUses: { type: "Boolean", value: true, altValue: true },
-            consumeResource: { type: "Boolean", value: true, altValue: true },
-            consumeRecharge: { type: "Boolean", value: true, altValue: true }
+            consumeResource: { type: "Boolean", value: true, altValue: true }
         },
         tool: {
 			quickDesc: { type: "Boolean", get value() { return SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ROLL_DESC_ENABLED) }, altValue: false },
