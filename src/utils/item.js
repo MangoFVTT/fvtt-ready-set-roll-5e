@@ -138,9 +138,6 @@ export class ItemUtility {
         if (item?.hasLimitedUses && item?.flags[MODULE_SHORT].consumeUses) {
             config.consumeUsage = item.flags[MODULE_SHORT].consumeUses[isAltRoll ? "altValue" : "value"];
         }
-        if (item?.hasRecharge && item?.flags[MODULE_SHORT].consumeRecharge) {
-            config.consumeRecharge = item.flags[MODULE_SHORT].consumeRecharge[isAltRoll ? "altValue" : "value"];
-        }
         if ((item?.hasResource || item?.hasAmmo) && item?.flags[MODULE_SHORT].consumeResource) {
             config.consumeResource = item.flags[MODULE_SHORT].consumeResource[isAltRoll ? "altValue" : "value"];
         }
