@@ -301,7 +301,14 @@ export class RollUtility {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
 
         params = CoreUtility.ensureQuickRollParams(params);
-        params.slotLevel = params.slotLevel ?? item.system.level;
+
+        if (params.slotLevel) {
+            params.slotLevel = Number.isInteger(params.slotLevel) ? params.slotLevel
+                : params.slotLevel === "pact" ? item.actor.spells.pact.level : parseInt(params.slotLevel.replace("spell", ""));
+        } else {
+            params.slotLevel = item.system.level;
+        }
+        
         params.createMessage = createMessage;
         item.system.level = params.spellLevel ?? item.system.level;
 
