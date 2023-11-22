@@ -304,7 +304,7 @@ export class RollUtility {
 
         if (params.slotLevel) {
             params.slotLevel = Number.isInteger(params.slotLevel) ? params.slotLevel
-                : params.slotLevel === "pact" ? item.actor.spells.pact.level : parseInt(params.slotLevel.replace("spell", ""));
+                : params.slotLevel === "pact" ? item.actor.system.spells.pact.level : parseInt(params.slotLevel.replace("spell", ""));
         } else {
             params.slotLevel = item.system.level;
         }
