@@ -25,7 +25,7 @@ export class PatchingUtility {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilityTest`, _actorRollAbilityTest, "MIXED");
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollAbilitySave`, _actorRollAbilitySave, "MIXED");
         }
-        
+
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) {
             libWrapper.register(MODULE_NAME, `${actorPrototype}.rollDeathSave`, _actorRollDeathSave, "MIXED");
         }
@@ -38,7 +38,7 @@ export class PatchingUtility {
         LogUtility.log("Patching Item Rolls");
         const itemPrototype = "CONFIG.Item.documentClass.prototype";
 
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {            
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
             libWrapper.register(MODULE_NAME, `${itemPrototype}.use`, _itemUse, "MIXED");
         }
     }
@@ -46,11 +46,11 @@ export class PatchingUtility {
     /**
      * Patches item sheets: quick roll configuration tabs, and damage context fields.
      */
-    static patchItemSheets() {        
+    static patchItemSheets() {
         LogUtility.log("Patching Item Sheets");
         const itemSheetPrototype = "ItemSheet.prototype";
 
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {  
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) {
             libWrapper.register(MODULE_NAME, `${itemSheetPrototype}._onChangeTab`, _onChangeTab, "OVERRIDE");
         }
     }
@@ -134,15 +134,16 @@ async function _actorRollDeathSave(wrapper, options) {
  * Patch function for rolling an Item usage.
  * @param {function} wrapper The original wrapper for the function.
  * @param {Object} options Options for processing the item usage.
+ * @param {Object} vanillaOptions Options expected by vanilla Item.use().
  * @returns {Promise<ChatMessage|object|void>} The generated chat data for the Item usage.
  * @private
  */
-async function _itemUse(wrapper, options) {
+async function _itemUse(wrapper, options, vanillaOptions) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
 
     //TO-DO: generate roll config from set flags in sheet, see item.mjs -> use()
     //idea is to get flags from sheet and change config to let the system handle all consumption/etc.
-    return await _itemProcessWrapper(this, wrapper, options);
+    return await _itemProcessWrapper(this, wrapper, options, vanillaOptions);
 }
 
 /**
@@ -156,9 +157,9 @@ async function _itemUse(wrapper, options) {
  */
 async function _actorProcessWrapper(caller, wrapper, options, id) {
     if (options?.chatMessage === false || options?.vanilla) {
-        return { 
+        return {
             roll: id ? wrapper.call(caller, id, options) : wrapper.call(caller, options),
-            ignore: true 
+            ignore: true
         };
     }
 
@@ -173,12 +174,13 @@ async function _actorProcessWrapper(caller, wrapper, options, id) {
  * @param {function} wrapper The original wrapper to process.
  * @param {*} config Configuration for processing the item.
  * @param {*} options Options for processing the wrapper.
+ * @param {Object} vanillaOptions Options expected by vanilla Item.use().
  * @returns {Promise<ChatMessage>} The processed chat data for the wrapper.
  * @private
  */
-async function _itemProcessWrapper(caller, wrapper, options) {
+async function _itemProcessWrapper(caller, wrapper, options, vanillaOptions) {
     if (options?.chatMessage === false || options?.vanilla) {
-		return wrapper.call(caller, options);
+		return wrapper.call(caller, options, vanillaOptions);
 	}
 
     // For item rolls, check the alternate item roll setting to see if the alt key should ignore quick roll.
