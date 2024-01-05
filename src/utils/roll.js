@@ -524,6 +524,7 @@ export class RollUtility {
         }
 
         return await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
+            maximize: options.powerfulCritical,
             async: true
         });
     }
