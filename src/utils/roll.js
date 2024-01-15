@@ -87,13 +87,14 @@ export class RollUtility {
     /**
      * Calls the wrapped Item roll with advantage/disadvantage/alternate determined by pressed modifier keys in the triggering event.
      * @param {Item} caller The calling object of the wrapper.
-     * @param {Function} wrapper The roll wrapper to call.
-     * @param {Object} options Option data for the triggering event.
+     * @param {Function} wrapper The roll wrapper to call. 
+     * @param {Object} config Initial configuration data for the roll.
+     * @param {Object} options Additional options for the roll.
      * @param {String} id The identifier of the roll (eg. ability name/skill name/etc).
      * @param {Boolean} bypass Is true if the quick roll should be bypassed and a default roll dialog used.
      * @returns {Promise<ChatData>} The roll result of the wrapper.
      */
-    static async rollItemWrapper(caller, wrapper, options, bypass = false) {
+    static async rollItemWrapper(caller, wrapper, config, options, bypass = false) {
         // We can ignore the item if it is not one of the types that requires a quick roll.
         if (bypass || !CONFIG[MODULE_SHORT].validItemTypes.includes(caller?.type)) {
             return wrapper.call(caller, {}, { ignore: true });
@@ -101,9 +102,8 @@ export class RollUtility {
 
         const advMode = CoreUtility.eventToAdvantage(options?.event);
         const isAltRoll = CoreUtility.eventToAltRoll(options?.event) || (options?.isAltRoll ?? false);
-        
-        const config = foundry.utils.mergeObject(options, ItemUtility.getRollConfigFromItem(caller, isAltRoll), { recursive: false });
-        const configureDialog = config?.configureDialog ?? (caller?.type === ITEM_TYPE.SPELL ? true : false);
+
+        config = foundry.utils.mergeObject(ItemUtility.getRollConfigFromItem(caller, isAltRoll), config, { recursive: false });
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
@@ -119,7 +119,7 @@ export class RollUtility {
 			itemUpdates["system.quantity"] = Math.max(0, caller.system.quantity - 1);            
             await caller.update(itemUpdates);
         }
-
+        
         const bonuses = [];
         if (options?.event?.button === CONFIG[MODULE_SHORT].situRollMouseButton && !bypass)
         {
@@ -145,15 +145,17 @@ export class RollUtility {
             bonuses.push(...values);
         }
 
-        return wrapper.call(caller, config, {
-            configureDialog,
-            createMessage: false,
+        options = foundry.utils.mergeObject({
+            configureDialog: caller?.type === ITEM_TYPE.SPELL,
+            createMessageTemp: options?.createMessage ?? true,
             advMode,
             isAltRoll,
             spellLevel: caller?.system?.level,
-            rollMode: options?.rollMode,
-            bonuses
-        });
+        }, options, { recursive: false });
+
+        options.createMessage = false;
+
+        return wrapper.call(caller, config, options);
     }
 
     /**
@@ -295,10 +297,9 @@ export class RollUtility {
      * Rolls a single usage from a given item.
      * @param {Item} item The item to roll.
      * @param {Object} params A set of parameters for rolling the Item.
-     * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollItem(item, params, createMessage = true) {
+    static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
 
         params = CoreUtility.ensureQuickRollParams(params);
@@ -310,7 +311,9 @@ export class RollUtility {
             params.slotLevel = item.system.level;
         }
         
-        params.createMessage = createMessage;
+        params.createMessage = params.createMessageTemp ?? true;
+        delete params.createMessageTemp;
+
         item.system.level = params.spellLevel ?? item.system.level;
 
         return await _getItemRoll(item, params, ROLL_TYPE.ITEM)

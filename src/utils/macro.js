@@ -25,11 +25,12 @@ export class MacroUtility {
  * Execute a macro that rolls a specific Item on a given Actor.
  * @param {String} itemId The name or ID of the Item to roll.
  * @param {String} actorId The name or ID of the Actor that owns the item. If not provided, tries to use the selected Actor.
+ * @param {Object} config Initial configuration data for the roll.
  * @param {Object} options Additional options for the roll.
  * @returns The result of the Item usage.
  * @private
  */
-function _macroRollItem(itemId, actorId, options = {}) {
+function _macroRollItem(itemId, actorId, config = {}, options = {}) {
     LogUtility.log("Executing macro: 'rollItem'");
 
     if (!itemId) {
@@ -62,7 +63,7 @@ function _macroRollItem(itemId, actorId, options = {}) {
         return null;
     }
 
-    return item.use(options);
+    return item.use(config, options);
 }
 
 async function _macroRollDamage(parts, options = {}) {
