@@ -103,7 +103,7 @@ export class RollUtility {
         const advMode = CoreUtility.eventToAdvantage(options?.event);
         const isAltRoll = CoreUtility.eventToAltRoll(options?.event) || (options?.isAltRoll ?? false);
 
-        config = foundry.utils.mergeObject(config, ItemUtility.getRollConfigFromItem(caller, isAltRoll), { recursive: false, overwrite: false });
+        config = foundry.utils.mergeObject(ItemUtility.getRollConfigFromItem(caller, isAltRoll), config, { recursive: false });
 
         // Handle quantity when uses are not consumed
         // While the rest can be handled by Item._getUsageUpdates(), this one thing cannot
@@ -145,7 +145,7 @@ export class RollUtility {
             bonuses.push(...values);
         }
 
-        options = foundry.utils.mergeObject(options, {
+        options = foundry.utils.mergeObject({
             configureDialog: caller?.type === ITEM_TYPE.SPELL,
             createMessage: false,
             advMode,
@@ -153,7 +153,7 @@ export class RollUtility {
             spellLevel: caller?.system?.level,
             rollMode: options?.rollMode,
             bonuses
-        }, { recursive: false, overwrite: false });
+        }, options, { recursive: false });
 
         return wrapper.call(caller, config, options);
     }
