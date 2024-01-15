@@ -132,17 +132,18 @@ async function _actorRollDeathSave(wrapper, options) {
 
 /**
  * Patch function for rolling an Item usage.
- * @param {function} wrapper The original wrapper for the function.
- * @param {Object} options Options for processing the item usage.
+ * @param {Function} wrapper The original wrapper for the function.
+ * @param {Object} config Initial configuration data for the usage.
+ * @param {Object} options Options used for configuring item usage.
  * @returns {Promise<ChatMessage|object|void>} The generated chat data for the Item usage.
  * @private
  */
-async function _itemUse(wrapper, options) {
+async function _itemUse(wrapper, config, options) {
     options = foundry.utils.mergeObject({ event: window.event }, options, { recursive: false });
 
     //TO-DO: generate roll config from set flags in sheet, see item.mjs -> use()
     //idea is to get flags from sheet and change config to let the system handle all consumption/etc.
-    return await _itemProcessWrapper(this, wrapper, options);
+    return await _itemProcessWrapper(this, wrapper, config, options);
 }
 
 /**
@@ -170,20 +171,20 @@ async function _actorProcessWrapper(caller, wrapper, options, id) {
 /**
  * Process the wrapper for an Item roll and bypass quick rolling if necessary.
  * @param {Item} caller The calling object of the wrapper.
- * @param {function} wrapper The original wrapper to process.
- * @param {*} config Configuration for processing the item.
- * @param {*} options Options for processing the wrapper.
+ * @param {Function} wrapper The original wrapper to process.
+ * @param {Object} config Initial configuration data for the usage.
+ * @param {Object} options Options used for configuring item usage.
  * @returns {Promise<ChatMessage>} The processed chat data for the wrapper.
  * @private
  */
-async function _itemProcessWrapper(caller, wrapper, options) {
-    if (options?.chatMessage === false || options?.vanilla) {
-		return wrapper.call(caller, options);
+async function _itemProcessWrapper(caller, wrapper, config, options) {
+    if (options?.vanilla) {
+		return wrapper.call(caller, config, options);
 	}
 
     // For item rolls, check the alternate item roll setting to see if the alt key should ignore quick roll.
     const ignore = (options?.event?.altKey && !CoreUtility.eventToAltRoll(options?.event)) ?? false;
-    return await RollUtility.rollItemWrapper(caller, wrapper, options, ignore);
+    return await RollUtility.rollItemWrapper(caller, wrapper, config, options, ignore);
 }
 
 /**

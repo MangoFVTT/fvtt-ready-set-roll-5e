@@ -33,6 +33,10 @@ export const HOOKS_MODULE = {
     PROCESSED_ROLL: `${MODULE_SHORT}.rollProcessed`
 }
 
+export const HOOKS_EXTERNAL = {
+    AA_ON_DMG: "autoAnimationOnDmg"
+}
+
 /**
  * Utility class to handle registering listeners for hooks needed throughout the module.
  */
@@ -111,7 +115,7 @@ export class HooksUtility {
         });
 
         Hooks.on(HOOKS_DND5E.USE_ITEM, (item, config, options) => {
-            if (!options?.ignore) {
+            if (!options?.ignore && !options?.vanilla) {
                 RollUtility.rollItem(item, foundry.utils.mergeObject(config, options, { recursive: false }));
             }
         });

@@ -1,4 +1,5 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { MODULE_DAE } from "../module/integration.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { FIELD_TYPE } from "./render.js";
@@ -39,7 +40,7 @@ export class ItemUtility {
         
         const manualDamageMode = SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE);
         const manualDamage = manualDamageMode === 2 || (manualDamageMode === 1 && item.hasAttack);
-        const applyEffects = CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED);
+        const applyEffects = CoreUtility.hasModule(MODULE_DAE) && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED);
         const chatData = await item.getChatData();
         let fields = [];
 
@@ -205,7 +206,7 @@ export class ItemUtility {
             item.hasRecharge = !!(item.system.recharge?.value);
         }
 
-        if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
+        if (CoreUtility.hasModule(MODULE_DAE) && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
             // For items with active effects (requires DAE to work, so check for module availability here)
             item.hasEffects = window.DAE && item.collections.effects.filter((effect) => !effect.disabled).length > 0;
         }
