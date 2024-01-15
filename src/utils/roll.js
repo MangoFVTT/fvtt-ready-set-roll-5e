@@ -147,11 +147,13 @@ export class RollUtility {
 
         options = foundry.utils.mergeObject({
             configureDialog: caller?.type === ITEM_TYPE.SPELL,
-            createMessage: false,
+            createMessageTemp: options?.createMessage ?? true,
             advMode,
             isAltRoll,
             spellLevel: caller?.system?.level,
         }, options, { recursive: false });
+
+        options.createMessage = false;
 
         return wrapper.call(caller, config, options);
     }
@@ -309,7 +311,9 @@ export class RollUtility {
             params.slotLevel = item.system.level;
         }
         
-        params.createMessage = params.createMessage ?? true;
+        params.createMessage = params.createMessageTemp ?? true;
+        delete params.createMessageTemp;
+
         item.system.level = params.spellLevel ?? item.system.level;
 
         return await _getItemRoll(item, params, ROLL_TYPE.ITEM)
