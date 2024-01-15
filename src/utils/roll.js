@@ -477,7 +477,7 @@ export class RollUtility {
         });
 
         return await Roll.fromTerms(baseTerms).evaluate({ 
-            // maximize: options.powerfulCritical,
+            maximize: options.powerfulCritical,
             async: true
         });
     }    
@@ -525,7 +525,6 @@ export class RollUtility {
         }
 
         return await Roll.fromTerms(Roll.simplifyTerms(critTerms)).reroll({
-            maximize: options.powerfulCritical,
             async: true
         });
     }
