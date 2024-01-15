@@ -320,7 +320,7 @@ export class QuickRoll {
 	 * Upgrades a quick roll that has damage to one with damage actually rolled.
 	 * Used for manually rolling damage via chat buttons, if the setting is enabled.
 	 * @param {Number} targetId The index of the manual damage button field.
-	 * @returns {Boolean} Whether or not the ugprade was succesful. 
+	 * @returns {Promise<Boolean>} Whether or not the ugprade was succesful. 
 	 */
 	async upgradeToDamageRoll(targetId) {
 		const targetField = this.fields[targetId];
@@ -356,7 +356,7 @@ export class QuickRoll {
 	 * @param {Number} targetRoll The index of the specific roll of the field being rerolled.
 	 * @param {Number} targetPart The index of the specific part of the roll being rerolled.
 	 * @param {Number} targetDie The index of the specific die of the part being rerolled.
-	 * @returns {Boolean} Whether or not the reroll was succesful. 
+	 * @returns {Promise<Boolean>} Whether or not the reroll was succesful. 
 	 */
 	async rerollDie(targetId, targetRoll, targetPart, targetDie) {
 		const targetField = this.fields[targetId];

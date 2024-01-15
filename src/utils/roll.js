@@ -26,6 +26,7 @@ export const ROLL_TYPE = {
 
 /**
  * Enumerable of identifiers for roll states (advantage or disadvantage).
+ * @enum {String}
  */
 export const ROLL_STATE = {
     ADV: "kh",

@@ -315,8 +315,13 @@ export class CoreUtility {
 		return game.dice3d && hasDice;
     }
 
-    static hasDAE() {
-        return game.modules.get("dae")?.active;
+    /**
+     * Checks if a given module name exists and is active in Foundry.
+     * @param {String} name The name of the module to check if active. 
+     * @returns 
+     */
+    static hasModule(name) {
+        return game.modules.get(name)?.active;
     }
 }
 

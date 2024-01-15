@@ -1,8 +1,10 @@
 import { CoreUtility } from "../utils/core.js";
+import { HOOKS_EXTERNAL } from "../utils/hooks.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
 import { MODULE_SHORT } from "./const.js";
+import { MODULE_AA, MODULE_DAE } from "./integration.js";
 import { QuickRoll } from "./quickroll.js";
 
 /**
@@ -26,7 +28,7 @@ export class QuickCard {
         this._prioritiseDamageTargeted = applyDamageOption === 4;
         this._prioritiseDamageSelected = applyDamageOption === 3;
 
-        if (CoreUtility.hasDAE())
+        if (CoreUtility.hasModule(MODULE_DAE))
         {
             const applyEffectsOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_TO);
             this._applyEffectsToTargeted = applyEffectsOption === 1 || applyEffectsOption >= 2;
@@ -129,7 +131,7 @@ export class QuickCard {
             });
         }
 
-        if (CoreUtility.hasDAE() && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
+        if (CoreUtility.hasModule(MODULE_DAE) && SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_EFFECTS_ENABLED)) {
             html.find(".rsr-effects-buttons button").click(async evt => {
                 await this._processEffectsButtonEvent(evt);
             });
@@ -335,6 +337,16 @@ export class QuickCard {
         }
 
         const targets = new Set([...selectTokens, ...targetTokens]);
+
+        // Call hook for AA integration
+        if (CoreUtility.hasModule(MODULE_AA)) {
+            const button = event.currentTarget;
+            const id = $(button).parents(".dice-roll.rsr-dual").attr('data-id');
+
+            if(await this.roll.upgradeToDamageRoll(id)) {
+                Hooks.call(HOOKS_EXTERNAL.AA_ON_DMG, Array.from(targets), this.roll.item, this.roll);
+            }
+        }
 
         await Promise.all(Array.from(targets).map(t => {
             const target = t.actor;

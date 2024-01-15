@@ -33,6 +33,10 @@ export const HOOKS_MODULE = {
     PROCESSED_ROLL: `${MODULE_SHORT}.rollProcessed`
 }
 
+export const HOOKS_EXTERNAL = {
+    AA_ON_DMG: "autoAnimationOnDmg"
+}
+
 /**
  * Utility class to handle registering listeners for hooks needed throughout the module.
  */
