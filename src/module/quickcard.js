@@ -1,4 +1,5 @@
 import { CoreUtility } from "../utils/core.js";
+import { HOOKS_EXTERNAL } from "../utils/hooks.js";
 import { LogUtility } from "../utils/log.js";
 import { FIELD_TYPE, RenderUtility } from "../utils/render.js";
 import { SettingsUtility, SETTING_NAMES } from "../utils/settings.js";
@@ -337,12 +338,13 @@ export class QuickCard {
 
         const targets = new Set([...selectTokens, ...targetTokens]);
 
-        // Hook for AA integration
-        if (game.modules.get("autoanimations")?.active) {
+        // Call hook for AA integration
+        if (CoreUtility.hasModule(MODULE_AA)) {
             const button = event.currentTarget;
             const id = $(button).parents(".dice-roll.rsr-dual").attr('data-id');
+
             if(await this.roll.upgradeToDamageRoll(id)) {
-                Hooks.call("autoAnimationOnDmg", Array.from(targets), this.roll.item, this.roll);
+                Hooks.call(HOOKS_EXTERNAL.AA_ON_DMG, Array.from(targets), this.roll.item, this.roll);
             }
         }
 
