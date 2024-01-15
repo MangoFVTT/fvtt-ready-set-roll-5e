@@ -1,4 +1,5 @@
 import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
+import { MODULE_DAE } from "../module/integration.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 
@@ -151,7 +152,7 @@ export class SettingsUtility {
         });
         
         // EFFECTS OPTIONS
-        if (CoreUtility.hasDAE()) {
+        if (CoreUtility.hasModule(MODULE_DAE)) {
             game.settings.register(MODULE_NAME, SETTING_NAMES.APPLY_EFFECTS_ENABLED, {
                 name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.name`),
                 hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.APPLY_EFFECTS_ENABLED}.hint`),

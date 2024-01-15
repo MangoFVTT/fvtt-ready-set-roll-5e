@@ -1,6 +1,7 @@
 /**
  * A list of templates available for rendering.
  * Used by the module for chat cards and item sheet renders.
+ *  @enum {String}
  */
 export const TEMPLATE = {
     FULL_CARD: "rsr-full-card.html",
