@@ -151,8 +151,6 @@ export class RollUtility {
             advMode,
             isAltRoll,
             spellLevel: caller?.system?.level,
-            rollMode: options?.rollMode,
-            bonuses
         }, options, { recursive: false });
 
         return wrapper.call(caller, config, options);
@@ -297,10 +295,9 @@ export class RollUtility {
      * Rolls a single usage from a given item.
      * @param {Item} item The item to roll.
      * @param {Object} params A set of parameters for rolling the Item.
-     * @param {Boolean} [createMessage=true] Whether the roll should immediately output to chat as a message.
      * @returns {Promise<QuickRoll>} The created quick roll.
      */
-    static async rollItem(item, params, createMessage = true) {
+    static async rollItem(item, params) {
         LogUtility.log(`Quick rolling Item '${item.name}'.`);
 
         params = CoreUtility.ensureQuickRollParams(params);
@@ -312,7 +309,7 @@ export class RollUtility {
             params.slotLevel = item.system.level;
         }
         
-        params.createMessage = createMessage;
+        params.createMessage = params.createMessage ?? true;
         item.system.level = params.spellLevel ?? item.system.level;
 
         return await _getItemRoll(item, params, ROLL_TYPE.ITEM)

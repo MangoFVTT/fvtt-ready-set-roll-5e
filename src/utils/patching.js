@@ -178,8 +178,8 @@ async function _actorProcessWrapper(caller, wrapper, options, id) {
  * @private
  */
 async function _itemProcessWrapper(caller, wrapper, config, options) {
-    if (options?.chatMessage === false || options?.vanilla) {
-		return wrapper.call(caller, options);
+    if (options?.vanilla) {
+		return wrapper.call(caller, config, options);
 	}
 
     // For item rolls, check the alternate item roll setting to see if the alt key should ignore quick roll.
