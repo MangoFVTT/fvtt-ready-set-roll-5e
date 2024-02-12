@@ -141,8 +141,8 @@ function _onOverlayHoverEnd(html) {
 
 function _onTooltipHover(message, html) {
     const hasPermission = game.user.isGM || message?.isAuthor;
-    const controlled = ChatUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
-    const targeted = ChatUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
+    const controlled = ChatUtility._applyDamageToSelected() && canvas?.tokens?.controlled?.length > 0;
+    const targeted = ChatUtility._applyDamageToTargeted() && game?.user?.targets?.size > 0;
 
     if (hasPermission && (controlled || targeted)) {
         html.find('.rsr-damage-buttons').show();
@@ -477,14 +477,14 @@ async function _processApplyButtonEvent(message, event) {
 
     const isTempHP = action === "rsr-apply-temp";
 
-    let selectTokens = ChatUtility._applyDamageToSelected ? canvas.tokens.controlled : [];
-    let targetTokens = ChatUtility._applyDamageToTargeted ? game.user.targets : [];
+    let selectTokens = ChatUtility._applyDamageToSelected() ? canvas.tokens.controlled : [];
+    let targetTokens = ChatUtility._applyDamageToTargeted() ? game.user.targets : [];
 
-    if (ChatUtility._prioritiseDamageSelected && selectTokens.length > 0) {
+    if (ChatUtility._prioritiseDamageSelected() && selectTokens.length > 0) {
         targetTokens = [];
     }
 
-    if (ChatUtility._prioritiseDamageTargeted && targetTokens.size > 0) {
+    if (ChatUtility._prioritiseDamageTargeted() && targetTokens.size > 0) {
         selectTokens = [];
     }
 

@@ -308,12 +308,17 @@ async function _addToolCheck(item, card) {
         return;
     }
 
-    const roll = await item.rollToolCheck({
+    let roll = await item.rollToolCheck({
         advantage: card.flags[MODULE_SHORT].advantage ?? false,
         disadvantage: card.flags[MODULE_SHORT].disadvantage ?? false,
         fastForward: true,
         chatMessage: false
     })
+
+    if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && roll.options.advantageMode === 0) {
+        roll = await RollUtility.ensureMultiRoll(roll, false);
+        card.flags[MODULE_SHORT].dual = true;
+    }
 
     card.rolls.push(roll);
     card.flags[MODULE_SHORT].rolls[ROLL_TYPE.TOOL_CHECK] = roll;
