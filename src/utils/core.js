@@ -115,4 +115,8 @@ export class CoreUtility {
 
 		return { rollMode, whisper, blind }
 	}
+
+    static playRollSound() {
+        AudioHelper.play({src: CONFIG.sounds.dice });
+    }
 }
