@@ -279,6 +279,8 @@ async function _addAttackRoll(item, card) {
     card.flags[MODULE_SHORT].rolls[ROLL_TYPE.ATTACK] = roll;
     card.flags[MODULE_SHORT].isCritical = card.flags[MODULE_SHORT].dual ? false : card.flags[MODULE_SHORT].rolls[ROLL_TYPE.ATTACK].isCritical;
     card.flags[MODULE_SHORT].consume = _getConsumeTargetFromItem(item)?.name;
+
+    card.flags.dnd5e.targets = item._formatAttackTargets();
 }
 
 async function _addDamageRoll(item, card) {

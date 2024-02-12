@@ -218,11 +218,6 @@ async function _injectContent(message, html) {
         case ROLL_TYPE.ITEM:
             const actions = html.find('.card-buttons');
 
-            actions.find(`[data-action='${ROLL_TYPE.ATTACK}']`).remove();
-            actions.find(`[data-action='${ROLL_TYPE.DAMAGE}']`).remove();
-            actions.find(`[data-action='${ROLL_TYPE.VERSATILE}']`).remove();
-            actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
-
             // Remove any redundant dice roll elements that were added forcefully by dnd5e system
             html.find('.dice-roll').remove();
 
@@ -238,12 +233,18 @@ async function _injectContent(message, html) {
                 html.find('.card-footer').remove();
             }
 
-            if (message.flags[MODULE_SHORT].manualDamage) {
-                await _injectDamageButton(message, actions);
+            if (message.flags[MODULE_SHORT].rolls?.attack) {
+                actions.find(`[data-action='${ROLL_TYPE.ATTACK}']`).remove();
+                await _injectAttackRoll(message, actions);
             }
 
-            if (message.flags[MODULE_SHORT].rolls?.attack) {
-                await _injectAttackRoll(message, actions);
+            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].rolls?.damage) {                
+                actions.find(`[data-action='${ROLL_TYPE.DAMAGE}']`).remove();
+                actions.find(`[data-action='${ROLL_TYPE.VERSATILE}']`).remove();
+            }
+
+            if (message.flags[MODULE_SHORT].manualDamage) {
+                await _injectDamageButton(message, actions);
             }
 
             if (message.flags[MODULE_SHORT].rolls?.damage) {
@@ -255,6 +256,7 @@ async function _injectContent(message, html) {
             }
 
             if (message.flags[MODULE_SHORT].rolls?.toolCheck) {
+                actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
                 await _injectToolCheckRoll(message, actions);
             }
 
@@ -289,6 +291,8 @@ async function _injectAttackRoll(message, html) {
     
     $(sectionHTML).append(rollHTML);
     sectionHTML.insertBefore(html);
+
+    message._enrichAttackTargets(html.parent()[0]);
 }
 
 async function _injectDamageRoll(message, html) {
