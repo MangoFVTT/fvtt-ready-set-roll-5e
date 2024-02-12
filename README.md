@@ -57,7 +57,7 @@ The following modules have been verified as compatible from the specified module
 
 ![retroactiveoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d73efc5b-cf47-4dca-a5af-6dff9c531359)
 
-### Individual Dice Rerolling - TEMPORARILY DISABLED
+### Individual Dice Rerolling - TEMPORARILY DISABLED IN 3.0
 - If enabled via the module settings, individual dice rolls in quick rolls can be rerolled by clicking on that individual dice within the chat card.
 - Rerolling dice will automatically live edit the quick roll's chat card, displaying the new rolls and roll totals alongside the already existing dice.
 
@@ -75,7 +75,7 @@ The following modules have been verified as compatible from the specified module
 
 ![damagecontext](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/04de2650-ad9d-4b78-bc7a-8052d1391a88)
 
-### Macro Support - TEMPORARILY DISABLED
+### Macro Support - TEMPORARILY DISABLED IN 3.0
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
     - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
@@ -83,7 +83,7 @@ The following modules have been verified as compatible from the specified module
 
 ![macros](https://user-images.githubusercontent.com/110994627/214150998-869afaaa-b93a-4ff0-b9af-470c54f35d52.png)
 
-### String Queries - TEMPORARILY DISABLED
+### String Queries - TEMPORARILY DISABLED IN 3.0
 - Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
 - This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
 
