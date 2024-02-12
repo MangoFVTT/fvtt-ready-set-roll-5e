@@ -503,9 +503,11 @@ async function _processApplyButtonEvent(message, event) {
     const type = dice.find('.label').text().toLowerCase();
     const multiplier = button.dataset.multiplier;
 
+    const properties = new Set(message.rolls.find(r => r instanceof CONFIG.Dice.DamageRoll)?.options?.properties ?? []);
+
     await Promise.all(Array.from(targets).map(t => {
         const target = t.actor;        
-        return isTempHP ? target.applyTempHP(damage) : target.applyDamage([{ value: damage, type: type}], { multiplier });
+        return isTempHP ? target.applyTempHP(damage) : target.applyDamage([{ value: damage, type: type, properties: properties }], { multiplier });
     }));
 
     setTimeout(() => {
