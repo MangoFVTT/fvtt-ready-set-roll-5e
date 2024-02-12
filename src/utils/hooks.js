@@ -1,40 +1,29 @@
 import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
-import { PatchingUtility } from "./patching.js";
-import { CoreUtility } from "./core.js";
-import { LogUtility } from "./log.js";
-import { SettingsUtility, SETTING_NAMES } from "./settings.js";
-import { RollUtility } from "./roll.js";
-import { SheetUtility } from "./sheet.js";
-import { ItemUtility } from "./item.js";
 import { ChatUtility } from "./chat.js";
-import { MacroUtility } from "./macro.js";
-import { QueryUtility } from "./query.js";
+import { ItemUtility } from "./item.js";
+import { LogUtility } from "./log.js";
+import { RollUtility } from "./roll.js";
+import { SETTING_NAMES, SettingsUtility } from "./settings.js";
+import { SheetUtility } from "./sheet.js";
 
 export const HOOKS_CORE = {
     INIT: "init",
-    READY: "ready",
-    CREATE_ITEM: "createItem",
-    RENDER_CHAT_MSG: "renderChatMessage"
+    READY: "ready"
 }
 
 export const HOOKS_DND5E = {
-    USE_ITEM: "dnd5e.useItem",
+    PRE_ROLL_ABILITY_TEST: "dnd5e.preRollAbilityTest",
+    PRE_ROLL_ABILITY_SAVE: "dnd5e.preRollAbilitySave",
+    PRE_ROLL_DEATH_SAVE: "dnd5e.preRollDeathSave",
+    PRE_ROLL_SKILL: "dnd5e.preRollSkill",
+    PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolCheck",
+    PRE_ROLL_DAMAGE: "dnd5e.preRollDamage",
+    PRE_USE_ITEM: "dnd5e.preUseItem",
     PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
     DISPLAY_CARD: "dnd5e.displayCard",
-    PRE_ROLL_SKILL: "dnd5e.preRollSkill",
-    PRE_ROLL_TOOL: "dnd5e.preRollToolCheck",
+    RENDER_CHAT_MESSAGE: "dnd5e.renderChatMessage",    
     RENDER_ITEM_SHEET: "renderItemSheet5e",
-    RENDER_ACTOR_SHEET: "renderActorSheet5e"
-}
-
-export const HOOKS_MODULE = {
-    LOADED: `${MODULE_SHORT}.loaded`,
-    RENDER: `${MODULE_SHORT}.render`,
-    PROCESSED_ROLL: `${MODULE_SHORT}.rollProcessed`
-}
-
-export const HOOKS_EXTERNAL = {
-    AA_ON_DMG: "autoAnimationOnDmg"
+    RENDER_ACTOR_SHEET: "renderActorSheet5e",
 }
 
 /**
@@ -47,86 +36,90 @@ export class HooksUtility {
     static registerModuleHooks() {
         Hooks.once(HOOKS_CORE.INIT, () => {
             LogUtility.log(`Initialising ${MODULE_TITLE}`);
-
-            if (!libWrapper.is_fallback && !libWrapper.version_at_least?.(1, 4, 0)) {
-                Hooks.once(HOOKS_CORE.READY, () => {
-                    const version = "v1.4.0.0";                    
-                    LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.libWrapperMinVersion`, { version }));
-                });        
-                return;
-            }
-
+            
             SettingsUtility.registerSettings();
-            PatchingUtility.patchActors();
-            PatchingUtility.patchItems();
-            PatchingUtility.patchItemSheets();
-                        
+
+            HooksUtility.registerRollHooks();
             HooksUtility.registerChatHooks();
-            HooksUtility.registerTestHooks();
         });
 
         Hooks.on(HOOKS_CORE.READY, () => {
-            // Setup specific fixed calls for the module
-            window[MODULE_SHORT] = {
-                macro: MacroUtility.getMacroList(),
-                query: QueryUtility.processQuery
-            }
-
-            Hooks.call(HOOKS_MODULE.LOADED);
-        });
-
-        Hooks.on(HOOKS_MODULE.LOADED, () => {
-            LogUtility.log(`Loaded ${MODULE_TITLE}`);
-
             CONFIG[MODULE_SHORT].combinedDamageTypes = foundry.utils.mergeObject(
-                foundry.utils.duplicate(CONFIG.DND5E.damageTypes),
-                foundry.utils.duplicate(CONFIG.DND5E.healingTypes),
+                Object.fromEntries(Object.entries(CONFIG.DND5E.damageTypes).map(([k, v]) => [k, v.label])),
+                Object.fromEntries(Object.entries(CONFIG.DND5E.healingTypes).map(([k, v]) => [k, v.label])),
                 { recursive: false }
             );
 
-            const combinedToolIds = foundry.utils.mergeObject(
-                foundry.utils.duplicate(CONFIG.DND5E.toolIds),
-                foundry.utils.duplicate(CONFIG.DND5E.vehicleTypes),
-                { recursive: false }
-            );
+            HooksUtility.registerSheetHooks();
 
-            CONFIG[MODULE_SHORT].combinedToolTypes = foundry.utils.mergeObject(
-                combinedToolIds,
-                foundry.utils.duplicate(CONFIG.DND5E.toolProficiencies),
-                { recursive: false }
-            );
-
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
-                HooksUtility.registerSheetHooks();
-                HooksUtility.registerItemHooks();
-            }
+            LogUtility.log(`Loaded ${MODULE_TITLE}`);
         });
-    }
-
-    static registerTestHooks() {
     }
 
     /**
-     * Register item specific hooks for module functionality.
+     * Register roll specific hooks for module functionality.
      */
-    static registerItemHooks() {
-        Hooks.on(HOOKS_CORE.CREATE_ITEM, (item) => {
-            ItemUtility.ensureFlagsOnitem(item);
-        });
+    static registerRollHooks() {
+        LogUtility.log("Registering roll hooks");
 
-        Hooks.on(HOOKS_DND5E.USE_ITEM, (item, config, options) => {
-            if (!options?.ignore && !options?.vanilla) {
-                RollUtility.rollItem(item, foundry.utils.mergeObject(config, options, { recursive: false }));
-            }
-        });
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ABILITY_ENABLED)) { 
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_TEST, (actor, config, abilityId) => {
+                RollUtility.processActorRoll(config);
+                return true;
+            });
+
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_SAVE, (actor, config, abilityId) => {
+                RollUtility.processActorRoll(config);
+                return true;
+            });
+        }
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) { 
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_SKILL, (actor, config, skillId) => {
+                RollUtility.processActorRoll(config);
+                return true;
+            });
+        }
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) { 
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_DEATH_SAVE, (actor, config) => {
+                RollUtility.processActorRoll(config);
+                return true;
+            });
+        }
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_TOOL_ENABLED)) { 
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (item, config) => {
+                RollUtility.processActorRoll(config);
+                return true;
+            });
+        }
+
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+            Hooks.on(HOOKS_DND5E.PRE_USE_ITEM, (item, config, options) => {
+                RollUtility.processItemRoll(options);
+                return true;
+            });
+
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (item, config) => {
+                ItemUtility.processItemDamageConfig(item, config);
+                return true;
+            });
+
+            Hooks.on(HOOKS_DND5E.DISPLAY_CARD, async (item, card) => {
+                await ItemUtility.runItemActions(card);
+            });
+        }
     }
 
     /**
      * Register chat specific hooks for module functionality.
      */
     static registerChatHooks() {
-        Hooks.on(HOOKS_CORE.RENDER_CHAT_MSG, (message, html, data) => {
-            ChatUtility.bindChatCard(message, html);           
+        LogUtility.log("Registering chat hooks");
+
+        Hooks.on(HOOKS_DND5E.RENDER_CHAT_MESSAGE, (message, html) => {
+            ChatUtility.processChatMessage(message, html);
         });
     }
 
@@ -134,13 +127,17 @@ export class HooksUtility {
      * Register sheet specific hooks for module functionality.
      */
     static registerSheetHooks() {
-        Hooks.on(HOOKS_DND5E.RENDER_ITEM_SHEET, (app, html, data) => {
-            SheetUtility.setAutoHeightOnSheet(app);
-            SheetUtility.addModuleContentToItemSheet(app, html);
-        });
+        LogUtility.log("Registering sheet hooks");
+        
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+            Hooks.on(HOOKS_DND5E.RENDER_ITEM_SHEET, (app, html, data) => {
+                SheetUtility.setAutoHeightOnSheet(app);
+                SheetUtility.addModuleContentToItemSheet(app, html);
+            });
 
-        Hooks.on(HOOKS_DND5E.RENDER_ACTOR_SHEET, (app, html, data) => {
-            SheetUtility.addModuleContentToActorSheet(app, html);
-        });
+            ItemSheet.prototype._onChangeTab = function _onChangeTab(event, tabs, active) {
+                SheetUtility.setAutoHeightOnSheet(this);
+            }
+        }
     }
 }
