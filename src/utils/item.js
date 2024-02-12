@@ -81,6 +81,8 @@ export class ItemUtility {
             type: card.type,
             rolls: card.rolls
         });
+
+        CoreUtility.playRollSound();
     }
 
     static async runItemAction(card, action) {
@@ -101,7 +103,12 @@ export class ItemUtility {
                 break;
         }
 
-        ChatUtility.updateChatMessage(card, { flags: card.flags });
+        ChatUtility.updateChatMessage(card, { 
+            flags: card.flags,
+            rolls: card.rolls
+        });
+
+        CoreUtility.playRollSound();
     }
 
     /**

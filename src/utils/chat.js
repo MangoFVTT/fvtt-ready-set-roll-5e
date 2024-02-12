@@ -560,7 +560,9 @@ async function _processRetroAdvButtonEvent(message, event) {
             flags: message.flags,
             rolls: message.rolls,
             flavor: message.flavor
-        });
+        });        
+
+        CoreUtility.playRollSound();
     }
 }
 
@@ -602,6 +604,8 @@ async function _processRetroCritButtonEvent(message, event) {
 
         ChatUtility.updateChatMessage(message, {
             flags: message.flags
-        });
+        });       
+
+        CoreUtility.playRollSound();
     }
 }
