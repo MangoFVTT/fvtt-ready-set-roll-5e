@@ -39,26 +39,25 @@ The following modules have been verified as compatible from the specified module
 - Items will automatically output damage, calculate critical damage (taking into account system settings for powerful criticals or critical numerical modifiers), place area templates, print Save DC buttons, and a variety of other options that can all be configured independently for each item.
 - Using modifier keys such as `shift` and `ctrl` allows for the roll to immediately output with advantage or disadvantage, and will automatically add in any required additional rolls (e.g. for Elven Accuracy). Rolls with advantage or disadvantage highlight the correct roll, indicating which roll is used.
 
-![quickrolls](https://user-images.githubusercontent.com/110994627/188636272-a557cd66-082d-46a3-a4e9-bf44e9c03535.png)
+![quickrolls](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/2fc0e9f8-c964-49cb-8b08-44086bf4a0f8)
 
 - If the correct setting is enabled, quick rolls can also always display the maximum amount of correct dice for a roll (2 normally, 3 for an Elven Accuracy roll) even when the roll does not have advantage or disadvantage. This can be interchangeably combined with using modifier keys to grant a roll advantage or disadvantage, in which case the correct roll out of those displayed will be highlighted as normal.
 
-![alwayson](https://user-images.githubusercontent.com/110994627/189175659-22c15f1f-f597-430e-bc22-dab3606c1b0f.png)
+![alwayson](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/4b9c0312-7bd6-4232-af9f-ff11ad960a06)
 
 ### Roll Configuration & Alt Rolls
 - Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
-- Item configuration extends system support for thrown items, consumables, ammunition, and items with otherwise limited quantities.
 - If enabled, items can also output an alternate roll when holding `alt`. This alternate roll can be configured independently of the default configuration. Enabling alternate rolls for items disables the ability to use the default dialog rolling for items.
 
-![rollconfig](https://user-images.githubusercontent.com/110994627/188637202-f0e4ba7b-7790-4c97-9be6-bc64f4be7015.png)
+![rollconfig](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/c76c4ee2-de78-4f05-8cfb-56568f406468)
 
 ### Retroactive Roll Editing
 - If enabled via the module settings, quick rolls can be edited post creation, allowing for retroactively rolling advantage, disadvantage, or critical damage for a roll after it has already been created.
 - Changes to the roll will automatically live edit the quick roll's chat card, displaying the new data alongside the already existing roll.
 
-![retroactiveoverlay](https://user-images.githubusercontent.com/110994627/189863316-90a483e8-b35b-4bc5-905a-ca7d0e2ea80c.gif)
+![retroactiveoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d73efc5b-cf47-4dca-a5af-6dff9c531359)
 
-### Individual Dice Rerolling - TEMPORARILY DISABLED
+### Individual Dice Rerolling - TEMPORARILY DISABLED IN 3.0
 - If enabled via the module settings, individual dice rolls in quick rolls can be rerolled by clicking on that individual dice within the chat card.
 - Rerolling dice will automatically live edit the quick roll's chat card, displaying the new rolls and roll totals alongside the already existing dice.
 
@@ -67,17 +66,16 @@ The following modules have been verified as compatible from the specified module
 ### Apply Individual Damage
 - If enabled via the module settings, each damage field in a quick roll chat card can apply damage or healing to selected or targeted tokens via overlay buttons. This extends core system behaviour (applying damage via context menus) to allow for the application of each damage field individually instead of as a single whole.
 - Damage fields can be applied in a specific manner (damage or healing) regardless of the actual damage type. This is intended to allow Players or GMs to manually decide what to do with the damage field in the event of edge cases (such as a specific damage type healing instead of doing damage for a particular creature).
-- Applying critical damage to a token will display a prompt allowing for critical damage to be ignored if desired. This can be bypassed via a setting to always apply critical damage.
 
-![damageoverlay](https://user-images.githubusercontent.com/110994627/189862751-41c7e9b3-33a1-49bf-a55a-32f6681954d3.gif)
+![damageoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/f610f9be-9578-435a-abb5-bac082abe06f)
 
 ### Damage Context
 - Damage fields can be given additional context strings to convey extra information about that particular damage group. This context will be then shown on the chat card, as either part of the overall damage description or a replacement to default damage titles/type strings.
 - Damage context can be configured via the module settings to be placed at various positions of the chat card, and even replace default damage title and type labels.
 
-![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
+![damagecontext](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/04de2650-ad9d-4b78-bc7a-8052d1391a88)
 
-### Macro Support - TEMPORARILY DISABLED
+### Macro Support - TEMPORARILY DISABLED IN 3.0
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
     - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
@@ -85,7 +83,7 @@ The following modules have been verified as compatible from the specified module
 
 ![macros](https://user-images.githubusercontent.com/110994627/214150998-869afaaa-b93a-4ff0-b9af-470c54f35d52.png)
 
-### String Queries - TEMPORARILY DISABLED
+### String Queries - TEMPORARILY DISABLED IN 3.0
 - Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
 - This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
 
