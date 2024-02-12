@@ -1,68 +1,13 @@
-.dnd5e.sheet .item-buttons button {
-	font-size: 10px;
-	line-height: 12px;
-	margin: 0;
+.rsr-multiroll {
+    display: flex;
 }
 
-.dnd5e.sheet .item-buttons span {
-	padding: 0;
-}
-
-.dnd5e.chat-card .card-header img {
-	flex: 0 0 36px;
-	margin-right: 5px;
-	object-fit: contain;
-}
-
-.dnd5e.chat-card.rsr-full .card-header {
-	position: relative;
-}
-
-.rsr-dual .dice-row {
-	position: relative;
-	clear: both;
-	display: flex;
-	justify-content: space-between;
-}
-
-.rsr-dual .dice-row .dice-row-item {
-	flex: 1;
-}
-
-.rsr-dual .tooltip.dice-row-item {
-	padding: 0px 4px 0px 4px;
-}
-
-.dice-roll .dice-total.critical {
-	color: var(--color-text-dark-primary);
-}
-
-.dice-roll .dice-total.fumble {
-	color: var(--color-text-dark-primary);
-}
-
-.rsr-dual .dice-row .failure {
-	color: #aa0200;
-}
-
-.rsr-dual .dice-row .success {
-	color: #257f11;
-}
-
-.rsr-full .dice-roll .dice-row .dice-row-item.ignored {
+.rsr-multiroll .dice-total.ignored {
 	opacity: .4;
 	border: 1px solid #888888;
 }
 
-.dnd5e.rsr-full.chat-card .dice-tooltip {
-	font-size:14px;
-}
-
-.rsr-dual .mixed {
-	color: #11257f;
-}
-
-.rsr-dual .die-icon {
+.rsr-multiroll .die-icon {
 	background-image: url(../../../icons/svg/d20-grey.svg);
 	width: 22px;
 	line-height: 22px;
@@ -80,20 +25,172 @@
 	transform: translate(0, -50%);
 }
 
-.rsr-dual .success .die-icon {
+.rsr-multiroll .success .die-icon {
 	filter: sepia(0.5) hue-rotate(60deg);
 }
 
-.rsr-dual .failure .die-icon {
+.rsr-multiroll .failure .die-icon {
 	filter: sepia(0.5) hue-rotate(-60deg);
 }
 
-.rsr5e-roll-label {
+.dice-result .rsr-multiroll .dice-total::before,
+.dice-result .rsr-multiroll .dice-total::after {
+	display: none;
+}
+
+.rsr-header {
+	margin-bottom: 0.25rem;
+}
+
+.rsr-title {
+	font-family: var(--dnd5e-font-roboto);
+	font-weight: bold;
+	font-size: var(--font-size-13);
+	text-transform: uppercase;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+	margin-bottom: 0.1rem;
+}
+
+.rsr-subtitle {
+	font-family: var(--dnd5e-font-roboto);
+	font-style: italic;
+	font-size: var(--font-size-12);
+	display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rsr-context {
+	font-family: var(--dnd5e-font-roboto);
+    font-size: var(--font-size-11);
+    color: var(--color-text-dark-5);
 	text-align: center;
+	border: 1px solid var(--color-border-light-1);
+	border-radius: 3px;
+	background: var(--dnd5e-background-10);
+	padding: 0.125rem;
+	margin-top: 0.125rem;
+	margin-bottom: 0.125rem;
+}
+
+.rsr-damage .dice-tooltip .tooltip-part {
+	position: relative;
+}
+
+.rsr-damage-buttons {
+	text-align: right!important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-right: 8%;
+}
+
+.rsr-damage-buttons button {
+	width: 22px;
+	height: 22px;
+	font-size: var(--font-size-12);
+	line-height: 22px;
+	padding: 0;
+	gap: 0;
+}
+
+.rsr-damage-buttons button.rsr-wide {
+	width: auto;
+	padding: 0 3px;
+}
+
+.rsr-damage-buttons button > i {
+	margin: 0;
+}
+
+.rsr-damage-buttons div {
+	height: 22px;
+	font-size: var(--font-size-14);
+	line-height: 18px;
+	padding: 0;
+	color: var(--color-text-light-4);
+	margin-left: 3px
+}
+
+.rsr-indicator i:hover {
+	cursor: default;
+	text-shadow: none;
+}
+
+.rsr-overlay {
+	text-align: center!important;
+	flex-grow: 1;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	padding: 0 30%;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	z-index: 1;
+}
+
+.rsr-overlay div {
+	width: 24px;
+	height: 24px;
+	font-size: var(--font-size-14);
+	line-height: 26px;
+	padding: 0;
+	color: var(--color-text-dark-5);
+}
+
+.rsr-overlay i:hover {
+	cursor: pointer;
+	text-shadow: 0 0 10px var(--color-shadow-primary);
+}
+
+.rsr-overlay-header {
+	left: auto;
+	justify-content: right;
+}
+
+.rsr-overlay-header button {
+	width: 30px;
+	height: 30px;
+	font-size: 14px;
+}
+
+.dnd5e.item form .rsr-item {
+	padding: 8px 8px 0;
+	overflow-y: auto;
+}
+
+.dnd5e.sheet.item .rsr-item input[type="text"],
+.dnd5e.sheet.item .rsr-item input[type="number"],
+.dnd5e.sheet.item .rsr-item select {
+	border: 1px solid #7a7971;
+	background: rgba(0, 0, 0, 0.05);
+}
+
+.dnd5e.sheet.item .rsr-item label.checkbox {
+		display: inline-table;
+		padding: 0px 8px;
+}
+
+.rsr-options-subsection {
+	align-items: center;
+    padding: 0 2px;
+	border-bottom: 0px;
+}
+
+.rsr-options-title {
+	padding-left: 6px;
+	padding-top: 4px;
 	font-size: 12px;
 }
 
-.rsr5e-options-box {
+.rsr-options-box {
 	background: rgba(0, 0, 0, 0.05);
 	border: 1px solid #999;
 	border-radius: 4px;
@@ -103,161 +200,10 @@
 	justify-content: space-between;
 }
 
-.tidy5e .rsr5e-options-box {
-	flex-direction: column;
-}
-
-.tidy5e .rsr5e-options-container {
-	display: flex;
-	flex-direction: column;
-}
-
-.rsr5e-options-subsection {
-	align-items: center;
-    padding: 0 2px;
-	border-bottom: 0px;
-}
-
-.rsr5e-options-spacer {
+.rsr-options-spacer {
 	padding-bottom: 8px;
 }
 
-.rsr5e-options-title {
-	padding-left: 6px;
-	padding-top: 4px;
-	font-size: 12px;
-}
-
-.rsr-full .rsr-flavor {
-	font-style: italic;
-}
-
-.rsr-full .inline {
-	display: inline;
-}
-
-.rsr-full .damage-type {
-	text-align: center;
-	font-size: 12px;
-}
-
-.rsr-full hr {
-	margin: 8px 0;
-	border-top: 1px dashed #b5b3a4;
-	border-bottom: 1px dashed #f0f0e0;
-}
-
-.dnd5e.rsr-full.chat-card footer.card-footer {
-	margin-top:2px;
-}
-
-.dnd5e.item form .item-rsr5e {
-	padding: 8px 8px 0;
-	overflow-y: auto;
-}
-
-.dnd5e.sheet.item .item-rsr5e input[type="text"],
-.dnd5e.sheet.item .item-rsr5e input[type="number"],
-.dnd5e.sheet.item .item-rsr5e select {
-	border: 1px solid #7a7971;
-	background: rgba(0, 0, 0, 0.05);
-}
-
-.dnd5e.sheet.item .item-rsr5e label.checkbox {
-		display: inline-table;
-		padding: 0px 8px;
-}
-
-.card-buttons .adice5e.dmg.rolled {
-	display:inline-flex;
-	width:100%;
-	align-items:baseline;
-}
-
-.die-result-overlay-rsr {
-	text-align: right!important;
-	flex-grow: 1;
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	padding: 0 2px;
-
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	z-index: 1;
-}
-
-.die-result-overlay-rsr span {
-	display: flex;
-}
-
-.die-result-overlay-rsr button {
-	width: 20px;
-	height: 20px;
-	font-size: 10px;
-	line-height: 1px;
-	background-color: white;
-	border: 1px solid #999;
-	padding: 0;
-}
-
-.die-result-overlay-rsr button.icon {
-	background-size: 14px;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-.header-overlay-rsr {
-	left: auto;
-	justify-content: right;
-}
-
-.header-overlay-rsr button {
-	width: 30px;
-	height: 30px;
-	font-size: 14px;
-}
-
-.icon.overlay-healing {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-healing.svg");
-}
-
-.icon.overlay-healing-temp {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-healing-temp.svg");
-}
-
-.icon.overlay-damage-full {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-full.svg");
-}
-
-.icon.overlay-damage-half {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-half.svg");
-}
-
-.icon.overlay-damage-quarter {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-quarter.svg");
-}
-
-.icon.overlay-damage-double {
-	background-image: url("../../../modules/ready-set-roll-5e/icons/overlay-damage-double.svg");
-}
-
-.die-result-overlay-rsr button i {
-	margin: 0;
-}
-
-.better-npc-sheet .item.expanded .item-summary .item-buttons {
-	line-height: 22px;
-}
-
-.rsr5e-hidden {
-	display: none;
-}
-
-.dice-tooltip .dice-rolls .roll.rollable:hover {
-	cursor: pointer;
-	text-shadow: 0 0 10px red;
+.rsr-hide {
+    display: none !important;
 }

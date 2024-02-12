@@ -4,19 +4,13 @@
  *  @enum {String}
  */
 export const TEMPLATE = {
-    FULL_CARD: "rsr-full-card.html",
-    HEADER: "rsr-header.html",
-    FOOTER: "rsr-footer.html",
-    DESCRIPTION: "rsr-description.html",
     MULTIROLL: "rsr-multiroll.html",
-    DAMAGE: "rsr-damage-roll.html",
-    DAMAGE_BUTTON: "rsr-damage-button.html",
-    EFFECTS_BUTTON: "rsr-effects-button.html",
-    SAVE_BUTTON: "rsr-save-button.html",
-    OPTIONS: "rsr-item-options.html",
-    BLANK: "rsr-blank.html",
-    OVERLAY_DAMAGE: "rsr-overlay-damage.html",
+    DAMAGE: "rsr-damage.html",
+    DAMAGE_BUTTONS: "rsr-damage-buttons.html",
+    CONTEXT: "rsr-context.html",
+    SECTION: "rsr-section.html",
+    OPTIONS: "rsr-options.html",
+    BUTTON: "rsr-button.html",
     OVERLAY_MULTIROLL: "rsr-overlay-multiroll.html",
-    OVERLAY_HEADER: "rsr-overlay-header.html",
-    DIALOG_BONUS: "rsr-dialog-bonus.html"
+    OVERLAY_CRIT: "rsr-overlay-crit.html"
 }
