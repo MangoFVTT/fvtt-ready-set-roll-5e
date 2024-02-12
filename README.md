@@ -31,10 +31,6 @@ Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper
 ### Verified Modules
 The following modules have been verified as compatible from the specified module release onward. Note that updates to Foundry VTT or the module in question may cause incompatibilities that need to be re-tested. Furthermore, each verified module is tested with Ready Set Roll in isolation. Combining modules is likely to still work, however may cause issues. Always proceed with caution (keep backups) when installing and using multiple modules.
 - [Dice So Nice](https://gitlab.com/riccisi/foundryvtt-dice-so-nice) <sup>(1.2.0+)</sup>
-- [Tidy5e Sheet](https://github.com/sdenec/tidy5e-sheet) <sup>(1.2.0+)</sup>
-- [Dynamic Active Effects](https://gitlab.com/tposney/dae) <sup>(1.3.1+)</sup>
-- [Build-a-Bonus](https://github.com/krbz999/babonus) <sup>(1.3.2+)</sup>
-- [Combat Utility Belt](https://github.com/death-save/combat-utility-belt) <sup>(1.3.11+)</sup>
 
 ## Implemented Features
 
@@ -62,7 +58,7 @@ The following modules have been verified as compatible from the specified module
 
 ![retroactiveoverlay](https://user-images.githubusercontent.com/110994627/189863316-90a483e8-b35b-4bc5-905a-ca7d0e2ea80c.gif)
 
-### Individual Dice Rerolling
+### Individual Dice Rerolling - TEMPORARILY DISABLED
 - If enabled via the module settings, individual dice rolls in quick rolls can be rerolled by clicking on that individual dice within the chat card.
 - Rerolling dice will automatically live edit the quick roll's chat card, displaying the new rolls and roll totals alongside the already existing dice.
 
@@ -81,19 +77,7 @@ The following modules have been verified as compatible from the specified module
 
 ![damagecontext](https://user-images.githubusercontent.com/110994627/188952930-f8be9901-a45e-43dd-97b4-d707062bc1ad.png)
 
-### Transfer Item Effects
-- If enabled via the module settings, quick rolls for items that have transferrable effects can be configured to transfer some or all of those effects to selected or targeted tokens via a clickable button in the roll card.
-- This feature requires [Dynamic Active Effects (DAE)](https://gitlab.com/tposney/dae) to work. If this module is not available, the setting will automatically be hidden/disabled.
-
-![applyeffects](https://user-images.githubusercontent.com/110994627/217320554-9f62e5ce-1b6e-4671-8cc9-5b780a98bfd2.gif)
-
-### Situational Bonuses
-- If enabled via the module settings, right-clicking anything that would normally output a quick roll will display a pop-up dialog providing the possibility to add a situational bonus to relevant parts of the roll.
-- For actor rolls, this is a simple bonus to the roll. For item rolls, this can be a bonus to attack, ability check, or damage, depending on what's available for the item.
-
-![situationalbonus](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/72d2204c-e02d-4a90-8641-50bd5c8bf1b4)
-
-### Macro Support
+### Macro Support - TEMPORARILY DISABLED
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
     - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
@@ -101,7 +85,7 @@ The following modules have been verified as compatible from the specified module
 
 ![macros](https://user-images.githubusercontent.com/110994627/214150998-869afaaa-b93a-4ff0-b9af-470c54f35d52.png)
 
-### String Queries
+### String Queries - TEMPORARILY DISABLED
 - Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
 - This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
 
