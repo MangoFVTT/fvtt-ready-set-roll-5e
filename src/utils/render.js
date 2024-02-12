@@ -94,5 +94,5 @@ async function _renderDamageRoll(data = {}) {
  */
 function _renderModuleTemplate(template, data) {
     //return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
-    return renderTemplate(`modules/ready-set-roll-5e-v3/templates/${template}`, data);
+    return renderTemplate(`modules/ready-set-roll-5e/templates/${template}`, data);
 }
