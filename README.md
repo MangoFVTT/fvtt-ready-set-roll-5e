@@ -24,9 +24,7 @@ If you are feeling generous, and would like to support my work, you can do so th
 4. Enjoy!
 
 ## Compatibility
-**IMPORTANT:** Ready Set Roll is not compatible with other modules which modify DnD5e rolls (for example, [Midi-QOL](https://gitlab.com/tposney/midi-qol) or [MRE](https://github.com/ElfFriend-DnD/FVTT-Minimal-Rolling-Enhancements-DND5E)). While it is possible that such modules may also still work, using their roll automation features alongside this module is likely to cause issues, and is not recommended.
-
-Ready Set Roll requires [libWrapper](https://foundryvtt.com/packages/lib-wrapper/) as a dependency to avoid conflicts with other modules. This dependency will be automatically resolved by Foundry when installed. It is recommended to have the latest version of libWrapper installed at all times.
+**IMPORTANT:** Ready Set Roll is not compatible with other modules which modify DnD5e rolls or chat cards (for example, [Midi-QOL](https://gitlab.com/tposney/midi-qol)). While it is possible that such modules may also still work, using their roll automation features alongside this module is likely to cause issues, and is not recommended.
 
 ### Verified Modules
 The following modules have been verified as compatible from the specified module release onward. Note that updates to Foundry VTT or the module in question may cause incompatibilities that need to be re-tested. Furthermore, each verified module is tested with Ready Set Roll in isolation. Combining modules is likely to still work, however may cause issues. Always proceed with caution (keep backups) when installing and using multiple modules.
