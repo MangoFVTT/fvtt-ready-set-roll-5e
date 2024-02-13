@@ -265,6 +265,8 @@ async function _injectContent(message, html) {
 
     //_setupRerollDice(html);
     _setupCardListeners(message, html);
+
+    ui.chat.scrollBottom();
 }
 
 async function _injectAttackRoll(message, html) {
