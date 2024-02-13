@@ -42,7 +42,6 @@ export class ItemUtility {
         const item = await _ensureItemFromCard(card);
         ItemUtility.ensureFlagsOnItem(item);
 
-        card.type = CONST.CHAT_MESSAGE_TYPES.ROLL;
         card.flags[MODULE_SHORT].rolls = {}
         card.flags[MODULE_SHORT].name = item.name;
         card.flags[MODULE_SHORT].isHealing = item.isHealing;
@@ -74,12 +73,12 @@ export class ItemUtility {
             await _addToolCheck(item, card);
         }
 
+        await CoreUtility.tryRollDice3D(card.rolls);
+
         card.flags[MODULE_SHORT].processed = true;
 
         ChatUtility.updateChatMessage(card, { 
-            flags: card.flags,
-            type: card.type,
-            rolls: card.rolls
+            flags: card.flags
         });
 
         CoreUtility.playRollSound();
@@ -103,9 +102,10 @@ export class ItemUtility {
                 break;
         }
 
+        await CoreUtility.tryRollDice3D(card.rolls);
+
         ChatUtility.updateChatMessage(card, { 
-            flags: card.flags,
-            rolls: card.rolls
+            flags: card.flags
         });
 
         CoreUtility.playRollSound();
