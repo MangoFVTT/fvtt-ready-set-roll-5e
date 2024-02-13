@@ -96,7 +96,11 @@ export class HooksUtility {
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_USE_ITEM, (item, config, options) => {
+            Hooks.on(HOOKS_DND5E.PRE_USE_ITEM, (item, config, options) => {               
+                if (!item || !CONFIG[MODULE_SHORT].validItemTypes.includes(item.type)) {
+                    return true;
+                }
+
                 RollUtility.processItemRoll(options);
                 return true;
             });

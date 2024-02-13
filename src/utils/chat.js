@@ -82,13 +82,13 @@ export class ChatUtility {
             // Setup hover buttons when the message is actually hovered(for optimisation).
             let hoverSetupComplete = false;
             content.hover(async () => {
-                if (!hoverSetupComplete) {                    
+                if (!hoverSetupComplete) {
                     LogUtility.log("Injecting overlay hover buttons")
                     hoverSetupComplete = true;
                     await _injectOverlayButtons(message, content);
                     _onOverlayHover(message, content);
                 }
-            })
+            });
         }
     }
 
@@ -265,6 +265,8 @@ async function _injectContent(message, html) {
 
     //_setupRerollDice(html);
     _setupCardListeners(message, html);
+
+    ui.chat.scrollBottom();
 }
 
 async function _injectAttackRoll(message, html) {
@@ -367,11 +369,13 @@ async function _injectApplyDamageButtons(message, html) {
     const tooltip = html.find('.rsr-damage .dice-tooltip .tooltip-part')
     tooltip.append($(render));
 
-    // Enable Hover Events (to show/hide the elements).
-    tooltip.each((i, el) => {        
-        $(el).find(".rsr-damage-buttons").attr("style", "display: none;height: 0px");
-        $(el).hover(_onTooltipHover.bind(this, message, $(el)), _onTooltipHoverEnd.bind(this, $(el)));
-    })
+    if (!SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_SHOW_BUTTONS)) {
+        // Enable Hover Events (to show/hide the elements).
+        tooltip.each((i, el) => {        
+            $(el).find(".rsr-damage-buttons").attr("style", "display: none;height: 0px");
+            $(el).hover(_onTooltipHover.bind(this, message, $(el)), _onTooltipHoverEnd.bind(this, $(el)));
+        })
+    }
 }
 
 async function _injectToolCheckRoll(message, html) {
@@ -403,7 +407,7 @@ async function _injectToolCheckRoll(message, html) {
  */
 async function _injectOverlayButtons(message, html) {
     await _injectOverlayRetroButtons(message, html);
-    await _injectOverlayHeaderButtons(message, html);
+    await _injectOverlayHeaderButtons(message, html);    
     
     // Enable Hover Events (to show/hide the elements).
     _onOverlayHoverEnd(html);
