@@ -49,12 +49,6 @@ export class ChatUtility {
         if (!message.flags[MODULE_SHORT].quickRoll) {
             return;
         }
-        
-        if (game.dice3d && message._dice3danimating && !game.settings.get("dice-so-nice", "immediatelyDisplayChatMessages")) {
-            if (message._countNewRolls) {
-                $(html).addClass("dsn-hide");
-            }
-        }
 
         // Hide the message if we haven't yet finished processing RSR content
         if (!message.flags[MODULE_SHORT].processed) {
