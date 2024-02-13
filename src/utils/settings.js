@@ -19,8 +19,8 @@ export const SETTING_NAMES = {
     MANUAL_DAMAGE_MODE: "manualDamageMode",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     DAMAGE_BUTTONS_ENABLED: "enableDamageButtons",
+    ALWAYS_SHOW_BUTTONS: "alwaysShowButtons",
     DICE_REROLL_ENABLED: "enableDiceReroll",
-    APPLY_DAMAGE_MODS: "applyDamageMods",
     APPLY_DAMAGE_TO: "applyDamageTo",
     ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti",
 }
@@ -106,6 +106,7 @@ export class SettingsUtility {
             { name: SETTING_NAMES.DICE_REROLL_ENABLED, default: true },
             { name: SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, default: true },
             { name: SETTING_NAMES.DAMAGE_BUTTONS_ENABLED, default: true },
+            { name: SETTING_NAMES.ALWAYS_SHOW_BUTTONS, default: false },
         ]        
 
         chatCardOptions.forEach(option => {

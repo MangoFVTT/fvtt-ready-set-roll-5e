@@ -27,6 +27,8 @@
             "enableOverlayButtons.hint": "When outputting a quick roll, enable overlay buttons on the chat message that offer additional functionality for the roll.",
             "enableDamageButtons.name": "Enable Damage Apply Buttons",
             "enableDamageButtons.hint": "When outputting a quick roll with damage, enable buttons on the chat message that allow for that damage to be applied to tokens.",
+            "alwaysShowButtons.name": "Always Show Damage Apply Buttons",
+            "alwaysShowButtons.hint": "When outputting a quick roll chat card, always show the damage apply buttons, instead of only on hover.",
             "applyDamageTo.name": "Apply Damage Options",
             "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons."
         },
