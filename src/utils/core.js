@@ -38,11 +38,13 @@ export class CoreUtility {
 
         switch(mode) {
             case 0:
-                return event.shiftKey ? 1 : (event.ctrlKey || event.metaKey ? -1 : 0);
+                return event.shiftKey ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE 
+                    : (event.ctrlKey || event.metaKey ? CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE : CONFIG.Dice.D20Roll.ADV_MODE.NORMAL);
             case 1:
-                return event.shiftKey ? -1 : (event.ctrlKey || event.metaKey ? 1 : 0);
+                return event.shiftKey ? CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE
+                    : (event.ctrlKey || event.metaKey ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE  : CONFIG.Dice.D20Roll.ADV_MODE.NORMAL);
             default:
-                return 0;
+                return CONFIG.Dice.D20Roll.ADV_MODE.NORMAL;
         }
     }
 

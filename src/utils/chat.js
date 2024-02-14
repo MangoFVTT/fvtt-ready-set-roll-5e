@@ -42,11 +42,16 @@ export class ChatUtility {
             return;
         }
 
-        if (!message.flags || !message.flags[MODULE_SHORT]) {
+        if (!message.flags) {
             return;
         }
 
-        if (!message.flags[MODULE_SHORT].quickRoll) {
+        if (message.isRoll && SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) && !message.flags[MODULE_SHORT]) {
+            _processVanillaMessage(message)
+            return;
+        }
+
+        if (!message.flags[MODULE_SHORT] || !message.flags[MODULE_SHORT].quickRoll) {
             return;
         }
 
@@ -102,7 +107,8 @@ export class ChatUtility {
     }
 
     static isMessageMultiRoll(message) {
-        return (message.flags[MODULE_SHORT].advantage || message.flags[MODULE_SHORT].disadvantage || message.flags[MODULE_SHORT].dual) ?? false;
+        return (message.flags[MODULE_SHORT].advantage || message.flags[MODULE_SHORT].disadvantage || message.flags[MODULE_SHORT].dual
+            || (message.rolls[0] instanceof CONFIG.Dice.D20Roll && message.rolls[0].options.advantageMode !== CONFIG.Dice.D20Roll.ADV_MODE.NORMAL)) ?? false;
     }
 
     static isMessageCritical(message) {
@@ -157,6 +163,16 @@ function _onTooltipHoverEnd(html) {
         html.parent().removeAttr("style");
         html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
     }
+}
+
+function _processVanillaMessage(message) {
+    message.flags[MODULE_SHORT] = {}
+    message.flags[MODULE_SHORT].quickRoll = true;
+    message.flags[MODULE_SHORT].processed = true;
+
+    ChatUtility.updateChatMessage(message, {
+        flags: message.flags
+    })
 }
 
 /**
