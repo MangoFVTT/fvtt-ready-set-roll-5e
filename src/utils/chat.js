@@ -267,7 +267,7 @@ async function _injectAttackRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
 
     const roll = CONFIG.Dice.D20Roll.fromData(message.flags[MODULE_SHORT].rolls[ROLL_TYPE.ATTACK]);
-    roll.resetFormula();
+    RollUtility.resetRollGetters(roll);
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK })
 
@@ -288,8 +288,11 @@ async function _injectAttackRoll(message, html) {
     $(sectionHTML).append(rollHTML);
     sectionHTML.insertBefore(html);
 
-    message.rolls.push(roll);
-    message._enrichAttackTargets(html.closest('.chat-message')[0]);
+    // Remove and re-add enrichers for hit/miss indication
+    message.rolls[0] = roll;
+    const card = html.closest('.chat-message');
+    card.find('.evaluation').remove();
+    message._enrichAttackTargets(card[0]);
 }
 
 async function _injectDamageRoll(message, html) {

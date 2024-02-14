@@ -111,7 +111,8 @@ export class RollUtility {
             });
 
             roll.terms[roll.terms.indexOf(d20BaseTerm)] = d20Forced;
-            roll.resetFormula();
+
+            RollUtility.resetRollGetters(roll);
         }
 
         return roll;
@@ -143,9 +144,14 @@ export class RollUtility {
         upgradedRoll.options.advantageMode = targetState === ROLL_STATE.ADV 
             ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE 
             : CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
-        upgradedRoll.resetFormula();
 
+        RollUtility.resetRollGetters(upgradedRoll);
         return upgradedRoll;
+    }
+
+    static resetRollGetters(roll) {
+        roll._total = roll._evaluateTotal();
+        roll.resetFormula();
     }
 
     /**
