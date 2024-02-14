@@ -289,10 +289,11 @@ async function _injectAttackRoll(message, html) {
     sectionHTML.insertBefore(html);
 
     // Remove and re-add enrichers for hit/miss indication
-    message.rolls[0] = roll;
+    message.rolls.push(roll);
     const card = html.closest('.chat-message');
     card.find('.evaluation').remove();
     message._enrichAttackTargets(card[0]);
+    message.rolls = [];
 }
 
 async function _injectDamageRoll(message, html) {
