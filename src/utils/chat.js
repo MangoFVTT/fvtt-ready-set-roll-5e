@@ -288,7 +288,8 @@ async function _injectAttackRoll(message, html) {
     $(sectionHTML).append(rollHTML);
     sectionHTML.insertBefore(html);
 
-    message._enrichAttackTargets(html.parent()[0]);
+    message.rolls.push(roll);
+    message._enrichAttackTargets(html.closest('.chat-message')[0]);
 }
 
 async function _injectDamageRoll(message, html) {
