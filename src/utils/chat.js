@@ -290,10 +290,17 @@ async function _injectContent(message, html) {
                 actions.find(`[data-action='${ROLL_TYPE.ATTACK}']`).remove();
                 await _injectAttackRoll(message, actions);
             }
-
-            if (message.flags[MODULE_SHORT].hasDamage) {
+            
+            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].hasDamage) {                
                 actions.find(`[data-action='${ROLL_TYPE.DAMAGE}']`).remove();
                 actions.find(`[data-action='${ROLL_TYPE.VERSATILE}']`).remove();
+            }
+
+            if (message.flags[MODULE_SHORT].manualDamage) {
+                await _injectDamageButton(message, actions);
+            }
+
+            if (message.flags[MODULE_SHORT].hasDamage) {
                 await _injectDamageRoll(message, actions);
             }
 
@@ -602,9 +609,11 @@ async function _processRetroAdvButtonEvent(message, event) {
             flags: message.flags,
             rolls: message.rolls,
             flavor: message.flavor
-        });        
+        });
 
-        CoreUtility.playRollSound();
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 }
 
@@ -647,8 +656,10 @@ async function _processRetroCritButtonEvent(message, event) {
         await ChatUtility.updateChatMessage(message, {
             flags: message.flags,
             rolls: message.rolls
-        });       
+        });
 
-        CoreUtility.playRollSound();
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 }

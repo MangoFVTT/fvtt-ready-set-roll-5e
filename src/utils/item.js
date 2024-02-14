@@ -72,15 +72,15 @@ export class ItemUtility {
             await _runToolCheck(item, card);
         }
 
-        await CoreUtility.tryRollDice3D(card.rolls);
-
         card.flags[MODULE_SHORT].processed = true;
 
         ChatUtility.updateChatMessage(card, { 
             flags: card.flags
         });
 
-        CoreUtility.playRollSound();
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 
     static async runItemAction(card, action) {
@@ -101,13 +101,13 @@ export class ItemUtility {
                 break;
         }
 
-        await CoreUtility.tryRollDice3D(card.rolls);
-
         ChatUtility.updateChatMessage(card, { 
             flags: card.flags
         });
 
-        CoreUtility.playRollSound();
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 
     /**
