@@ -199,6 +199,10 @@ function _processVanillaMessage(message) {
 }
 
 async function _enforceDualRolls(message) {
+    if (message.rolls.length === 0) {
+        return;
+    }
+
     for (let i = 0; i < message.rolls.length; i++) {
         if (message.rolls[i] instanceof CONFIG.Dice.D20Roll) {
             message.rolls[i] = await RollUtility.ensureMultiRoll(message.rolls[i]);            
