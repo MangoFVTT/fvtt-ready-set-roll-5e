@@ -49,6 +49,7 @@ export class ChatUtility {
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) && !message.flags[MODULE_SHORT]) {
             _processVanillaMessage(message);
+            $(html).addClass("rsr-hide");
         }
 
         if (!message.flags[MODULE_SHORT] || !message.flags[MODULE_SHORT].quickRoll) {
@@ -193,6 +194,7 @@ function _setupCardListeners(message, html) {
 function _processVanillaMessage(message) {
     message.flags[MODULE_SHORT] = {};
     message.flags[MODULE_SHORT].quickRoll = true;
+    message.flags[MODULE_SHORT].processed = true;
 }
 
 async function _enforceDualRolls(message) {
@@ -220,28 +222,28 @@ async function _injectContent(message, type, html) {
         case ROLL_TYPE.TOOL:
             if (parent && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
-                    parent.flags[MODULE_SHORT].hasAttack = true;
+                    parent.flags[MODULE_SHORT].renderAttack = true;
                     parent.flags[MODULE_SHORT].isCritical = parent.flags[MODULE_SHORT].dual ? false : message.rolls[0].isCritical;
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
-                    parent.flags[MODULE_SHORT].hasDamage = true;
+                    parent.flags[MODULE_SHORT].renderDamage = true;
                     parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
                 }
                 
                 if (type === ROLL_TYPE.TOOL) {
-                    parent.flags[MODULE_SHORT].hasToolCheck = true;                     
+                    parent.flags[MODULE_SHORT].renderToolCheck = true;                     
                 }
                 
                 parent.flags[MODULE_SHORT].quickRoll = true;
                 parent.rolls.push(...message.rolls);
-                parent.flags[MODULE_SHORT].isContentVisible = message.isContentVisible;
 
                 ChatUtility.updateChatMessage(parent, {
                     flags: parent.flags,
                     rolls: parent.rolls,
                 });
 
+                message.flags[MODULE_SHORT].processed = false;
                 message.delete();
                 return;
             }
