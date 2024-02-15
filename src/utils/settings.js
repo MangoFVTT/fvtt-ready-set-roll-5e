@@ -13,6 +13,7 @@ export const SETTING_NAMES = {
     QUICK_DEATH_ENABLED: "enableDeathQuickRoll",
     QUICK_TOOL_ENABLED: "enableToolQuickRoll",
     QUICK_ITEM_ENABLED: "enableItemQuickRoll",
+    QUICK_VANILLA_ENABLED: "enableVanillaQuickRoll",
     ALT_ROLL_ENABLED: "enableAltQuickRoll",
     ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti",
     D20_ICONS_ENABLED: "enableD20Icons",
@@ -54,7 +55,8 @@ export class SettingsUtility {
             { name: SETTING_NAMES.QUICK_SKILL_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_DEATH_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_TOOL_ENABLED, default: true },
-            { name: SETTING_NAMES.QUICK_ITEM_ENABLED, default: true }
+            { name: SETTING_NAMES.QUICK_ITEM_ENABLED, default: true },
+            { name: SETTING_NAMES.QUICK_VANILLA_ENABLED, default: false }
         ];
 
         quickRollOptions.forEach(option => {
