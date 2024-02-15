@@ -1,7 +1,5 @@
 import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
-import { MODULE_DSN } from "../module/integration.js";
 import { ChatUtility } from "./chat.js";
-import { CoreUtility } from "./core.js";
 import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RollUtility } from "./roll.js";
@@ -26,10 +24,6 @@ export const HOOKS_DND5E = {
     RENDER_CHAT_MESSAGE: "dnd5e.renderChatMessage",    
     RENDER_ITEM_SHEET: "renderItemSheet5e",
     RENDER_ACTOR_SHEET: "renderActorSheet5e",
-}
-
-export const HOOKS_INTEGRATION = {
-    DSN_ROLL_COMPLETE: "diceSoNiceRollComplete"
 }
 
 /**
@@ -57,7 +51,6 @@ export class HooksUtility {
             );
 
             HooksUtility.registerSheetHooks();
-            HooksUtility.registerIntegrationHooks();
 
             LogUtility.log(`Loaded ${MODULE_TITLE}`);
         });
@@ -112,17 +105,13 @@ export class HooksUtility {
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.PRE_DISPLAY_CARD, async (item, card, options) => {
-                ItemUtility.setRenderFlags(item, card);
-            });
-
-            Hooks.on(HOOKS_DND5E.DISPLAY_CARD, async (item, card) => {
-                ItemUtility.runItemActions(item, card);
-            });
-
             Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (item, config) => {
                 ItemUtility.processItemDamageConfig(item, config);
                 return true;
+            });
+
+            Hooks.on(HOOKS_DND5E.DISPLAY_CARD, async (item, card) => {
+                await ItemUtility.runItemActions(card);
             });
         }
     }
@@ -154,9 +143,5 @@ export class HooksUtility {
                 SheetUtility.setAutoHeightOnSheet(this);
             }
         }
-    }
-
-    static registerIntegrationHooks() {
-        LogUtility.log("Registering integration hooks");
     }
 }

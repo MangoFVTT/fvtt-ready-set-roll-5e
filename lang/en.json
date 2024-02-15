@@ -15,8 +15,6 @@
             "enableItemQuickRoll.hint": "When clicking on an item's image (weapons, spells, features, etc.), automatically roll to chat instead of using the normal chat output. This functionality can be bypassed by holding Alt when clicking.",
             "enableAltQuickRoll.name": "Enable Alternate Roll for Items",
             "enableAltQuickRoll.hint": "When Alt-clicking on an item's image, output a different quick roll which can be configured separately, replacing the ability to bypass quick rolling for items. This setting has no effect if item quick rolling is disabled.",
-            "enableVanillaQuickRoll.name": "Enable Content on Vanilla Rolls",
-            "enableVanillaQuickRoll.hint": "When outputting a vanilla roll, attempt to still apply module content, functionality, and styling. This setting will apply for any vanilla rolls, even those made by bypassing a quick roll by holding Alt.",
             "alwaysRollMulti.name": "Always Roll Multiple Dice",
             "alwaysRollMulti.hint": "When outputting a quick roll, always roll two dice (or three for Elven Accuracy) even when advantage/disadvantage is not applied.",
             "manualDamageMode.name": "Roll Damage Manually",
