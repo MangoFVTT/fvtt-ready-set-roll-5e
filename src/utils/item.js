@@ -87,6 +87,7 @@ export class ItemUtility {
     static async runItemActions(item, card) {
         if (card.flags[MODULE_SHORT].renderAttack && item.hasAttack) {
             const attackRoll = await ItemUtility.getAttackFromCard(item, card);
+            card.flags[MODULE_SHORT].isCritical = card.flags[MODULE_SHORT].dual ? false : attackRoll.isCritical
             card.rolls.push(attackRoll);
         }
 
@@ -106,8 +107,12 @@ export class ItemUtility {
 
         ChatUtility.updateChatMessage(card, { 
             flags: card.flags,
-            rolls: card.rolls
+            rolls: card.rolls,
         });
+
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 
     static async runItemAction(item, card, action) {

@@ -224,18 +224,22 @@ async function _injectContent(message, type, html) {
             if (parent && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
-                    parent.flags[MODULE_SHORT].isCritical = parent.flags[MODULE_SHORT].dual ? false : message.rolls[0].isCritical;
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
                     parent.flags[MODULE_SHORT].renderDamage = true;
                     parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+                    parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
                 }
                 
                 if (type === ROLL_TYPE.TOOL) {
                     parent.flags[MODULE_SHORT].renderToolCheck = true;                     
                 }
                 
+                if (game.dice3d) {
+                    await CoreUtility.waitUntil(() => !message._dice3danimating);
+                }
+
                 parent.flags[MODULE_SHORT].quickRoll = true;
                 parent.rolls.push(...message.rolls);
 
@@ -261,12 +265,6 @@ async function _injectContent(message, type, html) {
             html.find('.dice-total').replaceWith(render);
             html.find('.dice-tooltip').prepend(html.find('.dice-formula'));
             break;
-        case ROLL_TYPE.ATTACK:
-        case ROLL_TYPE.DAMAGE:
-            if (!parent) {
-                return;
-            }
-            return;
         case ROLL_TYPE.ITEM:
             const actions = html.find('.card-buttons');
 
