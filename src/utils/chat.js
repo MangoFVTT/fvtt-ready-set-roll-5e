@@ -231,6 +231,11 @@ async function _injectContent(message, type, html) {
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
+                    // Skip if damage enricher
+                    if (!message.flags.dnd5e?.roll.itemId) {
+                        return;
+                    }
+
                     parent.flags[MODULE_SHORT].renderDamage = true;
                     parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
                     parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
