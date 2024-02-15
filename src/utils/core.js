@@ -38,11 +38,13 @@ export class CoreUtility {
 
         switch(mode) {
             case 0:
-                return event.shiftKey ? 1 : (event.ctrlKey || event.metaKey ? -1 : 0);
+                return event.shiftKey ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE 
+                    : (event.ctrlKey || event.metaKey ? CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE : CONFIG.Dice.D20Roll.ADV_MODE.NORMAL);
             case 1:
-                return event.shiftKey ? -1 : (event.ctrlKey || event.metaKey ? 1 : 0);
+                return event.shiftKey ? CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE
+                    : (event.ctrlKey || event.metaKey ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE  : CONFIG.Dice.D20Roll.ADV_MODE.NORMAL);
             default:
-                return 0;
+                return CONFIG.Dice.D20Roll.ADV_MODE.NORMAL;
         }
     }
 
@@ -62,7 +64,7 @@ export class CoreUtility {
      * @param {Roll} rolls The roll objects to roll 3D dice for.
      * @returns {Promise<Boolean>} Whether or not 3D dice were actually rolled.
      */
-    static async tryRollDice3D(rolls) {
+    static async tryRollDice3D(rolls, messageID = null) {
         rolls = Array.isArray(rolls) ? rolls : [ rolls ];
 
         const promises = [];
@@ -73,7 +75,7 @@ export class CoreUtility {
 
             if (game.dice3d && hasDice) {
                 const whisperData = CoreUtility.getWhisperData();
-                promises.push(Promise.resolve(game.dice3d.showForRoll(roll, game.user, true, whisperData.whisper, whisperData.blind || false, null, whisperData.speaker)));
+                promises.push(Promise.resolve(game.dice3d.showForRoll(roll, game.user, true, whisperData.whisper, whisperData.blind || false, messageID, whisperData.speaker)));
             }
 		});
 
@@ -89,6 +91,17 @@ export class CoreUtility {
      */
     static hasModule(name) {
         return game.modules.get(name)?.active;
+    }
+
+    static isVisible(chatData) {
+        const whisper = chatData.whisper || [];
+        const isBlind = whisper.length && chatData.blind;
+
+        if ( whisper.length ) {
+            return whisper.includes(game.user.id) || (chatData.user.isSelf && !isBlind);
+        } 
+
+        return true;
     }
 
     /**
@@ -116,7 +129,33 @@ export class CoreUtility {
 		return { rollMode, whisper, blind }
 	}
 
+    /**
+     * Gets the default configured dice sound from Foundry VTT config.
+     * @returns 
+     */
+    static getRollSound() {
+        let sound = undefined;
+
+        if (!CoreUtility._lockRollSound && SettingsUtility.getSettingValue(SETTING_NAMES.DICE_SOUNDS_ENABLED)) {
+            CoreUtility._lockRollSound = true;
+            setTimeout(() => CoreUtility._lockRollSound = false, 300);
+            
+            sound = CONFIG.sounds.dice;
+        }
+
+        return { sound }
+    }
+
     static playRollSound() {
         AudioHelper.play({src: CONFIG.sounds.dice });
+    }
+
+    static async waitUntil(condition) {
+        const poll = resolve => {
+            if (condition()) resolve();
+            else setTimeout(_ => poll(resolve), 100);
+        }
+
+        return new Promise(poll);
     }
 }

@@ -1,7 +1,8 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { MODULE_DSN } from "../module/integration.js";
 import { TEMPLATE } from "../module/templates.js";
 import { CoreUtility } from "./core.js";
-import { ItemUtility } from "./item.js";
+import { ITEM_TYPE, ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RenderUtility } from "./render.js";
 import { ROLL_STATE, ROLL_TYPE, RollUtility } from "./roll.js";
@@ -37,25 +38,29 @@ export class ChatUtility {
      * @param {ChatMessage} message The chat message to process.
      * @param {JQuery} html The object data for the chat message.
      */
-    static processChatMessage(message, html) {
+    static async processChatMessage(message, html) {
         if (!message || !html) {
             return;
         }
 
-        if (!message.flags || !message.flags[MODULE_SHORT]) {
+        if (!message.flags || Object.keys(message.flags).length === 0) {
             return;
         }
 
-        if (!message.flags[MODULE_SHORT].quickRoll) {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) && !message.flags[MODULE_SHORT]) {
+            _processVanillaMessage(message);
+            $(html).addClass("rsr-hide");
+        }
+
+        if (!message.flags[MODULE_SHORT] || !message.flags[MODULE_SHORT].quickRoll) {
             return;
         }
+
+        const type = ChatUtility.getMessageType(message);
 
         // Hide the message if we haven't yet finished processing RSR content
         if (!message.flags[MODULE_SHORT].processed) {
             $(html).addClass("rsr-hide");
-            return;
-        } else {
-            $(html).removeClass("rsr-hide");
         }
 
         const content = $(html).find('.message-content');
@@ -66,11 +71,11 @@ export class ChatUtility {
         
         // This will force dual rolls on non-item messages, since this is the only place we can catch this before it is displayed.
         if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
-            _enforceDualRolls(message)
+            await _enforceDualRolls(message);
             return;
         }
-        
-        _injectContent(message, content);
+
+        await _injectContent(message, type, content);
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
             // Setup hover buttons when the message is actually hovered(for optimisation).
@@ -84,6 +89,12 @@ export class ChatUtility {
                 }
             });
         }
+
+        if (message.flags[MODULE_SHORT].processed) {
+            $(html).removeClass("rsr-hide");
+        }
+        
+        ui.chat.scrollBottom();
     }
 
     /**
@@ -91,9 +102,9 @@ export class ChatUtility {
      * @param {ChatMessage} message The chat message to update.
      * @param {Object} update The object data for the message update.
      */
-    static updateChatMessage(message, update = {}, context = {}) {
+    static async updateChatMessage(message, update = {}, context = {}) {
         if (message instanceof ChatMessage) {
-            message.update(update, context);
+            await message.update(update, context);
         }
     }
 
@@ -102,7 +113,8 @@ export class ChatUtility {
     }
 
     static isMessageMultiRoll(message) {
-        return (message.flags[MODULE_SHORT].advantage || message.flags[MODULE_SHORT].disadvantage || message.flags[MODULE_SHORT].dual) ?? false;
+        return (message.flags[MODULE_SHORT].advantage || message.flags[MODULE_SHORT].disadvantage || message.flags[MODULE_SHORT].dual
+            || (message.rolls[0] instanceof CONFIG.Dice.D20Roll && message.rolls[0].options.advantageMode !== CONFIG.Dice.D20Roll.ADV_MODE.NORMAL)) ?? false;
     }
 
     static isMessageCritical(message) {
@@ -179,7 +191,18 @@ function _setupCardListeners(message, html) {
     }
 }
 
+function _processVanillaMessage(message) {
+    message.flags[MODULE_SHORT] = {};
+    message.flags[MODULE_SHORT].quickRoll = true;
+    message.flags[MODULE_SHORT].processed = true;
+    message.flags[MODULE_SHORT].useConfig = false;
+}
+
 async function _enforceDualRolls(message) {
+    if (message.rolls.length === 0) {
+        return;
+    }
+
     for (let i = 0; i < message.rolls.length; i++) {
         if (message.rolls[i] instanceof CONFIG.Dice.D20Roll) {
             message.rolls[i] = await RollUtility.ensureMultiRoll(message.rolls[i]);            
@@ -188,22 +211,64 @@ async function _enforceDualRolls(message) {
 
     message.flags[MODULE_SHORT].dual = true;
 
-    ChatUtility.updateChatMessage(message, { 
+    await ChatUtility.updateChatMessage(message, { 
         flags: message.flags,
         rolls: message.rolls
     });
 }
 
-async function _injectContent(message, html) {
+async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
-    const type = ChatUtility.getMessageType(message);
+    const parent = game.messages.get(message.flags.dnd5e?.originatingMessage);
 
-    switch (type) {
+    switch (type) {        
+        case ROLL_TYPE.ATTACK:
+        case ROLL_TYPE.DAMAGE:
+        case ROLL_TYPE.TOOL:
+            if (parent && message.isOwner) {
+                if (type === ROLL_TYPE.ATTACK) {
+                    parent.flags[MODULE_SHORT].renderAttack = true;
+                }
+
+                if (type === ROLL_TYPE.DAMAGE) {
+                    // Skip if damage enricher
+                    if (!message.flags.dnd5e?.roll.itemId) {
+                        return;
+                    }
+
+                    parent.flags[MODULE_SHORT].renderDamage = true;
+                    parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+                    parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
+                }
+                
+                if (type === ROLL_TYPE.TOOL) {
+                    parent.flags[MODULE_SHORT].renderToolCheck = true;                     
+                }
+                
+                if (game.dice3d) {
+                    await CoreUtility.waitUntil(() => !message._dice3danimating);
+                }
+
+                parent.flags[MODULE_SHORT].quickRoll = true;
+                parent.rolls.push(...message.rolls);
+
+                ChatUtility.updateChatMessage(parent, {
+                    flags: parent.flags,
+                    rolls: parent.rolls,
+                });
+
+                message.flags[MODULE_SHORT].processed = false;
+                message.delete();
+                return;
+            }
         case ROLL_TYPE.SKILL:
         case ROLL_TYPE.ABILITY_SAVE:
         case ROLL_TYPE.ABILITY_TEST:
         case ROLL_TYPE.DEATH_SAVE:
-        case ROLL_TYPE.TOOL:
+            if (!message.isContentVisible) {
+                return;
+            }
+
             const roll = message.rolls[0];
             const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: type })
             html.find('.dice-total').replaceWith(render);
@@ -214,6 +279,18 @@ async function _injectContent(message, html) {
 
             // Remove any redundant dice roll elements that were added forcefully by dnd5e system
             html.find('.dice-roll').remove();
+
+            if (!CoreUtility.isVisible(message)) {
+                const ChatMessage5e = CONFIG.ChatMessage.documentClass;
+                const chatData = await (new Roll("0d0")).toMessage({}, {
+                    rollMode: game.settings.get("core", "rollMode"),
+                    create: false 
+                });
+                const rollHTML = await new ChatMessage5e(chatData).getHTML();
+                html.parent().find('.message-header').replaceWith(rollHTML.find('.message-header'));
+                html.replaceWith(rollHTML.find('.message-content'));
+                return;
+            }
 
             if (message.flags[MODULE_SHORT].hideSave) {                
                 actions.find(`[data-action='${ROLL_TYPE.ABILITY_SAVE}']`).remove();
@@ -227,12 +304,12 @@ async function _injectContent(message, html) {
                 html.find('.card-footer').remove();
             }
 
-            if (message.flags[MODULE_SHORT].rolls?.attack) {
+            if (message.flags[MODULE_SHORT].renderAttack || message.flags[MODULE_SHORT].renderAttack === false) {
                 actions.find(`[data-action='${ROLL_TYPE.ATTACK}']`).remove();
                 await _injectAttackRoll(message, actions);
             }
-
-            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].rolls?.damage) {                
+            
+            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].renderDamage) {                
                 actions.find(`[data-action='${ROLL_TYPE.DAMAGE}']`).remove();
                 actions.find(`[data-action='${ROLL_TYPE.VERSATILE}']`).remove();
             }
@@ -241,7 +318,7 @@ async function _injectContent(message, html) {
                 await _injectDamageButton(message, actions);
             }
 
-            if (message.flags[MODULE_SHORT].rolls?.damage) {
+            if (message.flags[MODULE_SHORT].renderDamage) {
                 await _injectDamageRoll(message, actions);
             }
 
@@ -249,30 +326,31 @@ async function _injectContent(message, html) {
                 await _injectApplyDamageButtons(message, html);
             }
 
-            if (message.flags[MODULE_SHORT].rolls?.toolCheck) {
+            if (message.flags[MODULE_SHORT].renderToolCheck) {
                 actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
                 await _injectToolCheckRoll(message, actions);
             }
 
             break;
+        default:
+            break;
     }
 
     //_setupRerollDice(html);
     _setupCardListeners(message, html);
-
-    ui.chat.scrollBottom();
 }
 
 async function _injectAttackRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
+    const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
 
-    const roll = CONFIG.Dice.D20Roll.fromData(message.flags[MODULE_SHORT].rolls[ROLL_TYPE.ATTACK]);
-    roll.resetFormula();
+    if (!roll) return;
+    
+    RollUtility.resetRollGetters(roll);    
 
-    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK })
-
-    const chatData = await roll.toMessage({}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
+    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
+    const chatData = await roll.toMessage({}, { create: false });   
+    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');    
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
 
@@ -280,6 +358,7 @@ async function _injectAttackRoll(message, html) {
 
     const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
     {
+        section: `rsr-section-${ROLL_TYPE.ATTACK}`,
         title: CoreUtility.localize("DND5E.Attack"),
         icon: "<dnd5e-icon src=\"systems/dnd5e/icons/svg/trait-weapon-proficiencies.svg\"></dnd5e-icon>",
         subtitle: ammo ? `${CoreUtility.localize("DND5E.ConsumableAmmo")} - ${ammo}` : undefined
@@ -288,38 +367,67 @@ async function _injectAttackRoll(message, html) {
     $(sectionHTML).append(rollHTML);
     sectionHTML.insertBefore(html);
 
-    message.rolls.push(roll);
-    message._enrichAttackTargets(html.closest('.chat-message')[0]);
+    // Remove and re-add enrichers for hit/miss indication
+    const card = html.closest('.chat-message');
+    card.find('.evaluation').remove();
+    message._enrichAttackTargets(card[0]);
+}
+
+async function _injectToolCheckRoll(message, html) {
+    const ChatMessage5e = CONFIG.ChatMessage.documentClass;
+    const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
+
+    if (!roll) return;
+
+    RollUtility.resetRollGetters(roll);
+
+    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.TOOL_CHECK });
+    const chatData = await roll.toMessage({}, { create: false });
+    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
+    rollHTML.find('.dice-total').replaceWith(render);
+    rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
+
+    const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
+    {       
+        section: `rsr-section-${ROLL_TYPE.TOOL}`,
+        title: CoreUtility.localize("DND5E.UseItem", { item: message.flags[MODULE_SHORT].name ?? CoreUtility.localize("ITEM.TypeTool") }),
+        icon: "<i class=\"fas fa-hammer\"></i>",
+    }));
+    
+    $(sectionHTML).append(rollHTML);
+    sectionHTML.insertBefore(html);
 }
 
 async function _injectDamageRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
+    const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
 
-    const rolls = []
-    for (const roll of message.flags[MODULE_SHORT].rolls[ROLL_TYPE.DAMAGE]) {
-        rolls.push(CONFIG.Dice.DamageRoll.fromData(roll));
-    }
+    if (!rolls || rolls.length === 0) return;
 
     const chatData = await CONFIG.Dice.DamageRoll.toMessage(rolls, {}, { create: false });
     const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
     rollHTML.find('.dice-result').addClass('rsr-damage');
 
-    const tooltip = rollHTML.find('.dice-tooltip .tooltip-part')
+    if (message.flags[MODULE_SHORT].context) {
+        const tooltip = rollHTML.find('.dice-tooltip .tooltip-part')
 
-    await tooltip.each(async (i, el) => {
-        if (message.flags[MODULE_SHORT].context[i] && message.flags[MODULE_SHORT].context[i] !== "") {
-            const contextHTML = await RenderUtility.render(TEMPLATE.CONTEXT, { context: message.flags[MODULE_SHORT].context[i]});
-            $(el).prepend(contextHTML);
-        }
-    })
+        await tooltip.each(async (i, el) => {
+            if (message.flags[MODULE_SHORT].context[i] && message.flags[MODULE_SHORT].context[i] !== "") {
+                const contextHTML = await RenderUtility.render(TEMPLATE.CONTEXT, { context: message.flags[MODULE_SHORT].context[i]});
+                $(el).prepend(contextHTML);
+            }
+        });
+    }
 
     const header = message.flags[MODULE_SHORT].isHealing
-        ? {
+        ? {            
+            section: `rsr-section-${ROLL_TYPE.DAMAGE}`,
             title: CoreUtility.localize("DND5E.Healing"),
             icon: "<dnd5e-icon src=\"systems/dnd5e/icons/svg/damage/healing.svg\"></dnd5e-icon>"
         } 
         : {
+            section: `rsr-section-${ROLL_TYPE.DAMAGE}`,
             title: `${CoreUtility.localize("DND5E.Damage")} ${message.flags[MODULE_SHORT].versatile ? "(" + CoreUtility.localize("DND5E.Versatile") + ")": ""}`,
             icon: "<i class=\"fas fa-burst\"></i>",
             subtitle: message.flags[MODULE_SHORT].isCritical ? `${CoreUtility.localize("DND5E.CriticalHit")}!` : undefined,
@@ -371,27 +479,6 @@ async function _injectApplyDamageButtons(message, html) {
             $(el).hover(_onTooltipHover.bind(this, message, $(el)), _onTooltipHoverEnd.bind(this, $(el)));
         })
     }
-}
-
-async function _injectToolCheckRoll(message, html) {
-    const ChatMessage5e = CONFIG.ChatMessage.documentClass;
-
-    const roll = CONFIG.Dice.D20Roll.fromData(message.flags[MODULE_SHORT].rolls[ROLL_TYPE.TOOL_CHECK]);
-    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll })
-
-    const chatData = await roll.toMessage({}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
-    rollHTML.find('.dice-total').replaceWith(render);
-    rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
-
-    const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
-    { 
-        title: CoreUtility.localize("DND5E.UseItem", { item: message.flags[MODULE_SHORT].name ?? CoreUtility.localize("ITEM.TypeTool") }),
-        icon: "<i class=\"fas fa-hammer\"></i>",
-    }));
-    
-    $(sectionHTML).append(rollHTML);
-    sectionHTML.insertBefore(html);
 }
 
 /**
@@ -457,8 +544,9 @@ async function _processDamageButtonEvent(message, event) {
     event.stopPropagation();
 
     message.flags[MODULE_SHORT].manualDamage = false
+    message.flags[MODULE_SHORT].renderDamage = true;  
 
-    await ItemUtility.runItemAction(message, ROLL_TYPE.DAMAGE);
+    await ItemUtility.runItemAction(null, message, ROLL_TYPE.DAMAGE);
 }
 
 /**
@@ -535,35 +623,24 @@ async function _processRetroAdvButtonEvent(message, event) {
         message.flags[MODULE_SHORT].advantage = state === ROLL_STATE.ADV;
         message.flags[MODULE_SHORT].disadvantage = state === ROLL_STATE.DIS;
 
-        let roll;
+        const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
+        await RollUtility.upgradeRoll(roll, state);
 
-        switch (key) {
-            case ROLL_TYPE.SKILL:
-            case ROLL_TYPE.ABILITY_SAVE:
-            case ROLL_TYPE.ABILITY_TEST:
-            case ROLL_TYPE.DEATH_SAVE:
-            case ROLL_TYPE.TOOL:
-                roll = message.rolls[0];
-                message.rolls[0] = await RollUtility.upgradeRoll(roll, state);
-                message.flavor += message.rolls[0].hasAdvantage 
-                    ? ` (${CoreUtility.localize("DND5E.Advantage")})` 
-                    : ` (${CoreUtility.localize("DND5E.Disadvantage")})`;
-                break;
-            case ROLL_TYPE.ATTACK:
-                roll = CONFIG.Dice.D20Roll.fromData(message.flags[MODULE_SHORT].rolls.attack);
-                message.flags[MODULE_SHORT].rolls.attack = await RollUtility.upgradeRoll(roll, state);                
-                break;
-            default:
-                return;
+        if (key !== ROLL_TYPE.ATTACK && key !== ROLL_TYPE.TOOL_CHECK) {
+            message.flavor += message.rolls[0].hasAdvantage 
+                ? ` (${CoreUtility.localize("DND5E.Advantage")})` 
+                : ` (${CoreUtility.localize("DND5E.Disadvantage")})`;
         }
 
-        ChatUtility.updateChatMessage(message, { 
+        await ChatUtility.updateChatMessage(message, { 
             flags: message.flags,
             rolls: message.rolls,
             flavor: message.flavor
-        });        
+        });
 
-        CoreUtility.playRollSound();
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 }
 
@@ -583,11 +660,11 @@ async function _processRetroCritButtonEvent(message, event) {
     if (action === "rsr-retro") {
         message.flags[MODULE_SHORT].isCritical = true;
 
-        const rolls = message.flags[MODULE_SHORT].rolls[ROLL_TYPE.DAMAGE];
+        const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
         const crits = await ItemUtility.getDamageFromCard(null, message);
 
         for (let i = 0; i < rolls.length; i++) {
-            const baseRoll = CONFIG.Dice.DamageRoll.fromData(rolls[i]);
+            const baseRoll = rolls[i];
             const critRoll = crits[i]
 
             for (const [j, term] of baseRoll.terms.entries()) {
@@ -597,16 +674,19 @@ async function _processRetroCritButtonEvent(message, event) {
 
                 critRoll.terms[j].results.splice(0, term.results.length, ...term.results);
             }
+
+            message.rolls[message.rolls.indexOf(baseRoll)] = critRoll;
         }
 
         await CoreUtility.tryRollDice3D(crits);
 
-        message.flags[MODULE_SHORT].rolls[ROLL_TYPE.DAMAGE] = crits;
+        await ChatUtility.updateChatMessage(message, {
+            flags: message.flags,
+            rolls: message.rolls
+        });
 
-        ChatUtility.updateChatMessage(message, {
-            flags: message.flags
-        });       
-
-        CoreUtility.playRollSound();
+        if (!game.dice3d) {
+            CoreUtility.playRollSound();
+        }
     }
 }
