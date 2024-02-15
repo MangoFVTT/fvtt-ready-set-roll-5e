@@ -195,6 +195,7 @@ function _processVanillaMessage(message) {
     message.flags[MODULE_SHORT] = {};
     message.flags[MODULE_SHORT].quickRoll = true;
     message.flags[MODULE_SHORT].processed = true;
+    message.flags[MODULE_SHORT].useConfig = false;
 }
 
 async function _enforceDualRolls(message) {

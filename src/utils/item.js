@@ -39,6 +39,7 @@ export class ItemUtility {
         ItemUtility.ensureFlagsOnItem(item);
 
         card.flags[MODULE_SHORT].name = item.name;
+        card.flags[MODULE_SHORT].useConfig = true;
         card.flags[MODULE_SHORT].isHealing = item.isHealing;
 
         if (!ItemUtility.getFlagValueFromItem(item, "quickFooter", card.flags[MODULE_SHORT].altRoll)) {
@@ -179,7 +180,8 @@ export class ItemUtility {
                 altRoll: card.flags[MODULE_SHORT].altRoll,
                 messageData: {
                     "flags.dnd5e.originatingMessage": card.id,
-                    "flags.rsr5e.quickRoll": true
+                    "flags.rsr5e.quickRoll": true,
+                    "flags.rsr5e.useConfig": card.flags[MODULE_SHORT].useConfig
                 }
             }
         });
@@ -192,6 +194,10 @@ export class ItemUtility {
      */
     static processItemDamageConfig(item, config) {
         if (!config.messageData[`flags.${MODULE_SHORT}.quickRoll`]) {
+            return;
+        }
+
+        if (!config.messageData[`flags.${MODULE_SHORT}.useConfig`]) {
             return;
         }
         
