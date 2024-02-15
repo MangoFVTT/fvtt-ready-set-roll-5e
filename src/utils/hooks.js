@@ -158,11 +158,5 @@ export class HooksUtility {
 
     static registerIntegrationHooks() {
         LogUtility.log("Registering integration hooks");
-
-        if (CoreUtility.hasModule(MODULE_DSN)) {
-            Hooks.on(HOOKS_INTEGRATION.DSN_ROLL_COMPLETE, (id) => {
-                console.log(id);
-            });
-        }
     }
 }
