@@ -57,7 +57,8 @@ export class RollUtility {
         config.disadvantage = advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
 
         config.messageData[`flags.${MODULE_SHORT}`] = { 
-            quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore
+            quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore,
+            processed: true
         };
     }
 

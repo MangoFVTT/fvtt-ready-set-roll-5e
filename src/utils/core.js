@@ -93,6 +93,17 @@ export class CoreUtility {
         return game.modules.get(name)?.active;
     }
 
+    static isVisible(chatData) {
+        const whisper = chatData.whisper || [];
+        const isBlind = whisper.length && chatData.blind;
+
+        if ( whisper.length ) {
+            return whisper.includes(game.user.id) || (chatData.user.isSelf && !isBlind);
+        } 
+
+        return true;
+    }
+
     /**
      * Gets data about whispers and roll mode for use in rendering messages.
      * @param {*} rollMode 

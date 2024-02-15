@@ -1,4 +1,5 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { MODULE_DSN } from "../module/integration.js";
 import { ChatUtility } from "./chat.js";
 import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
@@ -26,11 +27,7 @@ export const ITEM_TYPE = {
  * Utility class to handle setting and retrieving information to/from items.
  */
 export class ItemUtility {
-    /**
-     * Runs item actions and sets certain render flags depending on the item quick roll config.
-     * @param {ChatMessage} card The item card from which to retrieve the item and on which to set flags.
-     */
-    static async runItemActions(card) {
+    static setRenderFlags(item, card) {
         if (!card.flags || !card.flags[MODULE_SHORT]) {
             return;
         }
@@ -38,8 +35,7 @@ export class ItemUtility {
         if (!card.flags[MODULE_SHORT].quickRoll) {
             return;
         }
-
-        const item = await _ensureItemFromCard(card);
+        
         ItemUtility.ensureFlagsOnItem(item);
 
         card.flags[MODULE_SHORT].name = item.name;
@@ -58,32 +54,62 @@ export class ItemUtility {
         }
 
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", card.flags[MODULE_SHORT].altRoll)) {
-            await _runAttackRoll(item, card);
+            card.flags[MODULE_SHORT].renderAttack = true;            
+            card.flags[MODULE_SHORT].consume = _getConsumeTargetFromItem(item)?.name;
+            card.flags.dnd5e.targets = item._formatAttackTargets();
+        } else if (item.hasAttack) {
+            card.flags[MODULE_SHORT].renderAttack = false;
         }
         
         const manualDamageMode = SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE);
         card.flags[MODULE_SHORT].manualDamage = item.hasDamage && (manualDamageMode === 2 || (manualDamageMode === 1 && item.hasAttack));
 
         if (!card.flags[MODULE_SHORT].manualDamage) {
-            await _runDamageRoll(item, card);
-        }        
+            card.flags[MODULE_SHORT].renderDamage = true;            
+            card.flags[MODULE_SHORT].versatile = item.isVersatile ? ItemUtility.getFlagValueFromItem(item, "quickVersatile", card.flags[MODULE_SHORT].altRoll) : false;
+            card.flags[MODULE_SHORT].context = [];
+                
+            const damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", card.flags[MODULE_SHORT].altRoll ?? false)
+        
+            for (let i = 0; i < Object.keys(damageFlags).length; i++) {
+                if (damageFlags[i] ?? true) {
+                    card.flags[MODULE_SHORT].context.push(ItemUtility.getDamageContextFromItem(item, i));
+                }
+            }
+        }
 
         if (item.type === ITEM_TYPE.TOOL) {
-            await _runToolCheck(item, card);
+            card.flags[MODULE_SHORT].renderToolCheck = true;
         }
+    }
+
+    static async runItemActions(item, card) {
+        if (card.flags[MODULE_SHORT].renderAttack && item.hasAttack) {
+            const attackRoll = await ItemUtility.getAttackFromCard(item, card);
+            card.rolls.push(attackRoll);
+        }
+
+        if (card.flags[MODULE_SHORT].renderToolCheck && item.type !== ITEM_TYPE.TOOL) {
+            const toolCheckRoll = await ItemUtility.getToolCheckFromCard(item, card);
+            card.rolls.push(toolCheckRoll);
+        }
+
+        if (card.flags[MODULE_SHORT].renderDamage && item.hasDamage) {
+            const damageRolls = await ItemUtility.getDamageFromCard(item, card);
+            card.rolls.push(...damageRolls);
+        }
+
+        await CoreUtility.tryRollDice3D(card.rolls);
 
         card.flags[MODULE_SHORT].processed = true;
 
         ChatUtility.updateChatMessage(card, { 
-            flags: card.flags
+            flags: card.flags,
+            rolls: card.rolls
         });
-
-        if (!game.dice3d) {
-            CoreUtility.playRollSound();
-        }
     }
 
-    static async runItemAction(card, action) {
+    static async runItemAction(item, card, action) {
         if (!card.flags || !card.flags[MODULE_SHORT]) {
             return;
         }
@@ -91,23 +117,72 @@ export class ItemUtility {
         if (!card.flags[MODULE_SHORT].quickRoll) {
             return;
         }
-
-        const item = await _ensureItemFromCard(card);
+    
         ItemUtility.ensureFlagsOnItem(item);
 
         switch (action) {
             case ROLL_TYPE.DAMAGE:
-                await _runDamageRoll(item, card);
+                const damageRolls = await ItemUtility.getDamageFromCard(item, card);
+                await CoreUtility.tryRollDice3D(damageRolls);
+                card.rolls.push(...damageRolls);
                 break;
         }
 
         ChatUtility.updateChatMessage(card, { 
-            flags: card.flags
+            flags: card.flags,
+            rolls: card.rolls
         });
+    }
 
-        if (!game.dice3d) {
-            CoreUtility.playRollSound();
-        }
+    static async getAttackFromCard(item, card) {
+        item ??= await _ensureItemFromCard(card);
+
+        return item.rollAttack({
+            spellLevel: card.flags.dnd5e.use.spellLevel,
+            advantage: card.flags[MODULE_SHORT].advantage ?? false,
+            disadvantage: card.flags[MODULE_SHORT].disadvantage ?? false,
+            fastForward: true,
+            chatMessage: false,
+            messageData: {
+                "flags.dnd5e.originatingMessage": card.id,
+                "flags.rsr5e.quickRoll": true
+            }
+        });
+    }
+
+    static async getToolCheckFromCard(item, card) {
+        item ??= await _ensureItemFromCard(card);
+
+        return item.rollToolCheck({
+            advantage: card.flags[MODULE_SHORT].advantage ?? false,
+            disadvantage: card.flags[MODULE_SHORT].disadvantage ?? false,
+            fastForward: true,
+            chatMessage: false,
+            messageData: {
+                "flags.dnd5e.originatingMessage": card.id,
+                "flags.rsr5e.quickRoll": true
+            }
+        });
+    }
+
+    static async getDamageFromCard(item, card) {
+        item ??= await _ensureItemFromCard(card);
+
+        return item.rollDamage({
+            critical: card.flags[MODULE_SHORT].isCritical ?? false,
+            spellLevel: card.flags.dnd5e.use.spellLevel,
+            versatile: card.flags[MODULE_SHORT].versatile,
+            options: {
+                fastForward: true,
+                chatMessage: false,
+                returnMultiple: true,
+                altRoll: card.flags[MODULE_SHORT].altRoll,
+                messageData: {
+                    "flags.dnd5e.originatingMessage": card.id,
+                    "flags.rsr5e.quickRoll": true
+                }
+            }
+        });
     }
 
     /**
@@ -207,57 +282,6 @@ export class ItemUtility {
         return false;
     }
 
-    static async getAttackFromCard(item, card, chatMessage = true) {
-        item ??= await _ensureItemFromCard(card);
-
-        return item.rollAttack({
-            spellLevel: card.flags.dnd5e.use.spellLevel,
-            advantage: card.flags[MODULE_SHORT].advantage ?? false,
-            disadvantage: card.flags[MODULE_SHORT].disadvantage ?? false,
-            fastForward: true,
-            chatMessage,
-            messageData: {
-                "flags.dnd5e.originatingMessage": card.id,
-                "flags.rsr5e.quickRoll": true
-            }
-        });
-    }
-
-    static async getToolCheckFromCard(item, card, chatMessage = true) {
-        item ??= await _ensureItemFromCard(card);
-
-        await item.rollToolCheck({
-            advantage: card.flags[MODULE_SHORT].advantage ?? false,
-            disadvantage: card.flags[MODULE_SHORT].disadvantage ?? false,
-            fastForward: true,
-            chatMessage,
-            messageData: {
-                "flags.dnd5e.originatingMessage": card.id,
-                "flags.rsr5e.quickRoll": true
-            }
-        });
-    }
-
-    static async getDamageFromCard(item, card, chatMessage = true) {
-        item ??= await _ensureItemFromCard(card);
-
-        return item.rollDamage({
-            critical: card.flags[MODULE_SHORT].isCritical ?? false,
-            spellLevel: card.flags.dnd5e.use.spellLevel,
-            versatile: card.flags[MODULE_SHORT].versatile,
-            options: {
-                fastForward: true,
-                chatMessage,
-                returnMultiple: true,
-                altRoll: card.flags[MODULE_SHORT].altRoll,
-                messageData: {
-                    "flags.dnd5e.originatingMessage": card.id,
-                    "flags.rsr5e.quickRoll": true
-                }
-            }
-        });
-    }
-
     /**
      * Gets a specific context field for a given damage field index.
      * @param {Item} item The item from which to retrieve the context value. 
@@ -294,44 +318,6 @@ async function _ensureItemFromCard(card) {
     const storedData = card.getFlag("dnd5e", "itemData");
 
     return storedData && actor ? await Item5e.create(storedData, { parent: actor, temporary: true }) : actor?.items.get(itemId);
-}
-
-async function _runAttackRoll(item, card) {
-    if (!item.hasAttack) {
-        return;
-    }
-
-    card.flags[MODULE_SHORT].consume = _getConsumeTargetFromItem(item)?.name;
-    card.flags.dnd5e.targets = item._formatAttackTargets();
-
-    await ItemUtility.getAttackFromCard(item, card);
-}
-
-async function _runDamageRoll(item, card) {
-    if (!item.hasDamage) {
-        return;
-    }
-
-    card.flags[MODULE_SHORT].versatile = item.isVersatile ? ItemUtility.getFlagValueFromItem(item, "quickVersatile", card.flags[MODULE_SHORT].altRoll) : false;
-    card.flags[MODULE_SHORT].context = [];
-
-    await ItemUtility.getDamageFromCard(item, card);
-
-    const damageFlags = ItemUtility.getFlagValueFromItem(item, "quickDamage", card.flags[MODULE_SHORT].altRoll ?? false)
-
-    for (let i = 0; i < Object.keys(damageFlags).length; i++) {
-        if (damageFlags[i] ?? true) {
-            card.flags[MODULE_SHORT].context.push(ItemUtility.getDamageContextFromItem(item, i));
-        }
-    }
-}
-
-async function _runToolCheck(item, card) {
-    if (item.type !== ITEM_TYPE.TOOL) {
-        return;
-    }    
-
-    await ItemUtility.getToolCheckFromCard(item, card);
 }
 
 /**

@@ -1,7 +1,8 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { MODULE_DSN } from "../module/integration.js";
 import { TEMPLATE } from "../module/templates.js";
 import { CoreUtility } from "./core.js";
-import { ItemUtility } from "./item.js";
+import { ITEM_TYPE, ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RenderUtility } from "./render.js";
 import { ROLL_STATE, ROLL_TYPE, RollUtility } from "./roll.js";
@@ -42,7 +43,7 @@ export class ChatUtility {
             return;
         }
 
-        if (!message.flags) {
+        if (!message.flags || Object.keys(message.flags).length === 0) {
             return;
         }
 
@@ -53,6 +54,8 @@ export class ChatUtility {
         if (!message.flags[MODULE_SHORT] || !message.flags[MODULE_SHORT].quickRoll) {
             return;
         }
+
+        const type = ChatUtility.getMessageType(message);
 
         // Hide the message if we haven't yet finished processing RSR content
         if (!message.flags[MODULE_SHORT].processed) {
@@ -70,8 +73,8 @@ export class ChatUtility {
             await _enforceDualRolls(message);
             return;
         }
-        
-        await _injectContent(message, content);
+
+        await _injectContent(message, type, content);
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.OVERLAY_BUTTONS_ENABLED)) {
             // Setup hover buttons when the message is actually hovered(for optimisation).
@@ -89,6 +92,8 @@ export class ChatUtility {
         if (message.flags[MODULE_SHORT].processed) {
             $(html).removeClass("rsr-hide");
         }
+        
+        ui.chat.scrollBottom();
     }
 
     /**
@@ -205,23 +210,38 @@ async function _enforceDualRolls(message) {
     });
 }
 
-async function _injectContent(message, html) {
+async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
-    const type = ChatUtility.getMessageType(message);
     const parent = game.messages.get(message.flags.dnd5e?.originatingMessage);
 
-    switch (type) {
+    switch (type) {        
+        case ROLL_TYPE.ATTACK:
+        case ROLL_TYPE.DAMAGE:
         case ROLL_TYPE.TOOL:
-            if (parent) {
+            if (parent && message.isOwner) {
+                if (type === ROLL_TYPE.ATTACK) {
+                    parent.flags[MODULE_SHORT].hasAttack = true;
+                    parent.flags[MODULE_SHORT].isCritical = parent.flags[MODULE_SHORT].dual ? false : message.rolls[0].isCritical;
+                }
+
+                if (type === ROLL_TYPE.DAMAGE) {
+                    parent.flags[MODULE_SHORT].hasDamage = true;
+                    parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+                }
+                
+                if (type === ROLL_TYPE.TOOL) {
+                    parent.flags[MODULE_SHORT].hasToolCheck = true;                     
+                }
+                
                 parent.flags[MODULE_SHORT].quickRoll = true;
-                parent.flags[MODULE_SHORT].hasToolCheck = true; 
-                parent.rolls.push(message.rolls[0]);
+                parent.rolls.push(...message.rolls);
+                parent.flags[MODULE_SHORT].isContentVisible = message.isContentVisible;
 
                 ChatUtility.updateChatMessage(parent, {
                     flags: parent.flags,
-                    rolls: parent.rolls
+                    rolls: parent.rolls,
                 });
-    
+
                 message.delete();
                 return;
             }
@@ -229,50 +249,38 @@ async function _injectContent(message, html) {
         case ROLL_TYPE.ABILITY_SAVE:
         case ROLL_TYPE.ABILITY_TEST:
         case ROLL_TYPE.DEATH_SAVE:
+            if (!message.isContentVisible) {
+                return;
+            }
+
             const roll = message.rolls[0];
             const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: type })
             html.find('.dice-total').replaceWith(render);
             html.find('.dice-tooltip').prepend(html.find('.dice-formula'));
             break;
         case ROLL_TYPE.ATTACK:
-            if (!parent) {
-                return;
-            }
-            
-            parent.flags[MODULE_SHORT].quickRoll = true;
-            parent.flags[MODULE_SHORT].hasAttack = true;         
-            parent.flags[MODULE_SHORT].isCritical = parent.flags[MODULE_SHORT].dual ? false : message.rolls[0].isCritical;
-            parent.rolls.push(message.rolls[0]);
-
-            ChatUtility.updateChatMessage(parent, {
-                flags: parent.flags,
-                rolls: parent.rolls
-            });
-
-            message.delete();
-            return;
         case ROLL_TYPE.DAMAGE:
             if (!parent) {
                 return;
             }
-            
-            parent.flags[MODULE_SHORT].quickRoll = true;
-            parent.flags[MODULE_SHORT].hasDamage = true;
-            parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;  
-            parent.rolls.push(...message.rolls);
-
-            ChatUtility.updateChatMessage(parent, {
-                flags: parent.flags,
-                rolls: parent.rolls
-            });
-
-            message.delete();            
             return;
         case ROLL_TYPE.ITEM:
             const actions = html.find('.card-buttons');
 
             // Remove any redundant dice roll elements that were added forcefully by dnd5e system
             html.find('.dice-roll').remove();
+
+            if (!CoreUtility.isVisible(message)) {
+                const ChatMessage5e = CONFIG.ChatMessage.documentClass;
+                const chatData = await (new Roll("0d0")).toMessage({}, {
+                    rollMode: game.settings.get("core", "rollMode"),
+                    create: false 
+                });
+                const rollHTML = await new ChatMessage5e(chatData).getHTML();
+                html.parent().find('.message-header').replaceWith(rollHTML.find('.message-header'));
+                html.replaceWith(rollHTML.find('.message-content'));
+                return;
+            }
 
             if (message.flags[MODULE_SHORT].hideSave) {                
                 actions.find(`[data-action='${ROLL_TYPE.ABILITY_SAVE}']`).remove();
@@ -286,12 +294,12 @@ async function _injectContent(message, html) {
                 html.find('.card-footer').remove();
             }
 
-            if (message.flags[MODULE_SHORT].hasAttack) {
+            if (message.flags[MODULE_SHORT].renderAttack || message.flags[MODULE_SHORT].renderAttack === false) {
                 actions.find(`[data-action='${ROLL_TYPE.ATTACK}']`).remove();
                 await _injectAttackRoll(message, actions);
             }
             
-            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].hasDamage) {                
+            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].renderDamage) {                
                 actions.find(`[data-action='${ROLL_TYPE.DAMAGE}']`).remove();
                 actions.find(`[data-action='${ROLL_TYPE.VERSATILE}']`).remove();
             }
@@ -300,7 +308,7 @@ async function _injectContent(message, html) {
                 await _injectDamageButton(message, actions);
             }
 
-            if (message.flags[MODULE_SHORT].hasDamage) {
+            if (message.flags[MODULE_SHORT].renderDamage) {
                 await _injectDamageRoll(message, actions);
             }
 
@@ -308,10 +316,11 @@ async function _injectContent(message, html) {
                 await _injectApplyDamageButtons(message, html);
             }
 
-            if (message.flags[MODULE_SHORT].hasToolCheck) {
+            if (message.flags[MODULE_SHORT].renderToolCheck) {
                 actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
                 await _injectToolCheckRoll(message, actions);
             }
+
             break;
         default:
             break;
@@ -319,21 +328,19 @@ async function _injectContent(message, html) {
 
     //_setupRerollDice(html);
     _setupCardListeners(message, html);
-
-    message.flags[MODULE_SHORT].processed = true;
-    ui.chat.scrollBottom();
 }
 
 async function _injectAttackRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
-
     const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
-    RollUtility.resetRollGetters(roll);
 
-    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK })
+    if (!roll) return;
+    
+    RollUtility.resetRollGetters(roll);    
 
-    const chatData = await roll.toMessage({}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
+    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
+    const chatData = await roll.toMessage({}, { create: false });   
+    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');    
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
 
@@ -341,6 +348,7 @@ async function _injectAttackRoll(message, html) {
 
     const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
     {
+        section: `rsr-section-${ROLL_TYPE.ATTACK}`,
         title: CoreUtility.localize("DND5E.Attack"),
         icon: "<dnd5e-icon src=\"systems/dnd5e/icons/svg/trait-weapon-proficiencies.svg\"></dnd5e-icon>",
         subtitle: ammo ? `${CoreUtility.localize("DND5E.ConsumableAmmo")} - ${ammo}` : undefined
@@ -357,19 +365,21 @@ async function _injectAttackRoll(message, html) {
 
 async function _injectToolCheckRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
-
     const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
+
+    if (!roll) return;
+
     RollUtility.resetRollGetters(roll);
 
-    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.TOOL_CHECK })
-
+    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.TOOL_CHECK });
     const chatData = await roll.toMessage({}, { create: false });
     const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
 
     const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
-    { 
+    {       
+        section: `rsr-section-${ROLL_TYPE.TOOL}`,
         title: CoreUtility.localize("DND5E.UseItem", { item: message.flags[MODULE_SHORT].name ?? CoreUtility.localize("ITEM.TypeTool") }),
         icon: "<i class=\"fas fa-hammer\"></i>",
     }));
@@ -380,8 +390,9 @@ async function _injectToolCheckRoll(message, html) {
 
 async function _injectDamageRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
-
     const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
+
+    if (!rolls || rolls.length === 0) return;
 
     const chatData = await CONFIG.Dice.DamageRoll.toMessage(rolls, {}, { create: false });
     const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
@@ -400,11 +411,13 @@ async function _injectDamageRoll(message, html) {
     }
 
     const header = message.flags[MODULE_SHORT].isHealing
-        ? {
+        ? {            
+            section: `rsr-section-${ROLL_TYPE.DAMAGE}`,
             title: CoreUtility.localize("DND5E.Healing"),
             icon: "<dnd5e-icon src=\"systems/dnd5e/icons/svg/damage/healing.svg\"></dnd5e-icon>"
         } 
         : {
+            section: `rsr-section-${ROLL_TYPE.DAMAGE}`,
             title: `${CoreUtility.localize("DND5E.Damage")} ${message.flags[MODULE_SHORT].versatile ? "(" + CoreUtility.localize("DND5E.Versatile") + ")": ""}`,
             icon: "<i class=\"fas fa-burst\"></i>",
             subtitle: message.flags[MODULE_SHORT].isCritical ? `${CoreUtility.localize("DND5E.CriticalHit")}!` : undefined,
@@ -521,8 +534,9 @@ async function _processDamageButtonEvent(message, event) {
     event.stopPropagation();
 
     message.flags[MODULE_SHORT].manualDamage = false
+    message.flags[MODULE_SHORT].renderDamage = true;  
 
-    await ItemUtility.runItemAction(message, ROLL_TYPE.DAMAGE);
+    await ItemUtility.runItemAction(null, message, ROLL_TYPE.DAMAGE);
 }
 
 /**
@@ -596,6 +610,9 @@ async function _processRetroAdvButtonEvent(message, event) {
     const key = $(button).closest('.rsr-multiroll')[0].dataset.key;
 
     if (action === "rsr-retro") {
+        message.flags[MODULE_SHORT].advantage = state === ROLL_STATE.ADV;
+        message.flags[MODULE_SHORT].disadvantage = state === ROLL_STATE.DIS;
+
         const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
         await RollUtility.upgradeRoll(roll, state);
 
@@ -634,7 +651,7 @@ async function _processRetroCritButtonEvent(message, event) {
         message.flags[MODULE_SHORT].isCritical = true;
 
         const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
-        const crits = await ItemUtility.getDamageFromCard(null, message, false);
+        const crits = await ItemUtility.getDamageFromCard(null, message);
 
         for (let i = 0; i < rolls.length; i++) {
             const baseRoll = rolls[i];
