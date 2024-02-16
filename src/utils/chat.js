@@ -632,7 +632,7 @@ async function _processRetroAdvButtonEvent(message, event) {
                 : ` (${CoreUtility.localize("DND5E.Disadvantage")})`;
         }
 
-        await ChatUtility.updateChatMessage(message, { 
+        ChatUtility.updateChatMessage(message, { 
             flags: message.flags,
             rolls: message.rolls,
             flavor: message.flavor
@@ -675,12 +675,13 @@ async function _processRetroCritButtonEvent(message, event) {
                 critRoll.terms[j].results.splice(0, term.results.length, ...term.results);
             }
 
+            RollUtility.resetRollGetters(critRoll);
             message.rolls[message.rolls.indexOf(baseRoll)] = critRoll;
         }
 
         await CoreUtility.tryRollDice3D(crits);
 
-        await ChatUtility.updateChatMessage(message, {
+        ChatUtility.updateChatMessage(message, {
             flags: message.flags,
             rolls: message.rolls
         });
