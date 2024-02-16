@@ -661,7 +661,7 @@ async function _processRetroCritButtonEvent(message, event) {
         message.flags[MODULE_SHORT].isCritical = true;
 
         const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
-        const crits = await ItemUtility.getDamageFromCard(null, message);
+        const crits = await ItemUtility.getDamageFromCard(message);
 
         for (let i = 0; i < rolls.length; i++) {
             const baseRoll = rolls[i];
