@@ -86,18 +86,18 @@ export class ItemUtility {
 
     static async runItemActions(item, card) {
         if (card.flags[MODULE_SHORT].renderAttack && item.hasAttack) {
-            const attackRoll = await ItemUtility.getAttackFromCard(item, card);
+            const attackRoll = await ItemUtility.getAttackFromCard(card);
             card.flags[MODULE_SHORT].isCritical = card.flags[MODULE_SHORT].dual ? false : attackRoll.isCritical
             card.rolls.push(attackRoll);
         }
 
         if (card.flags[MODULE_SHORT].renderToolCheck && item.type !== ITEM_TYPE.TOOL) {
-            const toolCheckRoll = await ItemUtility.getToolCheckFromCard(item, card);
+            const toolCheckRoll = await ItemUtility.getToolCheckFromCard(card);
             card.rolls.push(toolCheckRoll);
         }
 
         if (card.flags[MODULE_SHORT].renderDamage && item.hasDamage) {
-            const damageRolls = await ItemUtility.getDamageFromCard(item, card);
+            const damageRolls = await ItemUtility.getDamageFromCard(card);
             card.rolls.push(...damageRolls);
         }
 
@@ -128,7 +128,7 @@ export class ItemUtility {
 
         switch (action) {
             case ROLL_TYPE.DAMAGE:
-                const damageRolls = await ItemUtility.getDamageFromCard(item, card);
+                const damageRolls = await ItemUtility.getDamageFromCard(card);
                 await CoreUtility.tryRollDice3D(damageRolls);
                 card.rolls.push(...damageRolls);
                 break;
@@ -140,8 +140,8 @@ export class ItemUtility {
         });
     }
 
-    static async getAttackFromCard(item, card) {
-        item ??= await _ensureItemFromCard(card);
+    static async getAttackFromCard(card) {
+        const item = await _ensureItemFromCard(card);
 
         return item.rollAttack({
             spellLevel: card.flags.dnd5e.use.spellLevel,
@@ -156,8 +156,8 @@ export class ItemUtility {
         });
     }
 
-    static async getToolCheckFromCard(item, card) {
-        item ??= await _ensureItemFromCard(card);
+    static async getToolCheckFromCard(card) {
+        const item = await _ensureItemFromCard(card);
 
         return item.rollToolCheck({
             advantage: card.flags[MODULE_SHORT].advantage ?? false,
@@ -171,8 +171,8 @@ export class ItemUtility {
         });
     }
 
-    static async getDamageFromCard(item, card) {
-        item ??= await _ensureItemFromCard(card);
+    static async getDamageFromCard(card) {
+        const item = await _ensureItemFromCard(card);
 
         return item.rollDamage({
             critical: card.flags[MODULE_SHORT].isCritical ?? false,
