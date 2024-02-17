@@ -86,7 +86,7 @@ export class RollUtility {
      * @param {Roll} roll The roll to check.
      * @returns {Promise<Roll>} The version of the roll with multi roll enforced if needed, or the original roll otherwise.
      */
-    static async ensureMultiRoll(roll, roll3d = true) {
+    static async ensureMultiRoll(roll, targetState = null) {
         if (!roll) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
             return null;
