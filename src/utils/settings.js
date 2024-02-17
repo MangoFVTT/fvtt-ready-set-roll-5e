@@ -149,4 +149,24 @@ export class SettingsUtility {
     static getSettingValue(settingKey) {
         return game.settings.get(MODULE_NAME, settingKey);
     }
+    
+    static get _applyDamageToTargeted() {
+        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
+        return applyDamageOption === 1 || applyDamageOption >= 2;
+    }
+
+    static get _applyDamageToSelected() {
+        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
+        return applyDamageOption === 0 || applyDamageOption >= 2;
+    }
+
+    static get _prioritiseDamageTargeted() {
+        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
+        return applyDamageOption === 4;
+    }
+
+    static  get _prioritiseDamageSelected() {
+        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
+        return applyDamageOption === 3;
+    }
 }
