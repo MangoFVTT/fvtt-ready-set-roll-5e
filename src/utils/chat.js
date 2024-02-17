@@ -12,26 +12,6 @@ import { SETTING_NAMES, SettingsUtility } from "./settings.js";
  * Utility class to handle binding chat cards for use by the module.
  */
 export class ChatUtility {
-    static _applyDamageToTargeted() {
-        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        return applyDamageOption === 1 || applyDamageOption >= 2;
-    }
-
-    static _applyDamageToSelected() {
-        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        return applyDamageOption === 0 || applyDamageOption >= 2;
-    }
-
-    static _prioritiseDamageTargeted() {
-        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        return applyDamageOption === 4;
-    }
-
-    static _prioritiseDamageSelected() {
-        const applyDamageOption = SettingsUtility.getSettingValue(SETTING_NAMES.APPLY_DAMAGE_TO);
-        return applyDamageOption === 3;
-    }
-
     /**
      * Process a given chat message, adding module content and events to it.
      * Does nothing if the message is not the correct type.
@@ -147,8 +127,8 @@ function _onOverlayHoverEnd(html) {
 
 function _onTooltipHover(message, html) {
     const hasPermission = game.user.isGM || message?.isAuthor;
-    const controlled = ChatUtility._applyDamageToSelected() && canvas?.tokens?.controlled?.length > 0;
-    const targeted = ChatUtility._applyDamageToTargeted() && game?.user?.targets?.size > 0;
+    const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
+    const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
     if (hasPermission && (controlled || targeted)) {
         html.find('.rsr-damage-buttons').show();
@@ -187,6 +167,10 @@ function _setupCardListeners(message, html) {
     if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {
         html.find('.rsr-damage-buttons button').click(async event => {
             await _processApplyButtonEvent(message, event);
+        });
+
+        html.find('.rsr-damage-buttons-xl button').click(async event => {
+            await _processApplyTotalButtonEvent(message, event);
         });
     }
 }
@@ -469,8 +453,15 @@ async function _injectDamageButton(message, html) {
 async function _injectApplyDamageButtons(message, html) {
     const render = await RenderUtility.render(TEMPLATE.DAMAGE_BUTTONS, {});
 
-    const tooltip = html.find('.rsr-damage .dice-tooltip .tooltip-part')
+    const tooltip = html.find('.rsr-damage .dice-tooltip .tooltip-part');
     tooltip.append($(render));
+
+    const total = html.find('.rsr-damage');
+    const renderXL = $(render);
+    renderXL.removeClass('rsr-damage-buttons');
+    renderXL.addClass('rsr-damage-buttons-xl');
+    renderXL.find('.rsr-indicator').remove();
+    total.append(renderXL);
 
     if (!SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_SHOW_BUTTONS)) {
         // Enable Hover Events (to show/hide the elements).
@@ -561,40 +552,24 @@ async function _processApplyButtonEvent(message, event) {
     
     const button = event.currentTarget;
     const action = button.dataset.action;
+    const multiplier = button.dataset.multiplier;
 
     if (action !== "rsr-apply-damage" && action !== "rsr-apply-temp") {
         return;
     }
 
-    const isTempHP = action === "rsr-apply-temp";
-
-    let selectTokens = ChatUtility._applyDamageToSelected() ? canvas.tokens.controlled : [];
-    let targetTokens = ChatUtility._applyDamageToTargeted() ? game.user.targets : [];
-
-    if (ChatUtility._prioritiseDamageSelected() && selectTokens.length > 0) {
-        targetTokens = [];
-    }
-
-    if (ChatUtility._prioritiseDamageTargeted() && targetTokens.size > 0) {
-        selectTokens = [];
-    }
-
-    const targets = new Set([...selectTokens, ...targetTokens]);
+    const targets = CoreUtility.getCurrentTargets();
 
     if (targets.size === 0) {
         return;
     }
 
-    const dice = $(button).parent().siblings().find('.total')
-    const damage = parseInt(dice.find('.value').text());
-    const type = dice.find('.label').text().toLowerCase();
-    const multiplier = button.dataset.multiplier;
+    const isTempHP = action === "rsr-apply-temp";
+    const damage = _getApplyDamage(message, button);
 
-    const properties = new Set(message.rolls.find(r => r instanceof CONFIG.Dice.DamageRoll)?.options?.properties ?? []);
-
-    await Promise.all(Array.from(targets).map(t => {
+    await Promise.all(Array.from(targets).map(async t => {
         const target = t.actor;        
-        return isTempHP ? target.applyTempHP(damage) : target.applyDamage([{ value: damage, type: type, properties: properties }], { multiplier });
+        return isTempHP ? await target.applyTempHP(damage.value) : await target.applyDamage([ damage ], { multiplier });
     }));
 
     setTimeout(() => {
@@ -602,6 +577,58 @@ async function _processApplyButtonEvent(message, event) {
             canvas.hud.token.render();
         }
     }, 50);
+}
+
+async function _processApplyTotalButtonEvent(message, event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const action = button.dataset.action;
+    const multiplier = button.dataset.multiplier;
+
+    if (action !== "rsr-apply-damage" && action !== "rsr-apply-temp") {
+        return;
+    }
+
+    const targets = CoreUtility.getCurrentTargets();
+
+    if (targets.size === 0) {
+        return;
+    }
+    
+    const isTempHP = action === "rsr-apply-temp";
+    const damages = [];
+
+    const children = $(button).closest('.dice-roll')
+        .find(`.rsr-damage .dice-tooltip .tooltip-part .rsr-damage-buttons button[data-action="${action}"][data-multiplier="${multiplier}"]`);
+
+    children.each((i, el) => {
+        damages.push(_getApplyDamage(message, el));
+    })
+
+    await Promise.all(Array.from(targets).map(async t => {
+        const target = t.actor;        
+        return isTempHP 
+            ? await target.applyTempHP(damages.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0)) 
+            : await target.applyDamage(damages, { multiplier });
+    }));
+
+    setTimeout(() => {
+        if (canvas.hud.token._displayState && canvas.hud.token._displayState !== 0) {
+            canvas.hud.token.render();
+        }
+    }, 50);
+}
+
+function _getApplyDamage(message, button) {    
+    const multiplier = button.dataset.multiplier;
+    const dice = $(button).parent().siblings().find('.total')
+    const value = parseInt(dice.find('.value').text());
+    const type = dice.find('.label').text().toLowerCase();
+
+    const properties = new Set(message.rolls.find(r => r instanceof CONFIG.Dice.DamageRoll)?.options?.properties ?? []);
+    return { value: value, type: multiplier < 0 ? 'healing' : type, properties: properties };
 }
 
 /**

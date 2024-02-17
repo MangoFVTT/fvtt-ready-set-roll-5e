@@ -107,7 +107,7 @@ export class CoreUtility {
     /**
      * Gets data about whispers and roll mode for use in rendering messages.
      * @param {*} rollMode 
-     * @returns A data package with the current roll mode 
+     * @returns {Object} A data package with the current roll mode.
      */
     static getWhisperData(rollMode = null) {
 		let whisper = undefined;
@@ -130,8 +130,27 @@ export class CoreUtility {
 	}
 
     /**
+     * Gets the current set of tokens that are selected or targeted (or both) depending on the chosen setting.
+     * @returns {Set} A set of tokens that the module considers as current targets.
+     */
+    static getCurrentTargets() {
+        let selectTokens = SettingsUtility._applyDamageToSelected ? canvas.tokens.controlled : [];
+        let targetTokens = SettingsUtility._applyDamageToTargeted ? game.user.targets : [];
+
+        if (SettingsUtility._prioritiseDamageSelected && selectTokens.length > 0) {
+            targetTokens = [];
+        }
+
+        if (SettingsUtility._prioritiseDamageTargeted && targetTokens.size > 0) {
+            selectTokens = [];
+        }
+
+        return new Set([...selectTokens, ...targetTokens]);
+    }
+
+    /**
      * Gets the default configured dice sound from Foundry VTT config.
-     * @returns 
+     * @returns {Object} A data package with the sound data to play when rolling.
      */
     static getRollSound() {
         let sound = undefined;
@@ -146,14 +165,36 @@ export class CoreUtility {
         return { sound }
     }
 
+    /**
+     * Plays the default roll sound from the audio helper.
+     */
     static playRollSound() {
         AudioHelper.play({src: CONFIG.sounds.dice });
     }
 
+    /**
+     * Asynchronous polling of a specific condition that ends when the condition is met.
+     * @param {Function} condition The condition function to poll.
+     * @returns {Promise} A promise that waits until the condition is met.
+     */
     static async waitUntil(condition) {
         const poll = resolve => {
             if (condition()) resolve();
             else setTimeout(_ => poll(resolve), 100);
+        }
+
+        return new Promise(poll);
+    }
+
+    /**
+     * Asynchronous polling of a specific condition that ends when the condition is no longer met.
+     * @param {Function} condition The condition function to poll.
+     * @returns {Promise} A promise that waits while the condition is met.
+     */
+    static async waitWhile(condition) {
+        const poll = resolve => {
+            if (condition()) setTimeout(_ => poll(resolve), 100);
+            else resolve();
         }
 
         return new Promise(poll);
