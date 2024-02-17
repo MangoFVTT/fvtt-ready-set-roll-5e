@@ -80,9 +80,13 @@
 	position: relative;
 }
 
-.rsr-damage-buttons {
+.rsr-damage-buttons,
+.rsr-damage-buttons-xl {
 	text-align: right!important;
 	display: flex;
+}
+
+.rsr-damage-buttons {
 	justify-content: center;
 	align-items: center;
 	padding-right: 8%;
@@ -97,12 +101,30 @@
 	gap: 0;
 }
 
-.rsr-damage-buttons button.rsr-wide {
+.rsr-damage-buttons-xl {
+	justify-content: space-between;
+	align-items: center;
+	padding-right: 0;
+	padding-top: 5px;
+}
+
+.rsr-damage-buttons-xl button {
+	width: 32px;
+	height: 26px;
+	font-size: var(--font-size-14);
+	line-height: 26px;
+	padding: 0;
+	gap: 0;
+}
+
+.rsr-damage-buttons button.rsr-wide,
+.rsr-damage-buttons-xl button.rsr-wide {
 	width: auto;
 	padding: 0 3px;
 }
 
-.rsr-damage-buttons button > i {
+.rsr-damage-buttons button > i,
+.rsr-damage-buttons-xl button > i {
 	margin: 0;
 }
 

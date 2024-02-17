@@ -86,7 +86,7 @@ export class RollUtility {
      * @param {Roll} roll The roll to check.
      * @returns {Promise<Roll>} The version of the roll with multi roll enforced if needed, or the original roll otherwise.
      */
-    static async ensureMultiRoll(roll, roll3d = true) {
+    static async ensureMultiRoll(roll) {
         if (!roll) {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.rollIsNullOrUndefined`));
             return null;
@@ -97,9 +97,7 @@ export class RollUtility {
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
             const d20Additional = new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: false });
 
-            if (roll3d) {
-                await CoreUtility.tryRollDice3D(d20Additional);
-            }
+            await CoreUtility.tryRollDice3D(d20Additional);
 
             const d20Forced = new Die({
                 number: forcedDiceCount,
@@ -132,6 +130,10 @@ export class RollUtility {
 			LogUtility.logError(CoreUtility.localize(`${MODULE_SHORT}.messages.error.incorrectTargetState`, { state: targetState }));
 			return roll;
 		}
+
+        if (targetState === ROLL_STATE.DIS) {
+            roll.options.elvenAccuracy = false;
+        }
 
         const upgradedRoll = await RollUtility.ensureMultiRoll(roll);
         
