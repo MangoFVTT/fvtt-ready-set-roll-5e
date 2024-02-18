@@ -1,8 +1,7 @@
 import { MODULE_SHORT } from "../module/const.js";
-import { MODULE_DSN } from "../module/integration.js";
 import { TEMPLATE } from "../module/templates.js";
 import { CoreUtility } from "./core.js";
-import { ITEM_TYPE, ItemUtility } from "./item.js";
+import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RenderUtility } from "./render.js";
 import { ROLL_STATE, ROLL_TYPE, RollUtility } from "./roll.js";
@@ -52,7 +51,15 @@ export class ChatUtility {
         // This will force dual rolls on non-item messages, since this is the only place we can catch this before it is displayed.
         if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
             await _enforceDualRolls(message);
-            return;
+
+            if (message.flags[MODULE_SHORT].dual) {
+                ChatUtility.updateChatMessage(message, {
+                    flags: message.flags,
+                    rolls: message.rolls
+                });
+
+                return;
+            }
         }
 
         await _injectContent(message, type, content);
@@ -183,22 +190,16 @@ function _processVanillaMessage(message) {
 }
 
 async function _enforceDualRolls(message) {
-    if (message.rolls.length === 0) {
-        return;
-    }
+    let dual = false;
 
     for (let i = 0; i < message.rolls.length; i++) {
         if (message.rolls[i] instanceof CONFIG.Dice.D20Roll) {
-            message.rolls[i] = await RollUtility.ensureMultiRoll(message.rolls[i]);            
+            message.rolls[i] = await RollUtility.ensureMultiRoll(message.rolls[i]);
+            dual = true;
         }
     }
 
-    message.flags[MODULE_SHORT].dual = true;
-
-    await ChatUtility.updateChatMessage(message, { 
-        flags: message.flags,
-        rolls: message.rolls
-    });
+    message.flags[MODULE_SHORT].dual = dual;
 }
 
 async function _injectContent(message, type, html) {
