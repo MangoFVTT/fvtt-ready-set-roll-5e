@@ -50,7 +50,7 @@ async function _renderMultiRoll(data = {}) {
         const critOptions = { 
             critThreshold: roll.options.critical,
             fumbleThreshold: roll.options.fumble,
-            targetValue: roll.options.targetValue
+            targetValue: roll.options.targetValue - (bonusRoll?.total ?? 0)
         };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
