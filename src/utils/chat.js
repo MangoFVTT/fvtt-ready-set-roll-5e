@@ -1,6 +1,7 @@
 import { MODULE_SHORT } from "../module/const.js";
 import { TEMPLATE } from "../module/templates.js";
 import { CoreUtility } from "./core.js";
+import { DialogUtility } from "./dialog.js";
 import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RenderUtility } from "./render.js";
@@ -650,6 +651,19 @@ async function _processRetroAdvButtonEvent(message, event) {
     const key = $(button).closest('.rsr-multiroll')[0].dataset.key;
 
     if (action === "rsr-retro") {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.CONFIRM_RETRO_ADV)) {        
+            const dialogOptions = {
+                width: 100,
+                top: event ? event.clientY - 50 : null,
+                left: window.innerWidth - 510
+            }
+    
+            const target = state === ROLL_STATE.ADV ? CoreUtility.localize("DND5E.Advantage") : CoreUtility.localize("DND5E.Disadvantage");
+            const confirmed = await DialogUtility.getConfirmDialog(CoreUtility.localize(`${MODULE_SHORT}.chat.prompts.retroAdv`, { target }), dialogOptions);
+    
+            if (!confirmed) return;
+        }
+        
         message.flags[MODULE_SHORT].advantage = state === ROLL_STATE.ADV;
         message.flags[MODULE_SHORT].disadvantage = state === ROLL_STATE.DIS;
 
@@ -688,6 +702,18 @@ async function _processRetroCritButtonEvent(message, event) {
     const action = button.dataset.action;
 
     if (action === "rsr-retro") {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.CONFIRM_RETRO_CRIT)) {        
+            const dialogOptions = {
+                width: 100,
+                top: event ? event.clientY - 50 : null,
+                left: window.innerWidth - 510
+            }
+    
+            const confirmed = await DialogUtility.getConfirmDialog(CoreUtility.localize(`${MODULE_SHORT}.chat.prompts.retroCrit`), dialogOptions);
+    
+            if (!confirmed) return;
+        }
+        
         message.flags[MODULE_SHORT].isCritical = true;
 
         const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);

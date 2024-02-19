@@ -32,7 +32,11 @@
             "alwaysShowButtons.name": "Always Show Apply Buttons",
             "alwaysShowButtons.hint": "When outputting a quick roll chat card, always show the damage apply buttons, instead of only on hover.",
             "applyDamageTo.name": "Apply Damage Options",
-            "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons."
+            "applyDamageTo.hint": "Determines which tokens damage is applied to when applying damage via the chat overlay buttons.",
+            "confirmRetroAdv.name": "Confirm Retroactive Advantage",
+            "confirmRetroAdv.hint": "Show a confirmation dialog when retroactively changing a roll to advantage or disadvantage.",
+            "confirmRetroCrit.name": "Confirm Retroactive Crits",
+            "confirmRetroCrit.hint": "Show a confirmation dialog when retroactively changing a roll to critical damage."
         },
         "choices": {
             "rollModifierMode": {
@@ -81,6 +85,10 @@
                 "rollAdvantage": "Click to roll with advantage.",
                 "rollDisadvantage": "Click to roll with disadvantage.",
                 "repeat": "Click to repeat the quick roll."
+            },
+            "prompts": {
+                "retroCrit": "Upgrade to Crit?",
+                "retroAdv": "Roll {target}?"
             }
         },
         "messages": {

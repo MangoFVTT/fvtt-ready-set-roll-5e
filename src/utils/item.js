@@ -313,8 +313,6 @@ export class ItemUtility {
             if (index < (itemPartsCount + ammoPartsCount)) {
                 return consumeTarget?.name;
             }
-
-            //return CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
         }
 
         return undefined;
