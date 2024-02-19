@@ -455,7 +455,10 @@ async function _injectApplyDamageButtons(message, html) {
     const render = await RenderUtility.render(TEMPLATE.DAMAGE_BUTTONS, {});
 
     const tooltip = html.find('.rsr-damage .dice-tooltip .tooltip-part');
-    tooltip.append($(render));
+
+    if (tooltip.length > 1) {
+        tooltip.append($(render));
+    }
 
     const total = html.find('.rsr-damage');
     const renderXL = $(render);
