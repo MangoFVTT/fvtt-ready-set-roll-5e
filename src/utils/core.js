@@ -180,7 +180,7 @@ export class CoreUtility {
     static async waitUntil(condition) {
         const poll = resolve => {
             if (condition()) resolve();
-            else setTimeout(_ => poll(resolve), 100);
+            else setTimeout(_ => poll(resolve), 10);
         }
 
         return new Promise(poll);
@@ -193,7 +193,7 @@ export class CoreUtility {
      */
     static async waitWhile(condition) {
         const poll = resolve => {
-            if (condition()) setTimeout(_ => poll(resolve), 100);
+            if (condition()) setTimeout(_ => poll(resolve), 10);
             else resolve();
         }
 

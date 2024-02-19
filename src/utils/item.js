@@ -313,8 +313,6 @@ export class ItemUtility {
             if (index < (itemPartsCount + ammoPartsCount)) {
                 return consumeTarget?.name;
             }
-
-            //return CoreUtility.localize(`${MODULE_SHORT}.chat.bonus.bonus`);
         }
 
         return undefined;
@@ -325,8 +323,15 @@ async function _ensureItemFromCard(card) {
     const Item5e = CONFIG.Item.documentClass;
 
     const itemId = card.flags.dnd5e.use.itemId;
-    const actor = game.actors.get(card.speaker.actor);
     const storedData = card.getFlag("dnd5e", "itemData");
+
+    let actor = null;
+    if (card.speaker.token) {
+        const token = game.scenes.get(card.speaker.scene).tokens.get(card.speaker.token);
+        actor = token?.actor;
+    } else if (card.speaker.actor) {
+        actor = game.actors.get(card.speaker.actor);
+    }
 
     return storedData && actor ? await Item5e.create(storedData, { parent: actor, temporary: true }) : actor?.items.get(itemId);
 }

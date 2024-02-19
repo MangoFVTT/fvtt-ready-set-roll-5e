@@ -1,6 +1,7 @@
 import { MODULE_SHORT } from "../module/const.js";
 import { TEMPLATE } from "../module/templates.js";
 import { CoreUtility } from "./core.js";
+import { DialogUtility } from "./dialog.js";
 import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RenderUtility } from "./render.js";
@@ -455,7 +456,10 @@ async function _injectApplyDamageButtons(message, html) {
     const render = await RenderUtility.render(TEMPLATE.DAMAGE_BUTTONS, {});
 
     const tooltip = html.find('.rsr-damage .dice-tooltip .tooltip-part');
-    tooltip.append($(render));
+
+    if (tooltip.length > 1) {
+        tooltip.append($(render));
+    }
 
     const total = html.find('.rsr-damage');
     const renderXL = $(render);
@@ -554,6 +558,7 @@ async function _processApplyButtonEvent(message, event) {
     const button = event.currentTarget;
     const action = button.dataset.action;
     const multiplier = button.dataset.multiplier;
+    const dice = $(button).closest('.tooltip-part').find('.dice');
 
     if (action !== "rsr-apply-damage" && action !== "rsr-apply-temp") {
         return;
@@ -566,7 +571,7 @@ async function _processApplyButtonEvent(message, event) {
     }
 
     const isTempHP = action === "rsr-apply-temp";
-    const damage = _getApplyDamage(message, button);
+    const damage = _getApplyDamage(message, dice, multiplier);
 
     await Promise.all(Array.from(targets).map(async t => {
         const target = t.actor;        
@@ -601,11 +606,10 @@ async function _processApplyTotalButtonEvent(message, event) {
     const isTempHP = action === "rsr-apply-temp";
     const damages = [];
 
-    const children = $(button).closest('.dice-roll')
-        .find(`.rsr-damage .dice-tooltip .tooltip-part .rsr-damage-buttons button[data-action="${action}"][data-multiplier="${multiplier}"]`);
+    const children = $(button).closest('.dice-roll').find('.rsr-damage .dice-tooltip .tooltip-part .dice');
 
     children.each((i, el) => {
-        damages.push(_getApplyDamage(message, el));
+        damages.push(_getApplyDamage(message, $(el), multiplier));
     })
 
     await Promise.all(Array.from(targets).map(async t => {
@@ -622,11 +626,10 @@ async function _processApplyTotalButtonEvent(message, event) {
     }, 50);
 }
 
-function _getApplyDamage(message, button) {    
-    const multiplier = button.dataset.multiplier;
-    const dice = $(button).parent().siblings().find('.total')
-    const value = parseInt(dice.find('.value').text());
-    const type = dice.find('.label').text().toLowerCase();
+function _getApplyDamage(message, dice, multiplier) {
+    const total = dice.find('.total')
+    const value = parseInt(total.find('.value').text());
+    const type = total.find('.label').text().toLowerCase();
 
     const properties = new Set(message.rolls.find(r => r instanceof CONFIG.Dice.DamageRoll)?.options?.properties ?? []);
     return { value: value, type: multiplier < 0 ? 'healing' : type, properties: properties };
@@ -648,6 +651,19 @@ async function _processRetroAdvButtonEvent(message, event) {
     const key = $(button).closest('.rsr-multiroll')[0].dataset.key;
 
     if (action === "rsr-retro") {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.CONFIRM_RETRO_ADV)) {        
+            const dialogOptions = {
+                width: 100,
+                top: event ? event.clientY - 50 : null,
+                left: window.innerWidth - 510
+            }
+    
+            const target = state === ROLL_STATE.ADV ? CoreUtility.localize("DND5E.Advantage") : CoreUtility.localize("DND5E.Disadvantage");
+            const confirmed = await DialogUtility.getConfirmDialog(CoreUtility.localize(`${MODULE_SHORT}.chat.prompts.retroAdv`, { target }), dialogOptions);
+    
+            if (!confirmed) return;
+        }
+        
         message.flags[MODULE_SHORT].advantage = state === ROLL_STATE.ADV;
         message.flags[MODULE_SHORT].disadvantage = state === ROLL_STATE.DIS;
 
@@ -686,6 +702,18 @@ async function _processRetroCritButtonEvent(message, event) {
     const action = button.dataset.action;
 
     if (action === "rsr-retro") {
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.CONFIRM_RETRO_CRIT)) {        
+            const dialogOptions = {
+                width: 100,
+                top: event ? event.clientY - 50 : null,
+                left: window.innerWidth - 510
+            }
+    
+            const confirmed = await DialogUtility.getConfirmDialog(CoreUtility.localize(`${MODULE_SHORT}.chat.prompts.retroCrit`), dialogOptions);
+    
+            if (!confirmed) return;
+        }
+        
         message.flags[MODULE_SHORT].isCritical = true;
 
         const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
