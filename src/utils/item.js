@@ -110,7 +110,7 @@ export class ItemUtility {
             rolls: card.rolls,
         });
 
-        if (!game.dice3d) {
+        if (!game.dice3d || !game.dice3d.isEnabled()) {
             CoreUtility.playRollSound();
         }
     }
