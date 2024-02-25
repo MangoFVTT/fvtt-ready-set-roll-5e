@@ -50,7 +50,7 @@ export class ChatUtility {
         }
         
         // This will force dual rolls on non-item messages, since this is the only place we can catch this before it is displayed.
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
+        if (message.isOwner && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
             await _enforceDualRolls(message);
 
             if (message.flags[MODULE_SHORT].dual) {
