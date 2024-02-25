@@ -50,7 +50,7 @@ export class ChatUtility {
         }
         
         // This will force dual rolls on non-item messages, since this is the only place we can catch this before it is displayed.
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
+        if (message.isOwner && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
             await _enforceDualRolls(message);
 
             if (message.flags[MODULE_SHORT].dual) {
@@ -231,7 +231,7 @@ async function _injectContent(message, type, html) {
                     parent.flags[MODULE_SHORT].renderToolCheck = true;                     
                 }
                 
-                if (game.dice3d) {
+                if (game.dice3d && game.dice3d.isEnabled()) {
                     await CoreUtility.waitUntil(() => !message._dice3danimating);
                 }
 
@@ -682,7 +682,7 @@ async function _processRetroAdvButtonEvent(message, event) {
             flavor: message.flavor
         });
 
-        if (!game.dice3d) {
+        if (!game.dice3d || !game.dice3d.isEnabled()) {
             CoreUtility.playRollSound();
         }
     }
@@ -742,7 +742,7 @@ async function _processRetroCritButtonEvent(message, event) {
             rolls: message.rolls
         });
 
-        if (!game.dice3d) {
+        if (!game.dice3d || !game.dice3d.isEnabled()) {
             CoreUtility.playRollSound();
         }
     }
