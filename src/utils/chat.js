@@ -231,7 +231,7 @@ async function _injectContent(message, type, html) {
                     parent.flags[MODULE_SHORT].renderToolCheck = true;                     
                 }
                 
-                if (game.dice3d) {
+                if (game.dice3d && game.dice3d.isEnabled()) {
                     await CoreUtility.waitUntil(() => !message._dice3danimating);
                 }
 
@@ -682,7 +682,7 @@ async function _processRetroAdvButtonEvent(message, event) {
             flavor: message.flavor
         });
 
-        if (!game.dice3d) {
+        if (!game.dice3d || !game.dice3d.isEnabled()) {
             CoreUtility.playRollSound();
         }
     }
@@ -742,7 +742,7 @@ async function _processRetroCritButtonEvent(message, event) {
             rolls: message.rolls
         });
 
-        if (!game.dice3d) {
+        if (!game.dice3d || !game.dice3d.isEnabled()) {
             CoreUtility.playRollSound();
         }
     }

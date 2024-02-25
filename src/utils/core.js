@@ -73,7 +73,7 @@ export class CoreUtility {
 		rolls.forEach(roll => {            
             hasDice ||= roll.dice.length > 0;
 
-            if (game.dice3d && hasDice) {
+            if (game.dice3d && game.dice3d.isEnabled() && hasDice) {
                 const whisperData = CoreUtility.getWhisperData();
                 promises.push(Promise.resolve(game.dice3d.showForRoll(roll, game.user, true, whisperData.whisper, whisperData.blind || false, messageID, whisperData.speaker)));
             }
@@ -81,7 +81,7 @@ export class CoreUtility {
 
 		await Promise.all(promises);
 
-		return game.dice3d && hasDice;
+		return game.dice3d && game.dice3d.isEnabled() && hasDice;
     }
 
     /**
