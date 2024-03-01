@@ -91,7 +91,7 @@ export class ItemUtility {
             card.rolls.push(attackRoll);
         }
 
-        if (card.flags[MODULE_SHORT].renderToolCheck && item.type !== ITEM_TYPE.TOOL) {
+        if (card.flags[MODULE_SHORT].renderToolCheck && item.type === ITEM_TYPE.TOOL) {
             const toolCheckRoll = await ItemUtility.getToolCheckFromCard(card);
             card.rolls.push(toolCheckRoll);
         }
