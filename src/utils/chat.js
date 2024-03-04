@@ -133,6 +133,12 @@ function _onOverlayHoverEnd(html) {
     html.find(".rsr-overlay").attr("style", "display: none;");
 }
 
+/**
+ * Handles hover begin events on the given html/jquery object.
+ * @param {ChatMessage} message The chat message to process.
+ * @param {JQuery} html The object to handle hover begin events for.
+ * @private
+ */
 function _onTooltipHover(message, html) {
     const hasPermission = game.user.isGM || message?.isAuthor;
     const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
@@ -157,6 +163,20 @@ function _onTooltipHoverEnd(html) {
         html.parent().removeAttr("style");
         html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
     }
+}
+
+function _onDamageHover(message, html) {
+    const hasPermission = game.user.isGM || message?.isAuthor;
+    const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
+    const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
+
+    if (hasPermission && (controlled || targeted)) {
+        html.find('.rsr-damage-buttons-xl').show();
+    }
+}
+
+function _onDamageHoverEnd(html) {
+    html.find(".rsr-damage-buttons-xl").attr("style", "display: none;");
 }
 
 /**
@@ -471,9 +491,12 @@ async function _injectApplyDamageButtons(message, html) {
     if (!SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_SHOW_BUTTONS)) {
         // Enable Hover Events (to show/hide the elements).
         tooltip.each((i, el) => {        
-            $(el).find(".rsr-damage-buttons").attr("style", "display: none;height: 0px");
+            $(el).find('.rsr-damage-buttons').attr("style", "display: none;height: 0px");
             $(el).hover(_onTooltipHover.bind(this, message, $(el)), _onTooltipHoverEnd.bind(this, $(el)));
         })
+
+        _onDamageHoverEnd(total);
+        total.hover(_onDamageHover.bind(this, message, total), _onDamageHoverEnd.bind(this, total));
     }
 }
 
