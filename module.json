@@ -2,7 +2,7 @@
 	"id": "ready-set-roll-5e",
 	"title": "Ready Set Roll for D&D5e",
 	"description": "This module overhauls rolls for the D&D 5e system with various quality of life improvements.",
-	"version": "3.0.11",
+	"version": "3.0.12",
 	"compatibility": {
 		"minimum": "11.299",
 		"verified": "11.315",
@@ -48,7 +48,7 @@
 	},
 	"url": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e",
 	"manifest": "https://raw.githubusercontent.com/MangoFVTT/fvtt-ready-set-roll-5e/master/module.json",
-	"download": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/releases/download/release-3.0.11/rsr5e-release-3.0.11.zip",
+	"download": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/releases/download/release-3.0.12/rsr5e-release-3.0.12.zip",
 	"bugs": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues",
 	"readme": "https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/blob/master/README.md"
 }
