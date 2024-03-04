@@ -228,9 +228,29 @@ async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
     const parent = game.messages.get(message.flags.dnd5e?.originatingMessage);
 
-    switch (type) {        
-        case ROLL_TYPE.ATTACK:
+    switch (type) {     
         case ROLL_TYPE.DAMAGE:
+            // Handle damage enrichers
+            if (!message.flags.dnd5e?.roll.itemId) {
+                const enricher = html.find('.dice-roll');
+                
+                html.parent().find('.flavor-text').text('');
+                html.append('<div class="dnd5e2 chat-card"></div>');
+                html.find('.chat-card').append(enricher);                        
+
+                message.flags[MODULE_SHORT].renderDamage = true;
+                message.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
+                message.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+
+                await _injectDamageRoll(message, enricher);
+
+                if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {                
+                    await _injectApplyDamageButtons(message, html);
+                }
+                enricher.remove();
+                break;
+            }  
+        case ROLL_TYPE.ATTACK:
         case ROLL_TYPE.TOOL:
             if (parent && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
@@ -238,27 +258,6 @@ async function _injectContent(message, type, html) {
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
-                    // Handle damage enrichers
-                    if (!message.flags.dnd5e?.roll.itemId) {
-                        const enricher = html.find('.dice-roll');
-                        
-                        html.parent().find('.flavor-text').text('');
-                        html.append('<div class="dnd5e2 chat-card"></div>');
-                        html.find('.chat-card').append(enricher);                        
-
-                        message.flags[MODULE_SHORT].renderDamage = true;
-                        message.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
-                        message.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
-
-                        await _injectDamageRoll(message, enricher);
-
-                        if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {                
-                            await _injectApplyDamageButtons(message, html);
-                        }
-                        enricher.remove();
-                        break;
-                    }
-
                     parent.flags[MODULE_SHORT].renderDamage = true;
                     parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
                     parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
