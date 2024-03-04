@@ -53,8 +53,8 @@ export class RollUtility {
         const ignore = config.event?.altKey ?? false;
 
         config.fastForward = !ignore;
-        config.advantage = advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
-        config.disadvantage = advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
+        config.advantage ??= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
+        config.disadvantage ??= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
 
         config.messageData[`flags.${MODULE_SHORT}`] = { 
             quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore,
@@ -70,8 +70,8 @@ export class RollUtility {
         const ignore = (window.event.altKey && !altRoll) ?? false;
 
         options.fastForward = !ignore;
-        options.advantage = advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
-        options.disadvantage = advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
+        options.advantage ??= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
+        options.disadvantage ??= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
 
         options.flags[MODULE_SHORT] = { 
             quickRoll: !ignore,
