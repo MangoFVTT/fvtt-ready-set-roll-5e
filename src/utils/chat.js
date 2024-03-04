@@ -118,10 +118,11 @@ export class ChatUtility {
  */
 function _onOverlayHover(message, html) {
     const hasPermission = game.user.isGM || message?.isAuthor;
+    const isItem =  message.flags.dnd5e?.use !== undefined;
 
     html.find('.rsr-overlay').show();
     html.find('.rsr-overlay-multiroll').toggle(hasPermission && !ChatUtility.isMessageMultiRoll(message));
-    html.find('.rsr-overlay-crit').toggle(hasPermission && !ChatUtility.isMessageCritical(message));
+    html.find('.rsr-overlay-crit').toggle(hasPermission && isItem && !ChatUtility.isMessageCritical(message));
 }
 
 /**
@@ -133,6 +134,12 @@ function _onOverlayHoverEnd(html) {
     html.find(".rsr-overlay").attr("style", "display: none;");
 }
 
+/**
+ * Handles hover begin events on the given html/jquery object.
+ * @param {ChatMessage} message The chat message to process.
+ * @param {JQuery} html The object to handle hover begin events for.
+ * @private
+ */
 function _onTooltipHover(message, html) {
     const hasPermission = game.user.isGM || message?.isAuthor;
     const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
@@ -157,6 +164,20 @@ function _onTooltipHoverEnd(html) {
         html.parent().removeAttr("style");
         html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
     }
+}
+
+function _onDamageHover(message, html) {
+    const hasPermission = game.user.isGM || message?.isAuthor;
+    const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
+    const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
+
+    if (hasPermission && (controlled || targeted)) {
+        html.find('.rsr-damage-buttons-xl').show();
+    }
+}
+
+function _onDamageHoverEnd(html) {
+    html.find(".rsr-damage-buttons-xl").attr("style", "display: none;");
 }
 
 /**
@@ -217,9 +238,25 @@ async function _injectContent(message, type, html) {
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
-                    // Skip if damage enricher
+                    // Handle damage enrichers
                     if (!message.flags.dnd5e?.roll.itemId) {
-                        return;
+                        const enricher = html.find('.dice-roll');
+                        
+                        html.parent().find('.flavor-text').text('');
+                        html.append('<div class="dnd5e2 chat-card"></div>');
+                        html.find('.chat-card').append(enricher);                        
+
+                        message.flags[MODULE_SHORT].renderDamage = true;
+                        message.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
+                        message.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+
+                        await _injectDamageRoll(message, enricher);
+
+                        if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {                
+                            await _injectApplyDamageButtons(message, html);
+                        }
+                        enricher.remove();
+                        break;
                     }
 
                     parent.flags[MODULE_SHORT].renderDamage = true;
@@ -471,9 +508,12 @@ async function _injectApplyDamageButtons(message, html) {
     if (!SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_SHOW_BUTTONS)) {
         // Enable Hover Events (to show/hide the elements).
         tooltip.each((i, el) => {        
-            $(el).find(".rsr-damage-buttons").attr("style", "display: none;height: 0px");
+            $(el).find('.rsr-damage-buttons').attr("style", "display: none;height: 0px");
             $(el).hover(_onTooltipHover.bind(this, message, $(el)), _onTooltipHoverEnd.bind(this, $(el)));
         })
+
+        _onDamageHoverEnd(total);
+        total.hover(_onDamageHover.bind(this, message, total), _onDamageHoverEnd.bind(this, total));
     }
 }
 
