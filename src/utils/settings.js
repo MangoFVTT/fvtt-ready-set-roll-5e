@@ -110,7 +110,7 @@ export class SettingsUtility {
             { name: SETTING_NAMES.DICE_REROLL_ENABLED, default: true },
             { name: SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, default: true },
             { name: SETTING_NAMES.DAMAGE_BUTTONS_ENABLED, default: true },
-            { name: SETTING_NAMES.ALWAYS_SHOW_BUTTONS, default: false },
+            { name: SETTING_NAMES.ALWAYS_SHOW_BUTTONS, default: true },
             { name: SETTING_NAMES.CONFIRM_RETRO_ADV, default: false },
             { name: SETTING_NAMES.CONFIRM_RETRO_CRIT, default: false },
         ]        

@@ -141,14 +141,12 @@ function _onOverlayHoverEnd(html) {
  * @private
  */
 function _onTooltipHover(message, html) {
-    const hasPermission = game.user.isGM || message?.isAuthor;
     const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
     const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
-    if (hasPermission && (controlled || targeted)) {
+    if (controlled || targeted) {
         html.find('.rsr-damage-buttons').show();
         html.find('.rsr-damage-buttons').removeAttr("style");
-        html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
     }
 }
 
@@ -159,19 +157,13 @@ function _onTooltipHover(message, html) {
  */
 function _onTooltipHoverEnd(html) {
     html.find(".rsr-damage-buttons").attr("style", "display: none;height: 0px");
-
-    if (html.parent()[0].style.height !== '0px') {        
-        html.parent().removeAttr("style");
-        html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
-    }
 }
 
 function _onDamageHover(message, html) {
-    const hasPermission = game.user.isGM || message?.isAuthor;
     const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
     const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
-    if (hasPermission && (controlled || targeted)) {
+    if (controlled || targeted) {
         html.find('.rsr-damage-buttons-xl').show();
     }
 }
@@ -630,7 +622,7 @@ async function _processApplyTotalButtonEvent(message, event) {
 
     const button = event.currentTarget;
     const action = button.dataset.action;
-    const multiplier = button.dataset.multiplier;
+    const multiplier = Number(button.dataset.multiplier);
 
     if (action !== "rsr-apply-damage" && action !== "rsr-apply-temp") {
         return;
@@ -655,7 +647,7 @@ async function _processApplyTotalButtonEvent(message, event) {
         const target = t.actor;        
         return isTempHP 
             ? await target.applyTempHP(damages.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0)) 
-            : await target.applyDamage(damages, { multiplier });
+            : await target.applyDamage(damages, { multiplier: Math.abs(multiplier) });
     }));
 
     setTimeout(() => {
