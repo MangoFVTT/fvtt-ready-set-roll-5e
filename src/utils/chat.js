@@ -147,7 +147,6 @@ function _onTooltipHover(message, html) {
     if (controlled || targeted) {
         html.find('.rsr-damage-buttons').show();
         html.find('.rsr-damage-buttons').removeAttr("style");
-        html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
     }
 }
 
@@ -158,11 +157,6 @@ function _onTooltipHover(message, html) {
  */
 function _onTooltipHoverEnd(html) {
     html.find(".rsr-damage-buttons").attr("style", "display: none;height: 0px");
-
-    if (html.parent()[0].style.height !== '0px') {        
-        html.parent().removeAttr("style");
-        html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
-    }
 }
 
 function _onDamageHover(message, html) {
