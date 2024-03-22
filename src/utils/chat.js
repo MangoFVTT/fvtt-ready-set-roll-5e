@@ -630,7 +630,7 @@ async function _processApplyTotalButtonEvent(message, event) {
 
     const button = event.currentTarget;
     const action = button.dataset.action;
-    const multiplier = button.dataset.multiplier;
+    const multiplier = Number(button.dataset.multiplier);
 
     if (action !== "rsr-apply-damage" && action !== "rsr-apply-temp") {
         return;
@@ -655,7 +655,7 @@ async function _processApplyTotalButtonEvent(message, event) {
         const target = t.actor;        
         return isTempHP 
             ? await target.applyTempHP(damages.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0)) 
-            : await target.applyDamage(damages, { multiplier });
+            : await target.applyDamage(damages, { multiplier: Math.abs(multiplier) });
     }));
 
     setTimeout(() => {
