@@ -141,11 +141,10 @@ function _onOverlayHoverEnd(html) {
  * @private
  */
 function _onTooltipHover(message, html) {
-    const hasPermission = game.user.isGM || message?.isAuthor;
     const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
     const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
-    if (hasPermission && (controlled || targeted)) {
+    if (controlled || targeted) {
         html.find('.rsr-damage-buttons').show();
         html.find('.rsr-damage-buttons').removeAttr("style");
         html.parent()[0].style.height = `${html.parent()[0].scrollHeight}px`
@@ -167,11 +166,10 @@ function _onTooltipHoverEnd(html) {
 }
 
 function _onDamageHover(message, html) {
-    const hasPermission = game.user.isGM || message?.isAuthor;
     const controlled = SettingsUtility._applyDamageToSelected && canvas?.tokens?.controlled?.length > 0;
     const targeted = SettingsUtility._applyDamageToTargeted && game?.user?.targets?.size > 0;
 
-    if (hasPermission && (controlled || targeted)) {
+    if (controlled || targeted) {
         html.find('.rsr-damage-buttons-xl').show();
     }
 }
