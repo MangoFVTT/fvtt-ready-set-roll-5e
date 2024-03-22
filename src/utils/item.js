@@ -57,7 +57,7 @@ export class ItemUtility {
         if (ItemUtility.getFlagValueFromItem(item, "quickAttack", card.flags[MODULE_SHORT].altRoll)) {
             card.flags[MODULE_SHORT].renderAttack = true;            
             card.flags[MODULE_SHORT].consume = _getConsumeTargetFromItem(item)?.name;
-            card.flags.dnd5e.targets = item._formatAttackTargets();
+            card.flags.dnd5e.targets = CONFIG.Item.documentClass._formatAttackTargets();
         } else if (item.hasAttack) {
             card.flags[MODULE_SHORT].renderAttack = false;
         }
