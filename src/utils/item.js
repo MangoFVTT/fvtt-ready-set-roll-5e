@@ -110,7 +110,7 @@ export class ItemUtility {
             rolls: card.rolls,
         });
 
-        if (!game.dice3d || !game.dice3d.isEnabled()) {
+        if (card.flags[MODULE_SHORT].quickRoll && (!game.dice3d || !game.dice3d.isEnabled())) {
             CoreUtility.playRollSound();
         }
     }
@@ -131,6 +131,7 @@ export class ItemUtility {
                 const damageRolls = await ItemUtility.getDamageFromCard(card);
                 await CoreUtility.tryRollDice3D(damageRolls);
                 card.rolls.push(...damageRolls);
+                CoreUtility.playRollSound();
                 break;
         }
 
