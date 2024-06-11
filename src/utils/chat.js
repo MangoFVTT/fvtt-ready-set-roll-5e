@@ -247,6 +247,7 @@ async function _injectContent(message, type, html) {
             if (parent && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
+                    parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
@@ -287,6 +288,8 @@ async function _injectContent(message, type, html) {
             const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: type })
             html.find('.dice-total').replaceWith(render);
             html.find('.dice-tooltip').prepend(html.find('.dice-formula'));
+
+            message._highlightCriticalSuccessFailure(html);
             break;
         case ROLL_TYPE.ITEM:
             const actions = html.find('.card-buttons');
@@ -344,7 +347,8 @@ async function _injectContent(message, type, html) {
                 actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
                 await _injectToolCheckRoll(message, actions);
             }
-
+            
+            message._highlightCriticalSuccessFailure(html);
             break;
         default:
             break;

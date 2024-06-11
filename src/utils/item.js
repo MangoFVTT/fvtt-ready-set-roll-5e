@@ -63,10 +63,11 @@ export class ItemUtility {
         }
         
         const manualDamageMode = SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE);
-        card.flags[MODULE_SHORT].manualDamage = item.hasDamage && (manualDamageMode === 2 || (manualDamageMode === 1 && item.hasAttack));
 
-        if (!card.flags[MODULE_SHORT].manualDamage) {
-            card.flags[MODULE_SHORT].renderDamage = true;            
+        if (item.hasDamage)
+        {
+            card.flags[MODULE_SHORT].manualDamage = (manualDamageMode === 2 || (manualDamageMode === 1 && item.hasAttack));
+
             card.flags[MODULE_SHORT].versatile = item.isVersatile ? ItemUtility.getFlagValueFromItem(item, "quickVersatile", card.flags[MODULE_SHORT].altRoll) : false;
             card.flags[MODULE_SHORT].context = [];
                 
@@ -77,6 +78,10 @@ export class ItemUtility {
                     card.flags[MODULE_SHORT].context.push(ItemUtility.getDamageContextFromItem(item, i));
                 }
             }
+        }
+
+        if (!card.flags[MODULE_SHORT].manualDamage) {
+            card.flags[MODULE_SHORT].renderDamage = true;
         }
 
         if (item.type === ITEM_TYPE.TOOL) {
@@ -110,7 +115,7 @@ export class ItemUtility {
             rolls: card.rolls,
         });
 
-        if (!game.dice3d || !game.dice3d.isEnabled()) {
+        if (card.flags[MODULE_SHORT].quickRoll && (!game.dice3d || !game.dice3d.isEnabled())) {
             CoreUtility.playRollSound();
         }
     }
@@ -131,6 +136,7 @@ export class ItemUtility {
                 const damageRolls = await ItemUtility.getDamageFromCard(card);
                 await CoreUtility.tryRollDice3D(damageRolls);
                 card.rolls.push(...damageRolls);
+                CoreUtility.playRollSound();
                 break;
         }
 
