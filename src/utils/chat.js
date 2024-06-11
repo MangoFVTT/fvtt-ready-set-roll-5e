@@ -250,6 +250,12 @@ async function _injectContent(message, type, html) {
                     parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
                 }
                 
+                if (type === ROLL_TYPE.DAMAGE) {
+                    parent.flags[MODULE_SHORT].renderDamage = true;
+                    parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+                    parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
+                }
+                
                 if (type === ROLL_TYPE.TOOL) {
                     parent.flags[MODULE_SHORT].renderToolCheck = true;                     
                 }
