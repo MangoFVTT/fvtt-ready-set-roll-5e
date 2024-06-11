@@ -25,11 +25,13 @@
 	transform: translate(0, -50%);
 }
 
-.rsr-multiroll .success .die-icon {
+.rsr-multiroll .success .die-icon,
+.rsr-multiroll .critical .die-icon {
 	filter: sepia(0.5) hue-rotate(60deg);
 }
 
-.rsr-multiroll .failure .die-icon {
+.rsr-multiroll .failure .die-icon,
+.rsr-multiroll .fumble .die-icon {
 	filter: sepia(0.5) hue-rotate(-60deg);
 }
 
