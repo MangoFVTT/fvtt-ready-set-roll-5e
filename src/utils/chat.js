@@ -247,12 +247,7 @@ async function _injectContent(message, type, html) {
             if (parent && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
-                }
-
-                if (type === ROLL_TYPE.DAMAGE) {
-                    parent.flags[MODULE_SHORT].renderDamage = true;
-                    parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
-                    parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
+                    parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
                 }
                 
                 if (type === ROLL_TYPE.TOOL) {
