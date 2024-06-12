@@ -95,7 +95,7 @@ export class RollUtility {
         if (!(roll.hasAdvantage || roll.hasDisadvantage)) {
             const forcedDiceCount = roll.options.elvenAccuracy ? 3 : 2;
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
-            const d20Additional = new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: false });
+            const d20Additional = await new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate();
 
             await CoreUtility.tryRollDice3D(d20Additional);
 

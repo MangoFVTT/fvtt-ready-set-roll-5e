@@ -1,3 +1,4 @@
+import { MODULE_NAME } from "../module/const.js";
 import { TEMPLATE } from "../module/templates.js";
 import { RollUtility } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
@@ -30,6 +31,13 @@ async function _renderMultiRoll(data = {}) {
 
     // Process bonuses beyond the base d20s into a single roll.
     const bonusTerms = roll.terms.slice(1);
+
+    await bonusTerms.forEach(async term => {            
+        if (!term._evaluated) {
+            await term.evaluate()
+        }
+    });
+
     const bonusRoll = (bonusTerms && bonusTerms.length > 0) ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
@@ -93,6 +101,5 @@ async function _renderDamageRoll(data = {}) {
  * @private
  */
 function _renderModuleTemplate(template, data) {
-    //return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
-    return renderTemplate(`modules/ready-set-roll-5e/templates/${template}`, data);
+    return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
 }
