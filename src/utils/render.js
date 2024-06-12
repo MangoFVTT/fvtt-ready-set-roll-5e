@@ -58,7 +58,8 @@ async function _renderMultiRoll(data = {}) {
         const critOptions = { 
             critThreshold: roll.options.critical,
             fumbleThreshold: roll.options.fumble,
-            targetValue: roll.options.targetValue - (bonusRoll?.total ?? 0)
+            targetValue: roll.options.targetValue - (bonusRoll?.total ?? 0),
+            displayChallenge: roll.options.displayChallenge
         };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
@@ -79,7 +80,7 @@ async function _renderMultiRoll(data = {}) {
 			roll: baseRoll,
 			total: baseRoll.total + (bonusRoll?.total ?? 0),
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
-			//critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
+            critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
 		});
     }
