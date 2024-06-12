@@ -1,3 +1,4 @@
+import { MODULE_NAME } from "../module/const.js";
 import { TEMPLATE } from "../module/templates.js";
 import { RollUtility } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
@@ -30,6 +31,13 @@ async function _renderMultiRoll(data = {}) {
 
     // Process bonuses beyond the base d20s into a single roll.
     const bonusTerms = roll.terms.slice(1);
+
+    await bonusTerms.forEach(async term => {            
+        if (!term._evaluated) {
+            await term.evaluate()
+        }
+    });
+
     const bonusRoll = (bonusTerms && bonusTerms.length > 0) ? Roll.fromTerms(bonusTerms) : null;
 
     const d20Rolls = roll.dice.find(d => d.faces === 20);
@@ -50,7 +58,8 @@ async function _renderMultiRoll(data = {}) {
         const critOptions = { 
             critThreshold: roll.options.critical,
             fumbleThreshold: roll.options.fumble,
-            targetValue: roll.options.targetValue - (bonusRoll?.total ?? 0)
+            targetValue: roll.options.targetValue - (bonusRoll?.total ?? 0),
+            displayChallenge: roll.options.displayChallenge
         };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
@@ -71,7 +80,7 @@ async function _renderMultiRoll(data = {}) {
 			roll: baseRoll,
 			total: baseRoll.total + (bonusRoll?.total ?? 0),
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
-			//critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
+            critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
 		});
     }
@@ -93,6 +102,5 @@ async function _renderDamageRoll(data = {}) {
  * @private
  */
 function _renderModuleTemplate(template, data) {
-    //return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
-    return renderTemplate(`modules/ready-set-roll-5e/templates/${template}`, data);
+    return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
 }

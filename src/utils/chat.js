@@ -219,6 +219,7 @@ async function _enforceDualRolls(message) {
 async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
     const parent = game.messages.get(message.flags.dnd5e?.originatingMessage);
+    message.flags[MODULE_SHORT].displayChallenge = parent?.shouldDisplayChallenge ?? message.shouldDisplayChallenge;
 
     switch (type) {     
         case ROLL_TYPE.DAMAGE:
@@ -285,11 +286,11 @@ async function _injectContent(message, type, html) {
             }
 
             const roll = message.rolls[0];
+            roll.options.displayChallenge = message.flags[MODULE_SHORT].displayChallenge;
+
             const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: type })
             html.find('.dice-total').replaceWith(render);
             html.find('.dice-tooltip').prepend(html.find('.dice-formula'));
-
-            message._highlightCriticalSuccessFailure(html);
             break;
         case ROLL_TYPE.ITEM:
             const actions = html.find('.card-buttons');
@@ -347,8 +348,6 @@ async function _injectContent(message, type, html) {
                 actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
                 await _injectToolCheckRoll(message, actions);
             }
-            
-            message._highlightCriticalSuccessFailure(html);
             break;
         default:
             break;
@@ -364,7 +363,9 @@ async function _injectAttackRoll(message, html) {
 
     if (!roll) return;
     
-    RollUtility.resetRollGetters(roll);    
+    RollUtility.resetRollGetters(roll);
+
+    roll.options.displayChallenge = message.flags[MODULE_SHORT].displayChallenge;
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
     const chatData = await roll.toMessage({}, { create: false });   
@@ -398,6 +399,8 @@ async function _injectToolCheckRoll(message, html) {
     if (!roll) return;
 
     RollUtility.resetRollGetters(roll);
+    
+    roll.options.displayChallenge = message.flags[MODULE_SHORT].displayChallenge;
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.TOOL_CHECK });
     const chatData = await roll.toMessage({}, { create: false });

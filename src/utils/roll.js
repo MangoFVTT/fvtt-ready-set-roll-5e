@@ -95,7 +95,7 @@ export class RollUtility {
         if (!(roll.hasAdvantage || roll.hasDisadvantage)) {
             const forcedDiceCount = roll.options.elvenAccuracy ? 3 : 2;
             const d20BaseTerm = roll.terms.find(d => d.faces === 20);
-            const d20Additional = new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate({ async: false });
+            const d20Additional = await new Roll(`${forcedDiceCount - d20BaseTerm.number}d20${d20BaseTerm.modifiers.join('')}`).evaluate();
 
             await CoreUtility.tryRollDice3D(d20Additional);
 
@@ -191,7 +191,7 @@ function _countCritsFumbles(die, options)
     let fumble = 0;
 
     if (die && die.faces > 1) {
-        let { critThreshold, fumbleThreshold, targetValue, ignoreDiscarded } = options
+        let { critThreshold, fumbleThreshold, targetValue, ignoreDiscarded, displayChallenge } = options
 
         critThreshold = critThreshold ?? die.options.critical ?? die.faces;
         fumbleThreshold = fumbleThreshold ?? die.options.fumble ?? 1;
@@ -201,9 +201,9 @@ function _countCritsFumbles(die, options)
                 continue;
             }
 
-            if (result.result >= targetValue || result.result >= critThreshold) {
+            if ((displayChallenge && result.result >= targetValue) || result.result >= critThreshold) {
                 crit += 1;
-            } else if (result.result < targetValue || result.result <= fumbleThreshold) {
+            } else if ((displayChallenge && result.result < targetValue) || result.result <= fumbleThreshold) {
                 fumble += 1;
             }
         }

@@ -106,8 +106,6 @@ export class ItemUtility {
             card.rolls.push(...damageRolls);
         }
 
-        await CoreUtility.tryRollDice3D(card.rolls);
-
         card.flags[MODULE_SHORT].processed = true;
 
         ChatUtility.updateChatMessage(card, { 
@@ -134,7 +132,6 @@ export class ItemUtility {
         switch (action) {
             case ROLL_TYPE.DAMAGE:
                 const damageRolls = await ItemUtility.getDamageFromCard(card);
-                await CoreUtility.tryRollDice3D(damageRolls);
                 card.rolls.push(...damageRolls);
                 CoreUtility.playRollSound();
                 break;
