@@ -1,7 +1,9 @@
 <div class="rsr-multiroll" data-key="{{key}}">
     {{#each entries}}
     <h4 class="dice-total {{#if this.ignored}}ignored{{/if}} {{this.critType}}">
-        {{this.total}}{{#if this.d20Result}}<span class="die-icon {{this.critType}}">{{this.d20Result}}</span>{{/if}}
+        {{this.total}}
+        {{#if this.d20Result}}<span class="die-icon {{this.critType}}">{{this.d20Result}}</span>{{/if}}
+        {{#if this.dcResult}}<div class="icons"><i class="{{this.dcResult}}" inert=""></i></div>{{/if}}
     </h4>
     {{/each}}
 </div>
