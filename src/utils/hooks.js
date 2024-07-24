@@ -56,6 +56,10 @@ export class HooksUtility {
                 { recursive: false }
             );
 
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+                CONFIG.DND5E.aggregateDamageDisplay = false;
+            }
+
             HooksUtility.registerSheetHooks();
             HooksUtility.registerIntegrationHooks();
 
