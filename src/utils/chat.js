@@ -256,9 +256,9 @@ async function _injectContent(message, type, html) {
                 enricher.remove();
                 break;
             }  
+        case ROLL_TYPE.TOOL:         
         case ROLL_TYPE.ATTACK:
-        case ROLL_TYPE.TOOL:
-            if (parent && message.isOwner) {
+            if (parent && parent.flags[MODULE_SHORT] && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
                     parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
