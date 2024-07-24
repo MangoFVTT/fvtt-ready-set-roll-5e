@@ -44,7 +44,7 @@ async function _renderMultiRoll(data = {}) {
 
     for (let i = 0; i < d20Rolls.results.length; i++) {
         let tmpResults = [];
-        tmpResults.push(duplicate(d20Rolls.results[i]));
+        tmpResults.push(foundry.utils.duplicate(d20Rolls.results[i]));
 
         while (d20Rolls?.results[i]?.rerolled && !d20Rolls?.results[i]?.count) {
             if ((i + 1) >= d20Rolls.results.length) {
