@@ -56,6 +56,10 @@ export class HooksUtility {
                 { recursive: false }
             );
 
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+                CONFIG.DND5E.aggregateDamageDisplay = false;
+            }
+
             HooksUtility.registerSheetHooks();
             HooksUtility.registerIntegrationHooks();
 
@@ -104,20 +108,15 @@ export class HooksUtility {
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
             Hooks.on(HOOKS_DND5E.PRE_USE_ITEM, (item, config, options) => {               
-                if (!item || !CONFIG[MODULE_SHORT].validItemTypes.includes(item.type)) {
-                    return true;
+                if (item && CONFIG[MODULE_SHORT].validItemTypes.includes(item.type)) {                    
+                    RollUtility.processItemRoll(options);
                 }
 
-                RollUtility.processItemRoll(options);
                 return true;
             });
 
             Hooks.on(HOOKS_DND5E.PRE_DISPLAY_CARD, async (item, card, options) => {
                 ItemUtility.setRenderFlags(item, card);
-            });
-
-            Hooks.on(HOOKS_DND5E.DISPLAY_CARD, async (item, card) => {
-                ItemUtility.runItemActions(item, card);
             });
 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (item, config) => {

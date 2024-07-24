@@ -44,7 +44,7 @@ async function _renderMultiRoll(data = {}) {
 
     for (let i = 0; i < d20Rolls.results.length; i++) {
         let tmpResults = [];
-        tmpResults.push(duplicate(d20Rolls.results[i]));
+        tmpResults.push(foundry.utils.duplicate(d20Rolls.results[i]));
 
         while (d20Rolls?.results[i]?.rerolled && !d20Rolls?.results[i]?.count) {
             if ((i + 1) >= d20Rolls.results.length) {
@@ -76,12 +76,15 @@ async function _renderMultiRoll(data = {}) {
         });
         const baseRoll = Roll.fromTerms([baseTerm]);
 
+        const total = baseRoll.total + (bonusRoll?.total ?? 0);
+
         entries.push({
 			roll: baseRoll,
-			total: baseRoll.total + (bonusRoll?.total ?? 0),
+			total: total,
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
             critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
-            d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null
+            d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null,
+            dcResult: isNaN(critOptions.targetValue) ? undefined : (total >= critOptions.targetValue ? "fas fa-check" : "fas fa-xmark")
 		});
     }
 

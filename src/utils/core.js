@@ -169,7 +169,7 @@ export class CoreUtility {
      * Plays the default roll sound from the audio helper.
      */
     static playRollSound() {
-        AudioHelper.play({src: CONFIG.sounds.dice }, true);
+        foundry.audio.AudioHelper.play({src: CONFIG.sounds.dice }, true);
     }
 
     /**

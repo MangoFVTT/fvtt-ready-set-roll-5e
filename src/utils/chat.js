@@ -41,6 +41,19 @@ export class ChatUtility {
         // Hide the message if we haven't yet finished processing RSR content
         if (!message.flags[MODULE_SHORT].processed) {
             $(html).addClass("rsr-hide");
+
+            if (type == ROLL_TYPE.ITEM)
+            {
+                ItemUtility.runItemActions(message);
+            }
+
+            return;
+        }
+
+        if (game.dice3d && game.dice3d.isEnabled() && message._dice3danimating)
+        {
+            $(html).addClass("rsr-hide");
+            await game.dice3d.waitFor3DAnimationByMessageID(message.id);
         }
 
         const content = $(html).find('.message-content');
@@ -228,7 +241,7 @@ async function _injectContent(message, type, html) {
                 const enricher = html.find('.dice-roll');
                 
                 html.parent().find('.flavor-text').text('');
-                html.append('<div class="dnd5e2 chat-card"></div>');
+                html.prepend('<div class="dnd5e2 chat-card"></div>');
                 html.find('.chat-card').append(enricher);                        
 
                 message.flags[MODULE_SHORT].renderDamage = true;
@@ -243,9 +256,9 @@ async function _injectContent(message, type, html) {
                 enricher.remove();
                 break;
             }  
+        case ROLL_TYPE.TOOL:         
         case ROLL_TYPE.ATTACK:
-        case ROLL_TYPE.TOOL:
-            if (parent && message.isOwner) {
+            if (parent && parent.flags[MODULE_SHORT] && message.isOwner) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
                     parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
@@ -580,7 +593,7 @@ async function _processDamageButtonEvent(message, event) {
     message.flags[MODULE_SHORT].manualDamage = false
     message.flags[MODULE_SHORT].renderDamage = true;  
 
-    await ItemUtility.runItemAction(null, message, ROLL_TYPE.DAMAGE);
+    await ItemUtility.runItemAction(message, ROLL_TYPE.DAMAGE);
 }
 
 /**
