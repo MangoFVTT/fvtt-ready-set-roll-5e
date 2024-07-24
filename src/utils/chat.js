@@ -50,7 +50,7 @@ export class ChatUtility {
             return;
         }
 
-        if (game.dice3d && message._dice3danimating)
+        if (game.dice3d && game.dice3d.isEnabled() && message._dice3danimating)
         {
             $(html).addClass("rsr-hide");
             await game.dice3d.waitFor3DAnimationByMessageID(message.id);
@@ -241,7 +241,7 @@ async function _injectContent(message, type, html) {
                 const enricher = html.find('.dice-roll');
                 
                 html.parent().find('.flavor-text').text('');
-                html.append('<div class="dnd5e2 chat-card"></div>');
+                html.prepend('<div class="dnd5e2 chat-card"></div>');
                 html.find('.chat-card').append(enricher);                        
 
                 message.flags[MODULE_SHORT].renderDamage = true;
