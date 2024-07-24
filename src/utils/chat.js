@@ -41,6 +41,19 @@ export class ChatUtility {
         // Hide the message if we haven't yet finished processing RSR content
         if (!message.flags[MODULE_SHORT].processed) {
             $(html).addClass("rsr-hide");
+
+            if (type == ROLL_TYPE.ITEM)
+            {
+                ItemUtility.runItemActions(message);
+            }
+
+            return;
+        }
+
+        if (game.dice3d && message._dice3danimating)
+        {
+            $(html).addClass("rsr-hide");
+            await game.dice3d.waitFor3DAnimationByMessageID(message.id);
         }
 
         const content = $(html).find('.message-content');
@@ -580,7 +593,7 @@ async function _processDamageButtonEvent(message, event) {
     message.flags[MODULE_SHORT].manualDamage = false
     message.flags[MODULE_SHORT].renderDamage = true;  
 
-    await ItemUtility.runItemAction(null, message, ROLL_TYPE.DAMAGE);
+    await ItemUtility.runItemAction(message, ROLL_TYPE.DAMAGE);
 }
 
 /**

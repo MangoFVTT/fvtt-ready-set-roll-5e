@@ -89,7 +89,10 @@ export class ItemUtility {
         }
     }
 
-    static async runItemActions(item, card) {
+    static async runItemActions(card) {
+        LogUtility.log("Quick rolling item rolls");
+        const item = await _ensureItemFromCard(card);
+
         if (card.flags[MODULE_SHORT].renderAttack && item.hasAttack) {
             const attackRoll = await ItemUtility.getAttackFromCard(card);
             card.flags[MODULE_SHORT].isCritical = card.flags[MODULE_SHORT].dual ? false : attackRoll.isCritical
@@ -118,7 +121,7 @@ export class ItemUtility {
         }
     }
 
-    static async runItemAction(item, card, action) {
+    static async runItemAction(card, action) {
         if (!card.flags || !card.flags[MODULE_SHORT]) {
             return;
         }
@@ -126,7 +129,8 @@ export class ItemUtility {
         if (!card.flags[MODULE_SHORT].quickRoll) {
             return;
         }
-    
+
+        const item = await _ensureItemFromCard(card);    
         ItemUtility.ensureFlagsOnItem(item);
 
         switch (action) {
