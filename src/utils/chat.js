@@ -401,7 +401,7 @@ async function _injectAttackRoll(message, html) {
 
     // Remove and re-add enrichers for hit/miss indication
     const card = html.closest('.chat-message');
-    card.find('.evaluation').remove();
+    card.find('.targets-tray').parent().remove();
     message._enrichAttackTargets(card[0]);
 }
 
