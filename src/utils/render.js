@@ -84,7 +84,7 @@ async function _renderMultiRoll(data = {}) {
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
             critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null,
-            dcResult: isNaN(critOptions.targetValue) ? undefined : (total >= critOptions.targetValue ? "fas fa-check" : "fas fa-xmark")
+            dcResult: !critOptions.displayChallenge || isNaN(critOptions.targetValue) ? undefined : (total >= critOptions.targetValue ? "fas fa-check" : "fas fa-xmark")
 		});
     }
 
