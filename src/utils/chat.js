@@ -233,6 +233,7 @@ async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
     const parent = game.messages.get(message.flags.dnd5e?.originatingMessage);
     message.flags[MODULE_SHORT].displayChallenge = parent?.shouldDisplayChallenge ?? message.shouldDisplayChallenge;
+    message.flags[MODULE_SHORT].displayAttackResult = game.user.isGM || (game.settings.get("dnd5e", "attackRollVisibility") !== "none");
 
     switch (type) {     
         case ROLL_TYPE.DAMAGE:
@@ -378,7 +379,7 @@ async function _injectAttackRoll(message, html) {
     
     RollUtility.resetRollGetters(roll);
 
-    roll.options.displayChallenge = message.flags[MODULE_SHORT].displayChallenge;
+    roll.options.displayChallenge = message.flags[MODULE_SHORT].displayAttackResult;
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
     const chatData = await roll.toMessage({}, { create: false });   
