@@ -42,7 +42,7 @@ export class ChatUtility {
         if (!message.flags[MODULE_SHORT].processed) {
             $(html).addClass("rsr-hide");
 
-            if (type == ROLL_TYPE.ITEM)
+            if (type == ROLL_TYPE.ITEM && message.isAuthor)
             {
                 ItemUtility.runItemActions(message);
             }
@@ -63,7 +63,7 @@ export class ChatUtility {
         }
         
         // This will force dual rolls on non-item messages, since this is the only place we can catch this before it is displayed.
-        if (message.isOwner && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
+        if (message.isAuthor && SettingsUtility.getSettingValue(SETTING_NAMES.ALWAYS_ROLL_MULTIROLL) && !ChatUtility.isMessageMultiRoll(message)) {
             await _enforceDualRolls(message);
 
             if (message.flags[MODULE_SHORT].dual) {
@@ -258,7 +258,7 @@ async function _injectContent(message, type, html) {
             }  
         case ROLL_TYPE.TOOL:         
         case ROLL_TYPE.ATTACK:
-            if (parent && parent.flags[MODULE_SHORT] && message.isOwner) {
+            if (parent && parent.flags[MODULE_SHORT] && message.isAuthor) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
                     parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
