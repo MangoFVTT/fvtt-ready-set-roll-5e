@@ -307,22 +307,14 @@ async function _injectContent(message, type, html) {
             html.find('.dice-tooltip').prepend(html.find('.dice-formula'));
             break;
         case ROLL_TYPE.ITEM:
-            const actions = html.find('.card-buttons');
-
-            // Remove any redundant dice roll elements that were added forcefully by dnd5e system
-            html.find('.dice-roll').remove();
-
-            if (!CoreUtility.isVisible(message)) {
-                const ChatMessage5e = CONFIG.ChatMessage.documentClass;
-                const chatData = await (new Roll("0d0")).toMessage({}, {
-                    rollMode: game.settings.get("core", "rollMode"),
-                    create: false 
-                });
-                const rollHTML = await new ChatMessage5e(chatData).getHTML();
-                html.parent().find('.message-header').replaceWith(rollHTML.find('.message-header'));
-                html.replaceWith(rollHTML.find('.message-content'));
+            if (!message.isContentVisible) {
                 return;
             }
+
+            const actions = html.find('.card-buttons');
+            
+            // Remove any redundant dice roll elements that were added forcefully by dnd5e system
+            html.find('.dice-roll').remove();
 
             if (message.flags[MODULE_SHORT].hideSave) {                
                 actions.find(`[data-action='${ROLL_TYPE.ABILITY_SAVE}']`).remove();
