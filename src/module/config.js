@@ -1,4 +1,5 @@
 import { ITEM_TYPE } from "../utils/item.js";
+import { ROLL_TYPE } from "../utils/roll.js";
 import { MODULE_SHORT } from "./const.js";
 
 /**
@@ -13,6 +14,16 @@ CONFIG[MODULE_SHORT] = {
         ITEM_TYPE.FEATURE,
         ITEM_TYPE.TOOL,
         ITEM_TYPE.CONSUMABLE
+    ],
+    validRollTypes: [
+        ROLL_TYPE.SKILL,
+        ROLL_TYPE.ABILITY_SAVE,
+        ROLL_TYPE.ABILITY_TEST,
+        ROLL_TYPE.DEATH_SAVE,
+        ROLL_TYPE.ITEM,
+        ROLL_TYPE.ATTACK,
+        ROLL_TYPE.DAMAGE,
+        ROLL_TYPE.TOOL
     ],
     flags: {
         weapon: {

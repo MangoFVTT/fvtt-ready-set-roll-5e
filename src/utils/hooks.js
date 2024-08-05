@@ -19,6 +19,7 @@ export const HOOKS_DND5E = {
     PRE_ROLL_DEATH_SAVE: "dnd5e.preRollDeathSave",
     PRE_ROLL_SKILL: "dnd5e.preRollSkill",
     PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolCheck",
+    PRE_ROLL_ATTACK: "dnd5e.preRollAttack",
     PRE_ROLL_DAMAGE: "dnd5e.preRollDamage",
     PRE_USE_ITEM: "dnd5e.preUseItem",
     PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
@@ -29,6 +30,7 @@ export const HOOKS_DND5E = {
 }
 
 export const HOOKS_INTEGRATION = {
+    DSN_ROLL_START: "diceSoNiceRollStart",
     DSN_ROLL_COMPLETE: "diceSoNiceRollComplete"
 }
 
@@ -155,7 +157,25 @@ export class HooksUtility {
         }
     }
 
+    /**
+     * Register sheet specific hooks for module integration with other modules.
+     */
     static registerIntegrationHooks() {
         LogUtility.log("Registering integration hooks");
+
+        if (game.modules.has(MODULE_DSN))
+        {
+            Hooks.on('diceSoNiceRollStart', (messageId, context) => {
+                const message = game.messages.get(messageId);
+
+                const rsrVanilla = SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) && 
+                    CONFIG[MODULE_SHORT].validRollTypes.includes(ChatUtility.getMessageType(message));
+
+                if (message?.flags && (message.flags[MODULE_SHORT] || rsrVanilla)) {
+                    console.log("hide dsn");
+                    context.blind = true;
+                }
+            });
+        }
     }
 }
