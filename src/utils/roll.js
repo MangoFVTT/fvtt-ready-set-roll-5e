@@ -18,7 +18,8 @@ export const ROLL_TYPE = {
     VERSATILE: "versatile",
     OTHER: "formula",
     ABILITY_CHECK: "abilityCheck",
-    TOOL_CHECK: "toolCheck"
+    TOOL_CHECK: "toolCheck",
+    CONCENTRATION: "concentration"
 }
 
 /**
@@ -56,9 +57,14 @@ export class RollUtility {
         config.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
         config.disadvantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
 
+        if (config.isConcentration) {
+            config.flavor = `${CoreUtility.localize("DND5E.ToolPromptTitle", { tool: CoreUtility.localize("DND5E.Concentration") })}`;
+        }
+
         config.messageData[`flags.${MODULE_SHORT}`] = { 
             quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore,
-            processed: true
+            processed: true,
+            isConcentration: config.isConcentration
         };
     }
 

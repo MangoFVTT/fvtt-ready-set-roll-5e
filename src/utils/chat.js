@@ -113,6 +113,18 @@ export class ChatUtility {
         return message.flags.dnd5e?.roll?.type ?? (message.flags.dnd5e?.use ? ROLL_TYPE.ITEM : null);
     }
 
+    static getActorFromMessage(message) {
+        let actor = null;
+        if (message.speaker.token) {
+            const token = game.scenes.get(message.speaker.scene).tokens.get(message.speaker.token);
+            actor = token?.actor;
+        } else if (message.speaker.actor) {
+            actor = game.actors.get(message.speaker.actor);
+        }
+
+        return actor;
+    }
+
     static isMessageMultiRoll(message) {
         return (message.flags[MODULE_SHORT].advantage || message.flags[MODULE_SHORT].disadvantage || message.flags[MODULE_SHORT].dual
             || (message.rolls[0] instanceof CONFIG.Dice.D20Roll && message.rolls[0].options.advantageMode !== CONFIG.Dice.D20Roll.ADV_MODE.NORMAL)) ?? false;
@@ -207,6 +219,10 @@ function _setupCardListeners(message, html) {
             await _processApplyTotalButtonEvent(message, event);
         });
     }
+
+    html.find(`[data-action='rsr-${ROLL_TYPE.CONCENTRATION}']`).click(async event => {
+        await _processBreakConcentrationButtonEvent(message, event);
+    });
 }
 
 function _processVanillaMessage(message) {
@@ -308,6 +324,11 @@ async function _injectContent(message, type, html) {
             const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: type })
             html.find('.dice-total').replaceWith(render);
             html.find('.dice-tooltip').prepend(html.find('.dice-formula'));
+
+            if (message.flags[MODULE_SHORT].isConcentration)
+            {
+                await _injectBreakConcentrationButton(message, html)
+            }
             break;
         case ROLL_TYPE.ITEM:
             if (!message.isContentVisible) {
@@ -485,9 +506,24 @@ async function _injectDamageButton(message, html) {
     { 
         action: ROLL_TYPE.DAMAGE,
         ...button
-    })
+    });
 
     html.prepend($(render));
+}
+
+async function _injectBreakConcentrationButton(message, html) {
+    const button = {
+        title: CoreUtility.localize("DND5E.ConcentrationBreak"),
+        icon: "<i class=\"fas fa-xmark\"></i>"
+    }
+
+    const render = await RenderUtility.render(TEMPLATE.BUTTON, 
+    { 
+        action: ROLL_TYPE.CONCENTRATION,
+        ...button
+    });
+
+    html.append($(render).addClass('rsr-concentration-buttons'));
 }
 
 /**
@@ -590,6 +626,18 @@ async function _processDamageButtonEvent(message, event) {
     message.flags[MODULE_SHORT].renderDamage = true;  
 
     await ItemUtility.runItemAction(message, ROLL_TYPE.DAMAGE);
+}
+
+async function _processBreakConcentrationButtonEvent(message, event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const actor = ChatUtility.getActorFromMessage(message);
+
+    if (actor) {
+        const ActiveEffect5e = CONFIG.ActiveEffect.documentClass;
+        ActiveEffect5e._manageConcentration(event, actor);
+    }
 }
 
 /**
