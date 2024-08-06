@@ -280,7 +280,10 @@ async function _injectContent(message, type, html) {
                 }
 
                 parent.flags[MODULE_SHORT].quickRoll = true;
-                parent.rolls.push(...message.rolls);
+                
+                if (parent.rolls.length > 0) {
+                    parent.rolls.push(...message.rolls);
+                }
 
                 ChatUtility.updateChatMessage(parent, {
                     flags: parent.flags,
