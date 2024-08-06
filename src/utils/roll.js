@@ -50,7 +50,7 @@ export class RollUtility {
         const advMode = CoreUtility.eventToAdvantage(config?.event);
 
         // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
-        const ignore = config.event?.altKey ?? false;
+        const ignore = config.vanilla || (config.event?.altKey ?? false);
 
         config.fastForward = !ignore;
         config.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
