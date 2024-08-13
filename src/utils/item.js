@@ -106,7 +106,7 @@ export class ItemUtility {
 
         if (card.flags[MODULE_SHORT].renderDamage && item.hasDamage) {
             const damageRolls = await ItemUtility.getDamageFromCard(card);
-            card.rolls.push(...damageRolls);
+            card.rolls.push(...(Array.isArray(damageRolls) ? damageRolls : [ damageRolls ]));
         }
 
         card.flags[MODULE_SHORT].processed = true;
