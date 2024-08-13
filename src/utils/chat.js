@@ -295,11 +295,8 @@ async function _injectContent(message, type, html) {
                     await CoreUtility.waitUntil(() => !message._dice3danimating);
                 }
 
-                parent.flags[MODULE_SHORT].quickRoll = true;
-                
-                if (parent.rolls.length > 0) {
-                    parent.rolls.push(...message.rolls);
-                }
+                parent.flags[MODULE_SHORT].quickRoll = true;                
+                parent.rolls.push(...message.rolls);
 
                 ChatUtility.updateChatMessage(parent, {
                     flags: parent.flags,

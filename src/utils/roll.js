@@ -83,7 +83,8 @@ export class RollUtility {
             quickRoll: !ignore,
             advantage: options.advantage,
             disadvantage: options.disadvantage,
-            altRoll: altRoll && !ignore
+            altRoll: altRoll && !ignore,
+            processed: ignore
         };
     }
 
