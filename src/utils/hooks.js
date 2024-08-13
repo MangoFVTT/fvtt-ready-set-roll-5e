@@ -1,7 +1,6 @@
-import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
-import { MODULE_DSN } from "../module/integration.js";
+import { MODULE_NAME, MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
+import { MODULE_LIB } from "../module/integration.js";
 import { ChatUtility } from "./chat.js";
-import { CoreUtility } from "./core.js";
 import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RollUtility } from "./roll.js";
@@ -149,8 +148,10 @@ export class HooksUtility {
                 SheetUtility.addModuleContentToItemSheet(app, html);
             });
 
-            ItemSheet.prototype._onChangeTab = function _onChangeTab(event, tabs, active) {
-                SheetUtility.setAutoHeightOnSheet(this);
+            if (game.modules.has(MODULE_LIB)) {
+                libWrapper.register(MODULE_NAME, "ItemSheet.prototype._onChangeTab", _onChangeTab, "OVERRIDE");
+            } else {
+                ItemSheet.prototype._onChangeTab = _onChangeTab;
             }
         }
     }
@@ -158,4 +159,15 @@ export class HooksUtility {
     static registerIntegrationHooks() {
         LogUtility.log("Registering integration hooks");
     }
+}
+
+/**
+ * Override function that ensures tab height is automatically scaled when changing tabs.
+ * @param {*} event The triggering event.
+ * @param {Tabs} tabs The list of navigation tabs in the sheet.
+ * @param {String} active The currently active tab.
+ * @private
+ */
+function _onChangeTab(event, tabs, active) {
+    SheetUtility.setAutoHeightOnSheet(this);
 }

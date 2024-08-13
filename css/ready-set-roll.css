@@ -139,6 +139,11 @@
 	margin-left: 3px
 }
 
+.rsr-concentration-buttons {
+	margin-top: 3px;
+	line-height: 24px;
+}
+
 .rsr-indicator i:hover {
 	cursor: default;
 	text-shadow: none;

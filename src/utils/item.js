@@ -106,7 +106,7 @@ export class ItemUtility {
 
         if (card.flags[MODULE_SHORT].renderDamage && item.hasDamage) {
             const damageRolls = await ItemUtility.getDamageFromCard(card);
-            card.rolls.push(...damageRolls);
+            card.rolls.push(...(Array.isArray(damageRolls) ? damageRolls : [ damageRolls ]));
         }
 
         card.flags[MODULE_SHORT].processed = true;
@@ -128,18 +128,20 @@ export class ItemUtility {
         
         if (!card.flags[MODULE_SHORT].quickRoll) {
             return;
-        }
-
-        const item = await _ensureItemFromCard(card);    
+        }      
+          
+        const item = await _ensureItemFromCard(card);
         ItemUtility.ensureFlagsOnItem(item);
-
+        
         switch (action) {
             case ROLL_TYPE.DAMAGE:
                 const damageRolls = await ItemUtility.getDamageFromCard(card);
                 card.rolls.push(...damageRolls);
-                CoreUtility.playRollSound();
+                if (!game.dice3d || !game.dice3d.isEnabled()) {
+                    CoreUtility.playRollSound();
+                }                
                 break;
-        }
+        }  
 
         ChatUtility.updateChatMessage(card, { 
             flags: card.flags,
@@ -331,14 +333,7 @@ async function _ensureItemFromCard(card) {
 
     const itemId = card.flags.dnd5e.use.itemId;
     const storedData = card.getFlag("dnd5e", "itemData");
-
-    let actor = null;
-    if (card.speaker.token) {
-        const token = game.scenes.get(card.speaker.scene).tokens.get(card.speaker.token);
-        actor = token?.actor;
-    } else if (card.speaker.actor) {
-        actor = game.actors.get(card.speaker.actor);
-    }
+    const actor = ChatUtility.getActorFromMessage(card);
 
     return storedData && actor ? await Item5e.create(storedData, { parent: actor, temporary: true }) : actor?.items.get(itemId);
 }

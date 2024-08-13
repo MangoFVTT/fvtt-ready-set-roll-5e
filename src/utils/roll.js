@@ -18,7 +18,8 @@ export const ROLL_TYPE = {
     VERSATILE: "versatile",
     OTHER: "formula",
     ABILITY_CHECK: "abilityCheck",
-    TOOL_CHECK: "toolCheck"
+    TOOL_CHECK: "toolCheck",
+    CONCENTRATION: "concentration"
 }
 
 /**
@@ -50,15 +51,20 @@ export class RollUtility {
         const advMode = CoreUtility.eventToAdvantage(config?.event);
 
         // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
-        const ignore = config.event?.altKey ?? false;
+        const ignore = config.vanilla || (config.event?.altKey ?? false);
 
         config.fastForward = !ignore;
         config.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
         config.disadvantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
 
+        if (config.isConcentration) {
+            config.flavor = `${CoreUtility.localize("DND5E.ToolPromptTitle", { tool: CoreUtility.localize("DND5E.Concentration") })}`;
+        }
+
         config.messageData[`flags.${MODULE_SHORT}`] = { 
             quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore,
-            processed: true
+            processed: true,
+            isConcentration: config.isConcentration
         };
     }
 
@@ -77,7 +83,8 @@ export class RollUtility {
             quickRoll: !ignore,
             advantage: options.advantage,
             disadvantage: options.disadvantage,
-            altRoll: altRoll && !ignore
+            altRoll: altRoll && !ignore,
+            processed: ignore
         };
     }
 
