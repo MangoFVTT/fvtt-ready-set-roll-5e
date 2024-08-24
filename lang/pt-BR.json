@@ -8,7 +8,7 @@
 			"enableAbilityQuickRoll.name": "Habilitar Rolagens Rápidas para Atributos",
 			"enableAbilityQuickRoll.hint": "Ao clicar em um teste de atributo ou salvaguarda, rolar diretamente para o chat em vez de usar a caixa de diálogo de rolagem padrão. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
 			"enableDeathQuickRoll.name": "Habilitar Rolagens Rápidas para Salvaguardas contra a Morte",
-			"enableDeathQuickRoll.hint": "Ao clicar em uma salvaguarda contra a morte, rolar diretamente para o chat em vez de usar a caixa de diálogo de rolagem padrão. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",			
+			"enableDeathQuickRoll.hint": "Ao clicar em uma salvaguarda contra a morte, rolar diretamente para o chat em vez de usar a caixa de diálogo de rolagem padrão. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
 			"enableItemQuickRoll.name": "Habilitar Rolagens Rápidas para Itens",
 			"enableItemQuickRoll.hint": "Ao clicar na imagem de um item (armas, magias, características e etc), automaticamente rola para o chat ao invés da mensagem normal. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
 			"enableAltQuickRoll.name": "Habilitar Rolagem Alternativa para Itens",
@@ -24,7 +24,19 @@
 			"enableOverlayButtons.name": "Habilitar Botões de Overlay",
 			"enableOverlayButtons.hint": "Ao emitir a mensagem de rolagem rápida, habilitar botões de overlay (passando o mouse por cima das rolagens) nas mensagens do chat que oferecerem funcionalidade adicional para a rolagem.",
 			"applyDamageTo.name": "Opções de Aplicação de Dano",
-			"applyDamageTo.hint": "Determina em quais tokens o dano é aplicado ao aplicar dano pelos botões de overlay no chat."
+			"applyDamageTo.hint": "Determina em quais tokens o dano é aplicado ao aplicar dano pelos botões de overlay no chat.",
+			"confirmRetroAdv.name": "Confirmar Vantagem Retroativa",
+			"confirmRetroAdv.hint": "Mostrar confirmação ao alterar retroativamente uma rolagem para vantagem ou desvantagem.",
+			"enableToolQuickRoll.name": "Habilitar Rolagens Rápidas para Testes de Ferramentas",
+			"enableToolQuickRoll.hint": "Ao clicar em um teste de ferramenta, automaticamente rola para o chat ao invés da mensagem normal. Esta funcionalidade pode ser ignorada segurando Alt ao clicar.",
+			"enableDamageButtons.name": "Habilitar Botões de Aplicação de Dano",
+			"alwaysShowButtons.name": "Sempre Mostrar Botões de Aplicação",
+			"alwaysShowButtons.hint": "Ao emitir um cartão no chat de rolagem rápida, sempre mostrar os botões de aplicação de dano em vez de apenas quando passar o mouse por cima.",
+			"enableVanillaQuickRoll.name": "Habilitar Conteúdo em Rolagens Simples",
+			"enableVanillaQuickRoll.hint": "Ao emitir uma rolagem simples, tentar aplicar o conteúdo, funcionalidade e estilo do módulo. Essa configuração se aplicará a todas rolagens simples, mesmo aquelas feitas ao ignorar uma rolagem rápida mantendo pressionada a tecla Alt.",
+			"enableDamageButtons.hint": "Ao emitir uma rolagem rápida com dano, habilitar botões na mensagem no chat que permitem que esse dano seja aplicado aos tokens.",
+			"confirmRetroCrit.name": "Confirmar Críticos Retroativos",
+			"confirmRetroCrit.hint": "Mostrar confirmação ao alterar retroativamente uma rolagem para dano crítico."
 		},
 		"choices": {
 			"rollModifierMode": {
@@ -72,14 +84,20 @@
 				"rollCrit": "Clique para rolar dano crítico.",
 				"rollAdvantage": "Clique para rolar com vantagem.",
 				"rollDisadvantage": "Clique para rolar com desvantagem.",
-				"repeat": "Clique para repetir a rolagem."
+				"repeat": "Clique para repetir a rolagem rápida."
+			},
+			"prompts": {
+				"retroCrit": "Alterar para Crítico?",
+				"retroAdv": "Rolar {target}?"
 			}
 		},
 		"messages": {
 			"error": {
 				"incorrectTargetState": "Não é possível aprimorar uma rolagem para o estado alvo '{state}' porque não é um estado válido (vantagem ou desvantagem).",
 				"rollIsNullOrUndefined": "A rolagem fornecida é nula ou indefinida.",
-				"termIsNullOrUndefined": "O termo fornecido é nulo ou indefinido."
+				"termIsNullOrUndefined": "O termo fornecido é nulo ou indefinido.",
+				"applyDamageNoTokens": "Você não tem tokens selecionados ou como alvo para aplicar dano.",
+				"applyDamageNoPermission": "Você não tem permissão para aplicar dano a partir desta mensagem."
 			},
 			"warning": {
 				"emptyDamageField": "Um ou mais campos de dano neste item estão vazios! Para rolar dano, certifique-se de que todos os campos de dano estejam preenchidos."
