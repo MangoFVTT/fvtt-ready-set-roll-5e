@@ -1,8 +1,8 @@
 import { MODULE_SHORT } from "../module/const.js";
 import { TEMPLATE } from "../module/templates.js";
+import { ActivityUtility } from "./activity.js";
 import { CoreUtility } from "./core.js";
 import { DialogUtility } from "./dialog.js";
-import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
 import { RenderUtility } from "./render.js";
 import { ROLL_STATE, ROLL_TYPE, RollUtility } from "./roll.js";
@@ -42,9 +42,9 @@ export class ChatUtility {
         if (!message.flags[MODULE_SHORT].processed) {
             $(html).addClass("rsr-hide");
 
-            if (type == ROLL_TYPE.ITEM && message.isAuthor)
+            if (type == ROLL_TYPE.ACTIVITY && message.isAuthor)
             {
-                ItemUtility.runItemActions(message);
+                ActivityUtility.runActivityActions(message);
             }
 
             return;
@@ -110,7 +110,7 @@ export class ChatUtility {
     }
 
     static getMessageType(message) {
-        return message.flags.dnd5e?.roll?.type ?? (message.flags.dnd5e?.use ? ROLL_TYPE.ITEM : null);
+        return message.flags.dnd5e?.roll?.type ?? (message.flags.dnd5e?.activity ? ROLL_TYPE.ACTIVITY : null);
     }
 
     static getActorFromMessage(message) {
@@ -247,14 +247,14 @@ async function _enforceDualRolls(message) {
 
 async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
-    const parent = game.messages.get(message.flags.dnd5e?.originatingMessage);
+    const parent =message.getOriginatingMessage();
     message.flags[MODULE_SHORT].displayChallenge = parent?.shouldDisplayChallenge ?? message.shouldDisplayChallenge;
     message.flags[MODULE_SHORT].displayAttackResult = game.user.isGM || (game.settings.get("dnd5e", "attackRollVisibility") !== "none");
 
     switch (type) {     
         case ROLL_TYPE.DAMAGE:
             // Handle damage enrichers
-            if (!message.flags.dnd5e?.roll.itemId) {
+            if (!message.flags.dnd5e?.item?.id) {
                 const enricher = html.find('.dice-roll');
                 
                 html.parent().find('.flavor-text').text('');
@@ -263,7 +263,7 @@ async function _injectContent(message, type, html) {
 
                 message.flags[MODULE_SHORT].renderDamage = true;
                 message.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
-                message.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+                //message.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
 
                 await _injectDamageRoll(message, enricher);
 
@@ -272,28 +272,23 @@ async function _injectContent(message, type, html) {
                 }
                 enricher.remove();
                 break;
-            }  
-        case ROLL_TYPE.TOOL:         
+            }
         case ROLL_TYPE.ATTACK:
             if (parent && parent.flags[MODULE_SHORT] && message.isAuthor) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
-                    parent.flags.dnd5e.targets = message.flags.dnd5e.targets ?? [];
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
                     parent.flags[MODULE_SHORT].renderDamage = true;
-                    parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
+                    //parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
                     parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
+                    parent.flags[MODULE_SHORT].isHealing = message.flags.dnd5e.activity.type === "heal";
                 }
                 
-                if (type === ROLL_TYPE.TOOL) {
-                    parent.flags[MODULE_SHORT].renderToolCheck = true;                     
-                }
-                
-                if (game.dice3d && game.dice3d.isEnabled()) {
-                    await CoreUtility.waitUntil(() => !message._dice3danimating);
-                }
+                // if (game.dice3d && game.dice3d.isEnabled()) {
+                //     await CoreUtility.waitUntil(() => !message._dice3danimating);
+                // }
 
                 parent.flags[MODULE_SHORT].quickRoll = true;                
                 parent.rolls.push(...message.rolls);
@@ -307,10 +302,12 @@ async function _injectContent(message, type, html) {
                 message.delete();
                 return;
             }
+            break;
         case ROLL_TYPE.SKILL:
         case ROLL_TYPE.ABILITY_SAVE:
         case ROLL_TYPE.ABILITY_TEST:
         case ROLL_TYPE.DEATH_SAVE:
+        case ROLL_TYPE.TOOL:
             if (!message.isContentVisible) {
                 return;
             }
@@ -327,7 +324,7 @@ async function _injectContent(message, type, html) {
                 await _injectBreakConcentrationButton(message, html)
             }
             break;
-        case ROLL_TYPE.ITEM:
+        case ROLL_TYPE.ACTIVITY:
             if (!message.isContentVisible) {
                 return;
             }
@@ -337,26 +334,14 @@ async function _injectContent(message, type, html) {
             // Remove any redundant dice roll elements that were added forcefully by dnd5e system
             html.find('.dice-roll').remove();
 
-            if (message.flags[MODULE_SHORT].hideSave) {                
-                actions.find(`[data-action='${ROLL_TYPE.ABILITY_SAVE}']`).remove();
-            }
-
-            if (message.flags[MODULE_SHORT].hideCheck) {                
-                actions.find(`[data-action='${ROLL_TYPE.ABILITY_CHECK}']`).remove();
-            }
-
-            if (message.flags[MODULE_SHORT].hideProperties) {                
-                html.find('.card-footer').remove();
-            }
-
             if (message.flags[MODULE_SHORT].renderAttack || message.flags[MODULE_SHORT].renderAttack === false) {
-                actions.find(`[data-action='${ROLL_TYPE.ATTACK}']`).remove();
+                actions.find(`[data-action=rollAttack]`).remove();
                 await _injectAttackRoll(message, actions);
             }
             
-            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].renderDamage) {                
-                actions.find(`[data-action='${ROLL_TYPE.DAMAGE}']`).remove();
-                actions.find(`[data-action='${ROLL_TYPE.VERSATILE}']`).remove();
+            if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].renderDamage) {
+                actions.find(`[data-action=rollDamage]`).remove();
+                actions.find(`[data-action=rollHealing]`).remove();
             }
 
             if (message.flags[MODULE_SHORT].manualDamage) {
@@ -369,11 +354,6 @@ async function _injectContent(message, type, html) {
 
             if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {                
                 await _injectApplyDamageButtons(message, html);
-            }
-
-            if (message.flags[MODULE_SHORT].renderToolCheck) {
-                actions.find(`[data-action='${ROLL_TYPE.TOOL_CHECK}']`).remove();
-                await _injectToolCheckRoll(message, actions);
             }
             break;
         default:
@@ -400,14 +380,14 @@ async function _injectAttackRoll(message, html) {
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
 
-    const ammo = message.flags[MODULE_SHORT].consume;
+    const ammo = message.getAssociatedActor().items.get(message.flags[MODULE_SHORT].ammunition)?.name;
 
     const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
     {
         section: `rsr-section-${ROLL_TYPE.ATTACK}`,
         title: CoreUtility.localize("DND5E.Attack"),
         icon: "<dnd5e-icon src=\"systems/dnd5e/icons/svg/trait-weapon-proficiencies.svg\"></dnd5e-icon>",
-        subtitle: ammo ? `${CoreUtility.localize("DND5E.ConsumableAmmo")} - ${ammo}` : undefined
+        subtitle: ammo ? `${CoreUtility.localize("DND5E.Item.Property.Ammunition")} - ${ammo}` : undefined
     }));
     
     $(sectionHTML).append(rollHTML);
@@ -417,33 +397,6 @@ async function _injectAttackRoll(message, html) {
     const card = html.closest('.chat-message');
     card.find('.targets-tray').parent().remove();
     message._enrichAttackTargets(card[0]);
-}
-
-async function _injectToolCheckRoll(message, html) {
-    const ChatMessage5e = CONFIG.ChatMessage.documentClass;
-    const roll = message.rolls.find(r => r instanceof CONFIG.Dice.D20Roll);
-
-    if (!roll) return;
-
-    RollUtility.resetRollGetters(roll);
-    
-    roll.options.displayChallenge = message.flags[MODULE_SHORT].displayChallenge;
-
-    const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.TOOL_CHECK });
-    const chatData = await roll.toMessage({}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
-    rollHTML.find('.dice-total').replaceWith(render);
-    rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
-
-    const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
-    {       
-        section: `rsr-section-${ROLL_TYPE.TOOL}`,
-        title: CoreUtility.localize("DND5E.UseItem", { item: message.flags[MODULE_SHORT].name ?? CoreUtility.localize("ITEM.TypeTool") }),
-        icon: "<i class=\"fas fa-hammer\"></i>",
-    }));
-    
-    $(sectionHTML).append(rollHTML);
-    sectionHTML.insertBefore(html);
 }
 
 async function _injectDamageRoll(message, html) {
@@ -622,7 +575,7 @@ async function _processDamageButtonEvent(message, event) {
     message.flags[MODULE_SHORT].manualDamage = false
     message.flags[MODULE_SHORT].renderDamage = true;  
 
-    await ItemUtility.runItemAction(message, ROLL_TYPE.DAMAGE);
+    await ActivityUtility.runActivityAction(message, ROLL_TYPE.DAMAGE);
 }
 
 async function _processBreakConcentrationButtonEvent(message, event) {
@@ -809,14 +762,14 @@ async function _processRetroCritButtonEvent(message, event) {
         message.flags[MODULE_SHORT].isCritical = true;
 
         const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
-        const crits = await ItemUtility.getDamageFromCard(message);
+        const crits = await ActivityUtility.getDamageFromMessage(message);
 
         for (let i = 0; i < rolls.length; i++) {
             const baseRoll = rolls[i];
             const critRoll = crits[i]
 
             for (const [j, term] of baseRoll.terms.entries()) {
-                if (!(term instanceof Die)) {
+                if (!(term instanceof foundry.dice.terms.Die)) {
                     continue;
                 }
 
