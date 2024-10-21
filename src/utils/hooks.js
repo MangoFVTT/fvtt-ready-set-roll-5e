@@ -1,11 +1,9 @@
-import { MODULE_NAME, MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
-import { MODULE_LIB } from "../module/integration.js";
+import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
+import { ActivityUtility } from "./activity.js";
 import { ChatUtility } from "./chat.js";
-import { ItemUtility } from "./item.js";
 import { LogUtility } from "./log.js";
-import { RollUtility } from "./roll.js";
+import { ROLL_TYPE, RollUtility } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
-import { SheetUtility } from "./sheet.js";
 
 export const HOOKS_CORE = {
     INIT: "init",
@@ -18,9 +16,11 @@ export const HOOKS_DND5E = {
     PRE_ROLL_DEATH_SAVE: "dnd5e.preRollDeathSave",
     PRE_ROLL_SKILL: "dnd5e.preRollSkill",
     PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolCheck",
-    PRE_ROLL_DAMAGE: "dnd5e.preRollDamage",
-    PRE_USE_ITEM: "dnd5e.preUseItem",
-    PRE_DISPLAY_CARD: "dnd5e.preDisplayCard",
+    PRE_ROLL_ATTACK: "dnd5e.preRollAttackV2",
+    PRE_ROLL_DAMAGE: "dnd5e.preRollDamageV2",
+    PRE_USE_ACTIVITY: "dnd5e.preUseActivity",
+    PRE_CREATE_USAGE_MESSAGE: "dnd5e.preCreateUsageMessage",
+    ACTIVITY_CONSUMPTION: "dnd5e.activityConsumption",
     DISPLAY_CARD: "dnd5e.displayCard",
     RENDER_CHAT_MESSAGE: "dnd5e.renderChatMessage",    
     RENDER_ITEM_SHEET: "renderItemSheet5e",
@@ -55,7 +55,7 @@ export class HooksUtility {
                 { recursive: false }
             );
 
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) { 
                 CONFIG.DND5E.aggregateDamageDisplay = false;
             }
 
@@ -99,29 +99,48 @@ export class HooksUtility {
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_TOOL_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (item, config) => {
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (actor, config, toolId) => {
                 RollUtility.processActorRoll(config);
                 return true;
             });
         }
 
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_USE_ITEM, (item, config, options) => {               
-                if (item && CONFIG[MODULE_SHORT].validItemTypes.includes(item.type)) {                    
-                    RollUtility.processItemRoll(options);
+        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) {
+            Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {              
+                RollUtility.processActivityRoll(usageConfig, dialogConfig, messageConfig);
+                return true;
+            });
+
+            Hooks.on(HOOKS_DND5E.PRE_CREATE_USAGE_MESSAGE, (activity, message) => {
+                ActivityUtility.setRenderFlags(activity, message);
+            });
+
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (rollConfig, dialogConfig, messageConfig) => {
+                rollConfig.rolls[0].options.advantage = rollConfig.advantage;
+                rollConfig.rolls[0].options.disadvantage = rollConfig.disadvantage;
+                return true;
+            })
+
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (rollConfig, dialogConfig, messageConfig) => {
+                for ( const roll of rollConfig.rolls ) {
+                    roll.options ??= {};
+                    roll.options.isCritical ??= rollConfig.isCritical;
+                }
+
+                if (!messageConfig.data.flags.dnd5e.originatingMessage) {
+                    const messageId = rollConfig.event?.target.closest("[data-message-id]")?.dataset.messageId;
+                    messageConfig.data.flags.dnd5e.originatingMessage = messageId;
                 }
 
                 return true;
-            });
+            })
 
-            Hooks.on(HOOKS_DND5E.PRE_DISPLAY_CARD, async (item, card, options) => {
-                ItemUtility.setRenderFlags(item, card);
-            });
-
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (item, config) => {
-                ItemUtility.processItemDamageConfig(item, config);
-                return true;
-            });
+            Hooks.on(HOOKS_DND5E.ACTIVITY_CONSUMPTION, (activity, usageConfig, messageConfig, updates) => {
+                if (activity.hasOwnProperty(ROLL_TYPE.ATTACK) && updates.item.length > 0 && messageConfig.data) {
+                    messageConfig.data.flags[MODULE_SHORT].ammunition = updates.item[0]._id;
+                    updates.item[0]["system.quantity"]++;
+                }
+            })
         }
     }
 
@@ -141,33 +160,9 @@ export class HooksUtility {
      */
     static registerSheetHooks() {
         LogUtility.log("Registering sheet hooks");
-        
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ITEM_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.RENDER_ITEM_SHEET, (app, html, data) => {
-                SheetUtility.setAutoHeightOnSheet(app);
-                SheetUtility.addModuleContentToItemSheet(app, html);
-            });
-
-            if (game.modules.has(MODULE_LIB)) {
-                libWrapper.register(MODULE_NAME, "ItemSheet.prototype._onChangeTab", _onChangeTab, "OVERRIDE");
-            } else {
-                ItemSheet.prototype._onChangeTab = _onChangeTab;
-            }
-        }
     }
 
     static registerIntegrationHooks() {
         LogUtility.log("Registering integration hooks");
     }
-}
-
-/**
- * Override function that ensures tab height is automatically scaled when changing tabs.
- * @param {*} event The triggering event.
- * @param {Tabs} tabs The list of navigation tabs in the sheet.
- * @param {String} active The currently active tab.
- * @private
- */
-function _onChangeTab(event, tabs, active) {
-    SheetUtility.setAutoHeightOnSheet(this);
 }

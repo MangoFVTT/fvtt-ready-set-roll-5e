@@ -12,9 +12,8 @@ export const SETTING_NAMES = {
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
     QUICK_DEATH_ENABLED: "enableDeathQuickRoll",
     QUICK_TOOL_ENABLED: "enableToolQuickRoll",
-    QUICK_ITEM_ENABLED: "enableItemQuickRoll",
+    QUICK_ACTIVITY_ENABLED: "enableActivityQuickRoll",
     QUICK_VANILLA_ENABLED: "enableVanillaQuickRoll",
-    ALT_ROLL_ENABLED: "enableAltQuickRoll",
     ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti",
     D20_ICONS_ENABLED: "enableD20Icons",
     MANUAL_DAMAGE_MODE: "manualDamageMode",
@@ -57,7 +56,7 @@ export class SettingsUtility {
             { name: SETTING_NAMES.QUICK_SKILL_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_DEATH_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_TOOL_ENABLED, default: true },
-            { name: SETTING_NAMES.QUICK_ITEM_ENABLED, default: true },
+            { name: SETTING_NAMES.QUICK_ACTIVITY_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_VANILLA_ENABLED, default: false }
         ];
 
@@ -75,7 +74,6 @@ export class SettingsUtility {
 
         // ADDITIONAL ROLL SETTINGS
         const extraRollOptions = [
-            { name: SETTING_NAMES.ALT_ROLL_ENABLED, default: false, scope: "world" },
             { name: SETTING_NAMES.ALWAYS_ROLL_MULTIROLL, default: false, scope: "client" }
         ];
 

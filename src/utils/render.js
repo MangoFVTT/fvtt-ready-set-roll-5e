@@ -68,7 +68,7 @@ async function _renderMultiRoll(data = {}) {
             r.active = !(r.rerolled && !r.count) ?? true; 
         });
 
-        const baseTerm = new Die({
+        const baseTerm = new foundry.dice.terms.Die({
             number: 1,
             faces: 20,
             results: tmpResults,

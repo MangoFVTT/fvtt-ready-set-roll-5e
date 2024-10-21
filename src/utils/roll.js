@@ -12,14 +12,14 @@ export const ROLL_TYPE = {
     ABILITY_SAVE: "save",
     DEATH_SAVE: "death",
     TOOL: "tool",
-    ITEM: "item",
+    ACTIVITY: "activity",
+    CHECK: "check",
     ATTACK: "attack",
     DAMAGE: "damage",
     VERSATILE: "versatile",
     OTHER: "formula",
-    ABILITY_CHECK: "abilityCheck",
-    TOOL_CHECK: "toolCheck",
-    CONCENTRATION: "concentration"
+    CONCENTRATION: "concentration",
+    HEALING: "healing"
 }
 
 /**
@@ -49,9 +49,7 @@ export const CRIT_TYPE = {
 export class RollUtility {
     static processActorRoll(config) {
         const advMode = CoreUtility.eventToAdvantage(config?.event);
-
-        // For actor rolls, the alternate item roll setting doesn't matter for ignoring quick roll, only the alt key.
-        const ignore = config.vanilla || (config.event?.altKey ?? false);
+        const ignore = config.vanilla || (config?.event?.altKey ?? false);
 
         config.fastForward = !ignore;
         config.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
@@ -68,22 +66,18 @@ export class RollUtility {
         };
     }
 
-    static processItemRoll(options) {
-        const advMode = CoreUtility.eventToAdvantage(window.event);
-        const altRoll = CoreUtility.eventToAltRoll(window.event)
+    static processActivityRoll(usageConfig, dialogConfig, messageConfig) {
+        const advMode = CoreUtility.eventToAdvantage(usageConfig?.event);
+        const ignore = usageConfig.vanilla || (usageConfig?.event?.altKey ?? false);
 
-        // For item rolls, check the alternate item roll setting to see if the alt key should ignore quick roll.
-        const ignore = (window.event.altKey && !altRoll) ?? false;
+        usageConfig.fastForward = !ignore;
+        usageConfig.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
+        usageConfig.disadvantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
 
-        options.fastForward = !ignore;
-        options.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
-        options.disadvantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
-
-        options.flags[MODULE_SHORT] = { 
+        messageConfig.data.flags[MODULE_SHORT] = { 
             quickRoll: !ignore,
-            advantage: options.advantage,
-            disadvantage: options.disadvantage,
-            altRoll: altRoll && !ignore,
+            advantage: usageConfig.advantage,
+            disadvantage: usageConfig.disadvantage,
             processed: ignore
         };
     }
@@ -106,7 +100,7 @@ export class RollUtility {
 
             await CoreUtility.tryRollDice3D(d20Additional);
 
-            const d20Forced = new Die({
+            const d20Forced = new foundry.dice.terms.Die({
                 number: forcedDiceCount,
                 faces: 20,
                 results: [...d20BaseTerm.results, ...d20Additional.dice[0].results],

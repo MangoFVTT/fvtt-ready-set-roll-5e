@@ -1,5 +1,4 @@
 import { MODULE_NAME, MODULE_SHORT } from "../module/const.js";
-import { ITEM_TYPE } from "./item.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
 
 /**
@@ -46,17 +45,6 @@ export class CoreUtility {
             default:
                 return CONFIG.Dice.D20Roll.ADV_MODE.NORMAL;
         }
-    }
-
-    /**
-     * Checks an event for alternate roll modifier key (if the relevant setting is enabled).
-     * @param {object} event Event data to check.
-     * @returns {Boolean} If the roll should be an alternate one. 
-     */
-    static eventToAltRoll(event = {}) {
-        const altRollEnabled = SettingsUtility.getSettingValue(SETTING_NAMES.ALT_ROLL_ENABLED);
-
-        return event.altKey && altRollEnabled;
     }
 
     /**
