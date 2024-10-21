@@ -43,19 +43,13 @@ The following modules have been verified as compatible from the specified module
 
 ![alwayson](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/4b9c0312-7bd6-4232-af9f-ff11ad960a06)
 
-### Roll Configuration & Alt Rolls
-- Rolls can be configured via a "Quick Rolls" tab while editing an item. This allows you to select what parts of the item are actually outputted to the quick roll.
-- If enabled, items can also output an alternate roll when holding `alt`. This alternate roll can be configured independently of the default configuration. Enabling alternate rolls for items disables the ability to use the default dialog rolling for items.
-
-![rollconfig](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/c76c4ee2-de78-4f05-8cfb-56568f406468)
-
 ### Retroactive Roll Editing
 - If enabled via the module settings, quick rolls can be edited post creation, allowing for retroactively rolling advantage, disadvantage, or critical damage for a roll after it has already been created.
 - Changes to the roll will automatically live edit the quick roll's chat card, displaying the new data alongside the already existing roll.
 
 ![retroactiveoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d73efc5b-cf47-4dca-a5af-6dff9c531359)
 
-### Individual Dice Rerolling - TEMPORARILY DISABLED IN 3.0
+### Individual Dice Rerolling - TEMPORARILY DISABLED IN 3.0+
 - If enabled via the module settings, individual dice rolls in quick rolls can be rerolled by clicking on that individual dice within the chat card.
 - Rerolling dice will automatically live edit the quick roll's chat card, displaying the new rolls and roll totals alongside the already existing dice.
 
@@ -67,13 +61,7 @@ The following modules have been verified as compatible from the specified module
 
 ![damageoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/f610f9be-9578-435a-abb5-bac082abe06f)
 
-### Damage Context
-- Damage fields can be given additional context strings to convey extra information about that particular damage group. This context will be then shown on the chat card, as either part of the overall damage description or a replacement to default damage titles/type strings.
-- Damage context can be configured via the module settings to be placed at various positions of the chat card, and even replace default damage title and type labels.
-
-![damagecontext](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/04de2650-ad9d-4b78-bc7a-8052d1391a88)
-
-### Macro Support - TEMPORARILY DISABLED IN 3.0
+### Macro Support - TEMPORARILY DISABLED IN 3.0+
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
     - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
@@ -81,7 +69,7 @@ The following modules have been verified as compatible from the specified module
 
 ![macros](https://user-images.githubusercontent.com/110994627/214150998-869afaaa-b93a-4ff0-b9af-470c54f35d52.png)
 
-### String Queries - TEMPORARILY DISABLED IN 3.0
+### String Queries - TEMPORARILY DISABLED IN 3.0+
 - Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
 - This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
 
