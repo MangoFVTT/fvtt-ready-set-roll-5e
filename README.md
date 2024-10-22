@@ -49,11 +49,11 @@ The following modules have been verified as compatible from the specified module
 
 ![retroactiveoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d73efc5b-cf47-4dca-a5af-6dff9c531359)
 
-### Individual Dice Rerolling - TEMPORARILY DISABLED IN 3.0+
+<!-- ### Individual Dice Rerolling - TEMPORARILY DISABLED IN 3.0+
 - If enabled via the module settings, individual dice rolls in quick rolls can be rerolled by clicking on that individual dice within the chat card.
 - Rerolling dice will automatically live edit the quick roll's chat card, displaying the new rolls and roll totals alongside the already existing dice.
 
-![dicereroll](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d0c16a57-e41e-49df-b88f-464b152d1658)
+![dicereroll](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/d0c16a57-e41e-49df-b88f-464b152d1658) -->
 
 ### Apply Individual Damage
 - If enabled via the module settings, each damage field in a quick roll chat card can apply damage or healing to selected or targeted tokens via overlay buttons. This extends core system behaviour (applying damage via context menus) to allow for the application of each damage field individually instead of as a single whole.
@@ -61,7 +61,7 @@ The following modules have been verified as compatible from the specified module
 
 ![damageoverlay](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/assets/110994627/f610f9be-9578-435a-abb5-bac082abe06f)
 
-### Macro Support - TEMPORARILY DISABLED IN 3.0+
+<!-- ### Macro Support - TEMPORARILY DISABLED IN 3.0+
 - Module-specific macros can be called to directly create quick rolls with custom options, or to output a set of damage rolls without any attached item.
 - Macros are available in the following format:
     - `rsr5e.macro.rollItem('item ID or name', 'actor ID or name (optional)', options = {})`
@@ -73,7 +73,7 @@ The following modules have been verified as compatible from the specified module
 - Macro scripts can call `rsr5e.query()` on a Roll20 style query (e.g. `'?{Select Die Value|1d4,4|1d6,6|1d8,8}'`. 
 - This will bring up a dialog prompt parsed from that query when the macro is executed, and return the selected value for later use.
 
-![image](https://user-images.githubusercontent.com/110994627/214161613-1bb4720e-b0b4-4f85-9658-e8c44d1227c3.png)
+![image](https://user-images.githubusercontent.com/110994627/214161613-1bb4720e-b0b4-4f85-9658-e8c44d1227c3.png) -->
 
 ## Planned Features
 - [See [FEATURE] Issues List](https://github.com/MangoFVTT/fvtt-ready-set-roll-5e/issues?q=is%3Aopen+is%3Aissue+label%3Afeature)
