@@ -54,10 +54,8 @@ export class HooksUtility {
                 Object.fromEntries(Object.entries(CONFIG.DND5E.healingTypes).map(([k, v]) => [k, v.label])),
                 { recursive: false }
             );
-
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) { 
-                CONFIG.DND5E.aggregateDamageDisplay = false;
-            }
+            
+            CONFIG.DND5E.aggregateDamageDisplay = SettingsUtility.getSettingValue(SETTING_NAMES.AGGREGATE_DAMAGE) ?? true;
 
             HooksUtility.registerSheetHooks();
             HooksUtility.registerIntegrationHooks();
