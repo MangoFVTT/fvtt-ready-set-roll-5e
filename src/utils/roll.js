@@ -19,7 +19,8 @@ export const ROLL_TYPE = {
     VERSATILE: "versatile",
     OTHER: "formula",
     CONCENTRATION: "concentration",
-    HEALING: "healing"
+    HEALING: "healing",
+    FORMULA: "roll"
 }
 
 /**
