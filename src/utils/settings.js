@@ -7,7 +7,6 @@ import { LogUtility } from "./log.js";
  * @enum {String}
  */
 export const SETTING_NAMES = {
-    ROLL_MODIFIER_MODE: "rollModifierMode",
     QUICK_SKILL_ENABLED: "enableSkillQuickRoll",
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
     QUICK_DEATH_ENABLED: "enableDeathQuickRoll",
@@ -37,19 +36,6 @@ export class SettingsUtility {
      */
     static registerSettings() {
         LogUtility.log("Registering module settings");
-
-        game.settings.register(MODULE_NAME, SETTING_NAMES.ROLL_MODIFIER_MODE, {
-			name: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ROLL_MODIFIER_MODE}.name`),
-			hint: CoreUtility.localize(`${MODULE_SHORT}.settings.${SETTING_NAMES.ROLL_MODIFIER_MODE}.hint`),
-			scope: "client",
-			config: true,
-			default: 0,
-			type: Number,
-			choices: {
-				0: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.ROLL_MODIFIER_MODE}.shiftAdv`),
-				1: CoreUtility.localize(`${MODULE_SHORT}.choices.${SETTING_NAMES.ROLL_MODIFIER_MODE}.ctrlAdv`)
-			}
-		});
 
         // QUICK ROLL SETTINGS        
 		const quickRollOptions = [
