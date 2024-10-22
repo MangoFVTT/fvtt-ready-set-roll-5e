@@ -19,6 +19,7 @@ export class ActivityUtility {
         const hasAttack = activity.hasOwnProperty(ROLL_TYPE.ATTACK);
         const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE);
         const hasHealing = activity.hasOwnProperty(ROLL_TYPE.HEALING);
+        const hasFormula = activity.hasOwnProperty(ROLL_TYPE.FORMULA);
 
         if (hasAttack) {            
             message.data.flags[MODULE_SHORT].renderAttack = true;
@@ -35,6 +36,14 @@ export class ActivityUtility {
             message.data.flags[MODULE_SHORT].isHealing = true;
             message.data.flags[MODULE_SHORT].renderDamage = true; 
         }
+
+        if (hasFormula) {
+            message.data.flags[MODULE_SHORT].renderFormula = true;
+
+            if (activity.roll?.name && activity.roll.name !== "") {
+                message.data.flags[MODULE_SHORT].formulaName = activity.roll?.name;
+            }
+        }
     }
 
     static async runActivityActions(message) {
@@ -48,6 +57,11 @@ export class ActivityUtility {
         if (message.flags[MODULE_SHORT].renderDamage) {
             const damageRolls = await ActivityUtility.getDamageFromMessage(message);
             message.rolls.push(...damageRolls);
+        }
+
+        if (message.flags[MODULE_SHORT].renderFormula) {
+            const formulaRolls = await ActivityUtility.getFormulaFromMessage(message);
+            message.rolls.push(...formulaRolls);
         }
 
         message.flags[MODULE_SHORT].processed = true;
@@ -101,6 +115,20 @@ export class ActivityUtility {
         {
             isCritical: message.flags[MODULE_SHORT].isCritical ?? false,
             ammunition: actor.items.get(message.flags[MODULE_SHORT].ammunition)
+        }, 
+        { 
+            configure: false 
+        }, 
+        { 
+            create: false 
+        });
+    }
+
+    static getFormulaFromMessage(message) {
+        const activity = message.getAssociatedActivity();
+
+        return activity.rollFormula(
+        {
         }, 
         { 
             configure: false 

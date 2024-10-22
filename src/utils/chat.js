@@ -352,7 +352,12 @@ async function _injectContent(message, type, html) {
                 await _injectDamageRoll(message, actions);
             }
 
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {                
+            if (message.flags[MODULE_SHORT].renderFormula) {
+                actions.find(`[data-action=rollFormula]`).remove();
+                await _injectFormulaRoll(message, actions);
+            }
+
+            if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {
                 await _injectApplyDamageButtons(message, html);
             }
             break;
@@ -375,7 +380,7 @@ async function _injectAttackRoll(message, html) {
     roll.options.displayChallenge = message.flags[MODULE_SHORT].displayAttackResult;
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
-    const chatData = await roll.toMessage({}, { create: false });   
+    const chatData = await roll.toMessage({}, { create: false });
     const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');    
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
@@ -394,6 +399,28 @@ async function _injectAttackRoll(message, html) {
     sectionHTML.insertBefore(html);
 }
 
+async function _injectFormulaRoll(message, html) {
+    const ChatMessage5e = CONFIG.ChatMessage.documentClass;
+    const roll = message.rolls.find(r => r instanceof CONFIG.Dice.BasicRoll);
+
+    if (!roll) return;
+
+    const chatData = await roll.toMessage({}, { create: false });
+    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
+    rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
+
+    const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
+    {
+        section: `rsr-section-${ROLL_TYPE.FORMULA}`,
+        title: message.flags[MODULE_SHORT].formulaName ?? CoreUtility.localize("DND5E.OtherFormula"),
+        icon: "<i class=\"fas fa-dice\"></i>"
+    }));
+    
+    $(sectionHTML).append(rollHTML);
+    sectionHTML.insertBefore(html);
+
+}
+
 async function _injectDamageRoll(message, html) {
     const ChatMessage5e = CONFIG.ChatMessage.documentClass;
     const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
@@ -404,17 +431,6 @@ async function _injectDamageRoll(message, html) {
     const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
     rollHTML.find('.dice-result').addClass('rsr-damage');
-
-    if (message.flags[MODULE_SHORT].context) {
-        const tooltip = rollHTML.find('.dice-tooltip .tooltip-part')
-
-        await tooltip.each(async (i, el) => {
-            if (message.flags[MODULE_SHORT].context[i] && message.flags[MODULE_SHORT].context[i] !== "") {
-                const contextHTML = await RenderUtility.render(TEMPLATE.CONTEXT, { context: message.flags[MODULE_SHORT].context[i]});
-                $(el).prepend(contextHTML);
-            }
-        });
-    }
 
     const header = message.flags[MODULE_SHORT].isHealing
         ? {            
