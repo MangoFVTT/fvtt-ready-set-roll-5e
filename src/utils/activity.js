@@ -17,7 +17,7 @@ export class ActivityUtility {
         }
 
         const hasAttack = activity.hasOwnProperty(ROLL_TYPE.ATTACK);
-        const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE);
+        const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE) && activity[ROLL_TYPE.DAMAGE].parts.length > 0;;
         const hasHealing = activity.hasOwnProperty(ROLL_TYPE.HEALING);
         const hasFormula = activity.hasOwnProperty(ROLL_TYPE.FORMULA);
 
