@@ -392,11 +392,6 @@ async function _injectAttackRoll(message, html) {
     
     $(sectionHTML).append(rollHTML);
     sectionHTML.insertBefore(html);
-
-    // Remove and re-add enrichers for hit/miss indication
-    const card = html.closest('.chat-message');
-    card.find('.targets-tray').parent().remove();
-    message._enrichAttackTargets(card[0]);
 }
 
 async function _injectDamageRoll(message, html) {

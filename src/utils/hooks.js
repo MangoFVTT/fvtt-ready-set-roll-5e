@@ -54,10 +54,8 @@ export class HooksUtility {
                 Object.fromEntries(Object.entries(CONFIG.DND5E.healingTypes).map(([k, v]) => [k, v.label])),
                 { recursive: false }
             );
-
-            if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) { 
-                CONFIG.DND5E.aggregateDamageDisplay = false;
-            }
+            
+            CONFIG.DND5E.aggregateDamageDisplay = SettingsUtility.getSettingValue(SETTING_NAMES.AGGREGATE_DAMAGE) ?? true;
 
             HooksUtility.registerSheetHooks();
             HooksUtility.registerIntegrationHooks();
@@ -103,7 +101,18 @@ export class HooksUtility {
                 RollUtility.processActorRoll(config);
                 return true;
             });
-        }
+        }        
+
+        // This needs to be outside if checks because it is also needed for vanilla rolls
+        // Should be removed in 4.1.0+ as this will be fixed internally by the system.
+        Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (rollConfig, dialogConfig, messageConfig) => {
+            if (!messageConfig.data.flags.dnd5e.originatingMessage) {
+                const messageId = rollConfig.event?.target.closest("[data-message-id]")?.dataset.messageId;
+                messageConfig.data.flags.dnd5e.originatingMessage = messageId;
+            }
+
+            return true;
+        });
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) {
             Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {              
@@ -127,20 +136,15 @@ export class HooksUtility {
                     roll.options.isCritical ??= rollConfig.isCritical;
                 }
 
-                if (!messageConfig.data.flags.dnd5e.originatingMessage) {
-                    const messageId = rollConfig.event?.target.closest("[data-message-id]")?.dataset.messageId;
-                    messageConfig.data.flags.dnd5e.originatingMessage = messageId;
-                }
-
                 return true;
-            })
+            });
 
             Hooks.on(HOOKS_DND5E.ACTIVITY_CONSUMPTION, (activity, usageConfig, messageConfig, updates) => {
                 if (activity.hasOwnProperty(ROLL_TYPE.ATTACK) && updates.item.length > 0 && messageConfig.data) {
                     messageConfig.data.flags[MODULE_SHORT].ammunition = updates.item[0]._id;
                     updates.item[0]["system.quantity"]++;
                 }
-            })
+            });
         }
     }
 
