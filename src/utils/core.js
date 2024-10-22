@@ -28,22 +28,25 @@ export class CoreUtility {
     }
 
     /**
-     * Checks an event for advantage/disadvantage modifier keys.
-     * @param {object} event Event data to check.
-     * @returns {number} An advantage mode: -1 is disadvantage, 0 is normal, 1 is advantage. 
+     * Determines if a roll should be quick rolled or bypassed depending on core DND5e key modifiers.
+     * @param {Object} config The usage config passed in with the roll hook, which contains keyboard events.
+     * @returns {Boolean, Boolean, Boolean} Flags indicating if the roll should fast forward, has advantage, and has disadvantage respectively.
      */
-    static eventToAdvantage(event = {}) {
-        const mode = SettingsUtility.getSettingValue(SETTING_NAMES.ROLL_MODIFIER_MODE);
+    static processKeyModifiers(config = {}) {
+        const {isFF, advantageMode} = CONFIG.Dice.D20Roll.determineAdvantageMode({ 
+            event: config.event,
+            advantage: config.advantage,
+            disadvantage: config.disadvantage 
+        });
 
-        switch(mode) {
-            case 0:
-                return event.shiftKey ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE 
-                    : (event.ctrlKey || event.metaKey ? CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE : CONFIG.Dice.D20Roll.ADV_MODE.NORMAL);
-            case 1:
-                return event.shiftKey ? CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE
-                    : (event.ctrlKey || event.metaKey ? CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE  : CONFIG.Dice.D20Roll.ADV_MODE.NORMAL);
-            default:
-                return CONFIG.Dice.D20Roll.ADV_MODE.NORMAL;
+        if (isFF && advantageMode === CONFIG.Dice.D20Roll.ADV_MODE.NORMAL) {
+            return { fastForward: false, advantage: false, disadvantage: false}
+        }
+
+        return { 
+            fastForward: true,
+            advantage: advantageMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE,
+            disadvantage: advantageMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE 
         }
     }
 

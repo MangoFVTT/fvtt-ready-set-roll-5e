@@ -19,7 +19,8 @@ export const ROLL_TYPE = {
     VERSATILE: "versatile",
     OTHER: "formula",
     CONCENTRATION: "concentration",
-    HEALING: "healing"
+    HEALING: "healing",
+    FORMULA: "roll"
 }
 
 /**
@@ -48,12 +49,11 @@ export const CRIT_TYPE = {
  */
 export class RollUtility {
     static processActorRoll(config) {
-        const advMode = CoreUtility.eventToAdvantage(config?.event);
-        const ignore = config.vanilla || (config?.event?.altKey ?? false);
+        const { fastForward, advantage, disadvantage } = CoreUtility.processKeyModifiers(config);
 
-        config.fastForward = !ignore;
-        config.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
-        config.disadvantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
+        config.fastForward = fastForward && !config.vanilla;
+        config.advantage ||= advantage;
+        config.disadvantage ||= disadvantage;
 
         if (config.isConcentration) {
             config.flavor = `${CoreUtility.localize("DND5E.ToolPromptTitle", { tool: CoreUtility.localize("DND5E.Concentration") })}`;
@@ -61,24 +61,25 @@ export class RollUtility {
 
         config.messageData[`flags.${MODULE_SHORT}`] = { 
             quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore,
-            processed: true,
-            isConcentration: config.isConcentration
+            advantage: config.advantage,
+            disadvantage: config.disadvantage,
+            isConcentration: config.isConcentration,            
+            processed: true
         };
     }
 
     static processActivityRoll(usageConfig, dialogConfig, messageConfig) {
-        const advMode = CoreUtility.eventToAdvantage(usageConfig?.event);
-        const ignore = usageConfig.vanilla || (usageConfig?.event?.altKey ?? false);
+        const { fastForward, advantage, disadvantage } = CoreUtility.processKeyModifiers(usageConfig);
 
-        usageConfig.fastForward = !ignore;
-        usageConfig.advantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE;
-        usageConfig.disadvantage ||= advMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE;
+        usageConfig.fastForward = fastForward && !usageConfig.vanilla;
+        usageConfig.advantage ||= advantage;
+        usageConfig.disadvantage ||= disadvantage;
 
         messageConfig.data.flags[MODULE_SHORT] = { 
-            quickRoll: !ignore,
+            quickRoll: fastForward,
             advantage: usageConfig.advantage,
             disadvantage: usageConfig.disadvantage,
-            processed: ignore
+            processed: !fastForward
         };
     }
 
