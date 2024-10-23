@@ -17,7 +17,7 @@ export class ActivityUtility {
         }
 
         const hasAttack = activity.hasOwnProperty(ROLL_TYPE.ATTACK);
-        const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE) && activity[ROLL_TYPE.DAMAGE].parts.length > 0;;
+        const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE);
         const hasHealing = activity.hasOwnProperty(ROLL_TYPE.HEALING);
         const hasFormula = activity.hasOwnProperty(ROLL_TYPE.FORMULA);
 
@@ -27,7 +27,7 @@ export class ActivityUtility {
 
         const manualDamageMode = SettingsUtility.getSettingValue(SETTING_NAMES.MANUAL_DAMAGE_MODE);
 
-        if (hasDamage) {            
+        if (hasDamage && activity[ROLL_TYPE.DAMAGE]?.parts?.length > 0) {            
             message.data.flags[MODULE_SHORT].manualDamage = (manualDamageMode === 2 || (manualDamageMode === 1 && hasAttack));
             message.data.flags[MODULE_SHORT].renderDamage = !message.data.flags[MODULE_SHORT].manualDamage;
         }
