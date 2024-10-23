@@ -37,7 +37,7 @@ export class ActivityUtility {
             message.data.flags[MODULE_SHORT].renderDamage = true; 
         }
 
-        if (hasFormula) {
+        if (hasFormula && activity[ROLL_TYPE.FORMULA]?.formula !== '') {
             message.data.flags[MODULE_SHORT].renderFormula = true;
 
             if (activity.roll?.name && activity.roll.name !== "") {
