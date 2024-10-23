@@ -141,8 +141,10 @@ export class HooksUtility {
 
             Hooks.on(HOOKS_DND5E.ACTIVITY_CONSUMPTION, (activity, usageConfig, messageConfig, updates) => {
                 if (activity.hasOwnProperty(ROLL_TYPE.ATTACK) && updates.item.length > 0 && messageConfig.data) {
-                    messageConfig.data.flags[MODULE_SHORT].ammunition = updates.item[0]._id;
-                    updates.item[0]["system.quantity"]++;
+                    const ammo = updates.item.find(i => i["system.quantity"]);
+                    if (!ammo) return;
+                    messageConfig.data.flags[MODULE_SHORT].ammunition = ammo._id;
+                    ammo["system.quantity"]++;
                 }
             });
         }
