@@ -50,19 +50,19 @@ export class ActivityUtility {
     static async runActivityActions(message) {
         if (message.flags[MODULE_SHORT].renderAttack) {
             const attackRolls = await ActivityUtility.getAttackFromMessage(message);
-            if (CoreUtility.isIterable(attackRolls)) message.rolls.push(...attackRolls);
+            _injectRollsToMessage(message, attackRolls, CONFIG.Dice.D20Roll);
 
             message.flags[MODULE_SHORT].isCritical = message.flags[MODULE_SHORT].dual ? false : attackRolls[0].isCritical
         }
 
         if (message.flags[MODULE_SHORT].renderDamage) {
             const damageRolls = await ActivityUtility.getDamageFromMessage(message);
-            if (CoreUtility.isIterable(damageRolls)) message.rolls.push(...damageRolls);
+            _injectRollsToMessage(message, damageRolls, CONFIG.Dice.DamageRoll);
         }
 
         if (message.flags[MODULE_SHORT].renderFormula) {
             const formulaRolls = await ActivityUtility.getFormulaFromMessage(message);
-            if (CoreUtility.isIterable(formulaRolls)) message.rolls.push(...formulaRolls);
+            _injectRollsToMessage(message, formulaRolls, CONFIG.Dice.BasicRoll);
         }
 
         message.flags[MODULE_SHORT].processed = true;
@@ -77,7 +77,7 @@ export class ActivityUtility {
         switch (action) {
             case ROLL_TYPE.DAMAGE:
                 const damageRolls = await ActivityUtility.getDamageFromMessage(message);
-                message.rolls.push(...damageRolls);      
+                _injectRollsToMessage(message, damageRolls, CONFIG.Dice.DamageRoll);
                 break;
         }  
 
@@ -137,5 +137,16 @@ export class ActivityUtility {
         { 
             create: false 
         });
+    }
+}
+
+function _injectRollsToMessage(message, rolls, cleanType)
+{
+    if (cleanType) {
+        message.rolls = message.rolls.filter(r => !(r instanceof cleanType))
+    }
+
+    if (CoreUtility.isIterable(rolls)) {
+        message.rolls.push(...rolls);
     }
 }
