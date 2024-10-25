@@ -142,11 +142,13 @@ export class ActivityUtility {
 
 function _injectRollsToMessage(message, rolls, cleanType)
 {
+    if (!message || !CoreUtility.isIterable(rolls)) {
+        return;
+    }
+
     if (cleanType) {
         message.rolls = message.rolls.filter(r => !(r instanceof cleanType))
     }
 
-    if (CoreUtility.isIterable(rolls)) {
-        message.rolls.push(...rolls);
-    }
+    message.rolls.push(...rolls);
 }
