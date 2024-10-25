@@ -84,15 +84,18 @@ export class CoreUtility {
         return game.modules.get(name)?.active;
     }
 
-    static isVisible(chatData) {
-        const whisper = chatData.whisper || [];
-        const isBlind = whisper.length && chatData.blind;
+    /**
+     * Checks if a given object is iterable
+     * @param {Object} obj The object to check
+     * @returns {Boolean} true if the object is iterable, false otherwise
+     */
+    static isIterable(obj) {
+        // checks for null and undefined
+        if (obj == null) {
+            return false;
+        }
 
-        if ( whisper.length ) {
-            return whisper.includes(game.user.id) || (chatData.user.isSelf && !isBlind);
-        } 
-
-        return true;
+        return typeof obj[Symbol.iterator] === 'function';
     }
 
     /**

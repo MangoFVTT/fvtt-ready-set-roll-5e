@@ -1,5 +1,6 @@
 import { MODULE_SHORT } from "../module/const.js";
 import { ChatUtility } from "./chat.js";
+import { CoreUtility } from "./core.js";
 import { ROLL_TYPE } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
 
@@ -49,19 +50,19 @@ export class ActivityUtility {
     static async runActivityActions(message) {
         if (message.flags[MODULE_SHORT].renderAttack) {
             const attackRolls = await ActivityUtility.getAttackFromMessage(message);
+            _injectRollsToMessage(message, attackRolls, CONFIG.Dice.D20Roll);
 
             message.flags[MODULE_SHORT].isCritical = message.flags[MODULE_SHORT].dual ? false : attackRolls[0].isCritical
-            message.rolls.push(...attackRolls);
         }
 
         if (message.flags[MODULE_SHORT].renderDamage) {
             const damageRolls = await ActivityUtility.getDamageFromMessage(message);
-            message.rolls.push(...damageRolls);
+            _injectRollsToMessage(message, damageRolls, CONFIG.Dice.DamageRoll);
         }
 
         if (message.flags[MODULE_SHORT].renderFormula) {
             const formulaRolls = await ActivityUtility.getFormulaFromMessage(message);
-            message.rolls.push(...formulaRolls);
+            _injectRollsToMessage(message, formulaRolls, CONFIG.Dice.BasicRoll);
         }
 
         message.flags[MODULE_SHORT].processed = true;
@@ -76,7 +77,7 @@ export class ActivityUtility {
         switch (action) {
             case ROLL_TYPE.DAMAGE:
                 const damageRolls = await ActivityUtility.getDamageFromMessage(message);
-                message.rolls.push(...damageRolls);      
+                _injectRollsToMessage(message, damageRolls, CONFIG.Dice.DamageRoll);
                 break;
         }  
 
@@ -137,4 +138,17 @@ export class ActivityUtility {
             create: false 
         });
     }
+}
+
+function _injectRollsToMessage(message, rolls, cleanType)
+{
+    if (!message || !CoreUtility.isIterable(rolls)) {
+        return;
+    }
+
+    if (cleanType) {
+        message.rolls = message.rolls.filter(r => !(r instanceof cleanType))
+    }
+
+    message.rolls.push(...rolls);
 }
