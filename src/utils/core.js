@@ -95,6 +95,15 @@ export class CoreUtility {
         return true;
     }
 
+    static isIterable(obj) {
+        // checks for null and undefined
+        if (obj == null) {
+            return false;
+        }
+
+        return typeof obj[Symbol.iterator] === 'function';
+    }
+
     /**
      * Gets data about whispers and roll mode for use in rendering messages.
      * @param {*} rollMode 

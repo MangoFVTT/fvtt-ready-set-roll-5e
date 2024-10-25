@@ -1,5 +1,6 @@
 import { MODULE_SHORT } from "../module/const.js";
 import { ChatUtility } from "./chat.js";
+import { CoreUtility } from "./core.js";
 import { ROLL_TYPE } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
 
@@ -49,19 +50,19 @@ export class ActivityUtility {
     static async runActivityActions(message) {
         if (message.flags[MODULE_SHORT].renderAttack) {
             const attackRolls = await ActivityUtility.getAttackFromMessage(message);
+            if (CoreUtility.isIterable(attackRolls)) message.rolls.push(...attackRolls);
 
             message.flags[MODULE_SHORT].isCritical = message.flags[MODULE_SHORT].dual ? false : attackRolls[0].isCritical
-            message.rolls.push(...attackRolls);
         }
 
         if (message.flags[MODULE_SHORT].renderDamage) {
             const damageRolls = await ActivityUtility.getDamageFromMessage(message);
-            message.rolls.push(...damageRolls);
+            if (CoreUtility.isIterable(attackRolls)) message.rolls.push(...damageRolls);
         }
 
         if (message.flags[MODULE_SHORT].renderFormula) {
             const formulaRolls = await ActivityUtility.getFormulaFromMessage(message);
-            message.rolls.push(...formulaRolls);
+            if (CoreUtility.isIterable(attackRolls)) message.rolls.push(...formulaRolls);
         }
 
         message.flags[MODULE_SHORT].processed = true;
