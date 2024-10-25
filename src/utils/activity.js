@@ -57,12 +57,12 @@ export class ActivityUtility {
 
         if (message.flags[MODULE_SHORT].renderDamage) {
             const damageRolls = await ActivityUtility.getDamageFromMessage(message);
-            if (CoreUtility.isIterable(attackRolls)) message.rolls.push(...damageRolls);
+            if (CoreUtility.isIterable(damageRolls)) message.rolls.push(...damageRolls);
         }
 
         if (message.flags[MODULE_SHORT].renderFormula) {
             const formulaRolls = await ActivityUtility.getFormulaFromMessage(message);
-            if (CoreUtility.isIterable(attackRolls)) message.rolls.push(...formulaRolls);
+            if (CoreUtility.isIterable(formulaRolls)) message.rolls.push(...formulaRolls);
         }
 
         message.flags[MODULE_SHORT].processed = true;
