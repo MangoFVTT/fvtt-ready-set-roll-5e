@@ -60,7 +60,7 @@ export class RollUtility {
         }
 
         config.messageData[`flags.${MODULE_SHORT}`] = { 
-            quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !ignore,
+            quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || config.fastForward,
             advantage: config.advantage,
             disadvantage: config.disadvantage,
             isConcentration: config.isConcentration,            
@@ -76,10 +76,10 @@ export class RollUtility {
         usageConfig.disadvantage ||= disadvantage;
 
         messageConfig.data.flags[MODULE_SHORT] = { 
-            quickRoll: fastForward,
+            quickRoll: usageConfig.fastForward,
             advantage: usageConfig.advantage,
             disadvantage: usageConfig.disadvantage,
-            processed: !fastForward
+            processed: !usageConfig.fastForward
         };
     }
 
