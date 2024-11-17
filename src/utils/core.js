@@ -28,26 +28,26 @@ export class CoreUtility {
     }
 
     /**
-     * Determines if a roll should be quick rolled or bypassed depending on core DND5e key modifiers.
-     * @param {Object} config The usage config passed in with the roll hook, which contains keyboard events.
-     * @returns {Boolean, Boolean, Boolean} Flags indicating if the roll should fast forward, has advantage, and has disadvantage respectively.
+     * Based on the provided event, determine if the keys are pressed to fulfill the specified keybinding.
+     * @param {Event} event    Triggering event.
+     * @param {string} action  Keybinding action within the `dnd5e` namespace.
+     * @returns {boolean}      Is the keybinding triggered?
      */
-    static processKeyModifiers(config = {}) {
-        const {isFF, advantageMode} = CONFIG.Dice.D20Roll.determineAdvantageMode({ 
-            event: config.event,
-            advantage: config.advantage,
-            disadvantage: config.disadvantage 
+    static areKeysPressed(event, action) {
+        if (!event) return false;
+        const activeModifiers = {};
+        const addModifiers = (key, pressed) => {
+            activeModifiers[key] = pressed;
+            KeyboardManager.MODIFIER_CODES[key].forEach(n => activeModifiers[n] = pressed);
+        };
+        addModifiers(KeyboardManager.MODIFIER_KEYS.CONTROL, event.ctrlKey || event.metaKey);
+        addModifiers(KeyboardManager.MODIFIER_KEYS.SHIFT, event.shiftKey);
+        addModifiers(KeyboardManager.MODIFIER_KEYS.ALT, event.altKey);
+        return game.keybindings.get("dnd5e", action).some(b => {
+            if (game.keyboard.downKeys.has(b.key) && b.modifiers.every(m => activeModifiers[m])) return true;
+            if (b.modifiers.length) return false;
+            return activeModifiers[b.key];
         });
-
-        if (isFF && advantageMode === CONFIG.Dice.D20Roll.ADV_MODE.NORMAL) {
-            return { fastForward: false, advantage: false, disadvantage: false}
-        }
-
-        return { 
-            fastForward: true,
-            advantage: advantageMode === CONFIG.Dice.D20Roll.ADV_MODE.ADVANTAGE,
-            disadvantage: advantageMode === CONFIG.Dice.D20Roll.ADV_MODE.DISADVANTAGE 
-        }
     }
 
     /**

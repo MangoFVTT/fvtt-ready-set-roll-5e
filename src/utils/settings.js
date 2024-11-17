@@ -9,7 +9,6 @@ import { LogUtility } from "./log.js";
 export const SETTING_NAMES = {
     QUICK_SKILL_ENABLED: "enableSkillQuickRoll",
     QUICK_ABILITY_ENABLED: "enableAbilityQuickRoll",
-    QUICK_DEATH_ENABLED: "enableDeathQuickRoll",
     QUICK_TOOL_ENABLED: "enableToolQuickRoll",
     QUICK_ACTIVITY_ENABLED: "enableActivityQuickRoll",
     QUICK_VANILLA_ENABLED: "enableVanillaQuickRoll",
@@ -41,7 +40,6 @@ export class SettingsUtility {
 		const quickRollOptions = [
             { name: SETTING_NAMES.QUICK_ABILITY_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_SKILL_ENABLED, default: true },
-            { name: SETTING_NAMES.QUICK_DEATH_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_TOOL_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_ACTIVITY_ENABLED, default: true },
             { name: SETTING_NAMES.QUICK_VANILLA_ENABLED, default: false }

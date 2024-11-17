@@ -11,11 +11,10 @@ export const HOOKS_CORE = {
 }
 
 export const HOOKS_DND5E = {
-    PRE_ROLL_ABILITY_TEST: "dnd5e.preRollAbilityTest",
-    PRE_ROLL_ABILITY_SAVE: "dnd5e.preRollAbilitySave",
-    PRE_ROLL_DEATH_SAVE: "dnd5e.preRollDeathSave",
-    PRE_ROLL_SKILL: "dnd5e.preRollSkill",
-    PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolCheck",
+    PRE_ROLL_ABILITY_CHECK: "dnd5e.preRollAbilityCheckV2",
+    PRE_ROLL_SAVING_THROW: "dnd5e.preRollSavingThrowV2",
+    PRE_ROLL_SKILL: "dnd5e.preRollSkillV2",
+    PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolV2",
     PRE_ROLL_ATTACK: "dnd5e.preRollAttackV2",
     PRE_ROLL_DAMAGE: "dnd5e.preRollDamageV2",
     PRE_USE_ACTIVITY: "dnd5e.preUseActivity",
@@ -71,34 +70,27 @@ export class HooksUtility {
         LogUtility.log("Registering roll hooks");
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ABILITY_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_TEST, (actor, config, abilityId) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_CHECK, (config, dialog, message) => {
+                RollUtility.processActorRoll(config, dialog, message);
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_SAVE, (actor, config, abilityId) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_SAVING_THROW, (config, dialog, message) => {
+                RollUtility.processActorRoll(config, dialog, message);
                 return true;
             });
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_SKILL, (actor, config, skillId) => {
-                RollUtility.processActorRoll(config);
-                return true;
-            });
-        }
-
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_DEATH_SAVE, (actor, config) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_SKILL, (config, dialog, message) => {
+                RollUtility.processActorRoll(config, dialog, message);
                 return true;
             });
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_TOOL_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (actor, config, toolId) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (config, dialog, message) => {
+                RollUtility.processActorRoll(config, dialog, message);
                 return true;
             });
         }        

@@ -5,8 +5,6 @@
             "enableSkillQuickRoll.hint": "When clicking on a skill check, automatically roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding the 'Skip Dialog' key modifier when clicking.",
             "enableAbilityQuickRoll.name": "Enable Quick Roll for Abilities",
             "enableAbilityQuickRoll.hint": "When clicking on an ability check or saving throw, quick roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding the 'Skip Dialog' key modifier when clicking.",
-            "enableDeathQuickRoll.name": "Enable Quick Roll for Death Saves",
-            "enableDeathQuickRoll.hint": "When clicking on a death saving throw, quick roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding the 'Skip Dialog' key modifier when clicking.",
             "enableToolQuickRoll.name": "Enable Quick Roll for Tool Checks",
             "enableToolQuickRoll.hint": "When clicking on a tool check, quick roll to chat instead of using the normal roll dialog. This functionality can be bypassed by holding the 'Skip Dialog' key modifier when clicking.",
             "enableActivityQuickRoll.name": "Enable Quick Roll for Activities",
