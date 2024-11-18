@@ -17,6 +17,8 @@ export class ActivityUtility {
             return;
         }
 
+        activity._triggerSubsequentActions = function() {};
+
         const hasAttack = activity.hasOwnProperty(ROLL_TYPE.ATTACK);
         const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE);
         const hasHealing = activity.hasOwnProperty(ROLL_TYPE.HEALING);

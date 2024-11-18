@@ -48,7 +48,9 @@ export const CRIT_TYPE = {
  * Utility class for functions related to making specific rolls.
  */
 export class RollUtility {
-    static processActorRoll(config, dialog, message) {
+    static processRoll(config, dialog, message) {
+        if (message.data.flags[MODULE_SHORT]?.processed) return;
+
         const keys = {
             normal: CoreUtility.areKeysPressed(config.event, "skipDialogNormal"),
             advantage: CoreUtility.areKeysPressed(config.event, "skipDialogAdvantage"),
@@ -70,18 +72,20 @@ export class RollUtility {
         };
     }
 
-    static processActivityRoll(usageConfig, dialogConfig, messageConfig) {
-        const { fastForward, advantage, disadvantage } = CoreUtility.processKeyModifiers(usageConfig);
+    static processActivity(usageConfig, dialogConfig, messageConfig) {
+        const keys = {
+            normal: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogNormal"),
+            advantage: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogAdvantage"),
+            disadvantage: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogDisadvantage")
+        };
 
-        usageConfig.fastForward = fastForward && !usageConfig.vanilla;
-        usageConfig.advantage ||= advantage;
-        usageConfig.disadvantage ||= disadvantage;
+        dialogConfig.configure = keys.normal || (usageConfig.vanilla ?? false);
 
         messageConfig.data.flags[MODULE_SHORT] = { 
-            quickRoll: usageConfig.fastForward,
-            advantage: usageConfig.advantage,
-            disadvantage: usageConfig.disadvantage,
-            processed: !usageConfig.fastForward
+            quickRoll: !(dialogConfig.configure ?? true),
+            advantage: keys.advantage,
+            disadvantage: keys.disadvantage,
+            processed: dialogConfig.configure ?? true
         };
     }
 

@@ -1,6 +1,7 @@
 import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
 import { ActivityUtility } from "./activity.js";
 import { ChatUtility } from "./chat.js";
+import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { ROLL_TYPE, RollUtility } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
@@ -71,65 +72,66 @@ export class HooksUtility {
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ABILITY_ENABLED)) { 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_CHECK, (config, dialog, message) => {
-                RollUtility.processActorRoll(config, dialog, message);
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_SAVING_THROW, (config, dialog, message) => {
-                RollUtility.processActorRoll(config, dialog, message);
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) { 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_SKILL, (config, dialog, message) => {
-                RollUtility.processActorRoll(config, dialog, message);
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_TOOL_ENABLED)) { 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (config, dialog, message) => {
-                RollUtility.processActorRoll(config, dialog, message);
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
-        }        
-
-        // This needs to be outside if checks because it is also needed for vanilla rolls
-        // Should be removed in 4.1.0+ as this will be fixed internally by the system.
-        Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (rollConfig, dialogConfig, messageConfig) => {
-            if (!messageConfig.data.flags.dnd5e.originatingMessage) {
-                const messageId = rollConfig.event?.target.closest("[data-message-id]")?.dataset.messageId;
-                messageConfig.data.flags.dnd5e.originatingMessage = messageId;
-            }
-
-            return true;
-        });
+        }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) {
             Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {              
-                RollUtility.processActivityRoll(usageConfig, dialogConfig, messageConfig);
+                RollUtility.processActivity(usageConfig, dialogConfig, messageConfig);
+                ActivityUtility.setRenderFlags(activity, messageConfig);
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.PRE_CREATE_USAGE_MESSAGE, (activity, message) => {
-                ActivityUtility.setRenderFlags(activity, message);
-            });
-
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (rollConfig, dialogConfig, messageConfig) => {
-                rollConfig.rolls[0].options.advantage = rollConfig.advantage;
-                rollConfig.rolls[0].options.disadvantage = rollConfig.disadvantage;
-                return true;
-            })
-
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (rollConfig, dialogConfig, messageConfig) => {
-                for ( const roll of rollConfig.rolls ) {
-                    roll.options ??= {};
-                    roll.options.isCritical ??= rollConfig.isCritical;
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {
+                for (const roll of config.rolls) {
+                    roll.options.advantage ??= config.advantage;
+                    roll.options.disadvantage ??= config.disadvantage; 
                 }
 
+                const keys = {
+                    normal: CoreUtility.areKeysPressed(config.event, "skipDialogNormal")
+                };
+        
+                dialog.configure = keys.normal || (config.vanilla ?? false);
+
                 return true;
             });
+
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (config, dialog, message) => {
+                for ( const roll of config.rolls ) {
+                    roll.options ??= {};
+                    roll.options.isCritical ??= config.isCritical;
+                }
+
+                const keys = {
+                    normal: CoreUtility.areKeysPressed(config.event, "skipDialogNormal")
+                };
+        
+                dialog.configure = keys.normal || (config.vanilla ?? false);
+
+                return true;
+            });           
 
             Hooks.on(HOOKS_DND5E.ACTIVITY_CONSUMPTION, (activity, usageConfig, messageConfig, updates) => {
                 if (activity.hasOwnProperty(ROLL_TYPE.ATTACK) && updates.item.length > 0 && messageConfig.data) {
