@@ -118,13 +118,12 @@ export class ActivityUtility {
         const activity = message.getAssociatedActivity();
         const actor = message.getAssociatedActor();
     
-        if (message.flags.dnd5e.scaling !== undefined) {
-            activity.item.updateSource({ "flags.dnd5e.scaling": message.flags.dnd5e.scaling ?? 0 });
-        }
+        activity.item.flags.dnd5e.scaling = message.flags.dnd5e.scaling ?? 0;
 
         const usageConfig = {
             isCritical: message.flags[MODULE_SHORT].isCritical ?? false,
-            ammunition: actor.items.get(message.flags[MODULE_SHORT].ammunition)
+            ammunition: actor.items.get(message.flags[MODULE_SHORT].ammunition),
+            scaling: message.flags.dnd5e.scaling ?? 0
         }
 
         const dialogConfig = { 
