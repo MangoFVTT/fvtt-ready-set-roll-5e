@@ -19,7 +19,7 @@ export const HOOKS_DND5E = {
     PRE_ROLL_ATTACK: "dnd5e.preRollAttackV2",
     PRE_ROLL_DAMAGE: "dnd5e.preRollDamageV2",
     PRE_USE_ACTIVITY: "dnd5e.preUseActivity",
-    PRE_CREATE_USAGE_MESSAGE: "dnd5e.preCreateUsageMessage",
+    POST_USE_ACTIVITY: "dnd5e.postUseActivity",
     ACTIVITY_CONSUMPTION: "dnd5e.activityConsumption",
     DISPLAY_CARD: "dnd5e.displayCard",
     RENDER_CHAT_MESSAGE: "dnd5e.renderChatMessage",    
@@ -98,10 +98,13 @@ export class HooksUtility {
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) {
             Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {
-                activity._triggerSubsequentActions = function() {};
                 RollUtility.processActivity(usageConfig, dialogConfig, messageConfig);
                 ActivityUtility.setRenderFlags(activity, messageConfig);
                 return true;
+            });
+
+            Hooks.on(HOOKS_DND5E.POST_USE_ACTIVITY, (activity, usageConfig, results) => {
+                return false;
             });
 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {                
