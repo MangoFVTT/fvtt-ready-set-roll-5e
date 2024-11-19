@@ -79,14 +79,14 @@ export class RollUtility {
             disadvantage: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogDisadvantage")
         };
 
-        dialogConfig.configure = keys.normal || (usageConfig.vanilla ?? false);
-        usageConfig.vanilla = keys.normal;
+        const fastForward = !(keys.normal || (usageConfig.vanilla ?? false))
+        dialogConfig.configure = usageConfig.hasOwnProperty('spell') || !fastForward;
 
         messageConfig.data.flags[MODULE_SHORT] = { 
-            quickRoll: !(dialogConfig.configure ?? true),
+            quickRoll: fastForward,
             advantage: keys.advantage,
             disadvantage: keys.disadvantage,
-            processed: dialogConfig.configure ?? true
+            processed: !fastForward
         };
     }
 
