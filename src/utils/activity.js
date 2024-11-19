@@ -118,6 +118,7 @@ export class ActivityUtility {
         const activity = message.getAssociatedActivity();
         const actor = message.getAssociatedActor();
     
+        activity.item.flags.dnd5e ??= {};
         activity.item.flags.dnd5e.scaling = message.flags.dnd5e.scaling ?? 0;
 
         const usageConfig = {
