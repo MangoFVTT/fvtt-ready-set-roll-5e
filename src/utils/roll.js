@@ -80,6 +80,7 @@ export class RollUtility {
         };
 
         dialogConfig.configure = keys.normal || (usageConfig.vanilla ?? false);
+        usageConfig.vanilla = keys.normal;
 
         messageConfig.data.flags[MODULE_SHORT] = { 
             quickRoll: !(dialogConfig.configure ?? true),

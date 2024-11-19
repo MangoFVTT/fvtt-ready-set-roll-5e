@@ -97,38 +97,35 @@ export class HooksUtility {
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) {
-            Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {              
+            Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {
+                activity._triggerSubsequentActions = function() {};
                 RollUtility.processActivity(usageConfig, dialogConfig, messageConfig);
                 ActivityUtility.setRenderFlags(activity, messageConfig);
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {                
+                if (!message.data?.flags || !message.data.flags[MODULE_SHORT]?.quickRoll) return true;
+
                 for (const roll of config.rolls) {
                     roll.options.advantage ??= config.advantage;
                     roll.options.disadvantage ??= config.disadvantage; 
                 }
 
-                const keys = {
-                    normal: CoreUtility.areKeysPressed(config.event, "skipDialogNormal")
-                };
-        
-                dialog.configure = keys.normal || (config.vanilla ?? false);
+                dialog.configure = false;
 
                 return true;
             });
 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (config, dialog, message) => {
+                if (!message.data?.flags || !message.data.flags[MODULE_SHORT]?.quickRoll) return true;
+
                 for ( const roll of config.rolls ) {
                     roll.options ??= {};
                     roll.options.isCritical ??= config.isCritical;
                 }
-
-                const keys = {
-                    normal: CoreUtility.areKeysPressed(config.event, "skipDialogNormal")
-                };
         
-                dialog.configure = keys.normal || (config.vanilla ?? false);
+                dialog.configure = false;
 
                 return true;
             });           
