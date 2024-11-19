@@ -1,6 +1,7 @@
 import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
 import { ActivityUtility } from "./activity.js";
 import { ChatUtility } from "./chat.js";
+import { CoreUtility } from "./core.js";
 import { LogUtility } from "./log.js";
 import { ROLL_TYPE, RollUtility } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
@@ -11,11 +12,10 @@ export const HOOKS_CORE = {
 }
 
 export const HOOKS_DND5E = {
-    PRE_ROLL_ABILITY_TEST: "dnd5e.preRollAbilityTest",
-    PRE_ROLL_ABILITY_SAVE: "dnd5e.preRollAbilitySave",
-    PRE_ROLL_DEATH_SAVE: "dnd5e.preRollDeathSave",
-    PRE_ROLL_SKILL: "dnd5e.preRollSkill",
-    PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolCheck",
+    PRE_ROLL_ABILITY_CHECK: "dnd5e.preRollAbilityCheckV2",
+    PRE_ROLL_SAVING_THROW: "dnd5e.preRollSavingThrowV2",
+    PRE_ROLL_SKILL: "dnd5e.preRollSkillV2",
+    PRE_ROLL_TOOL_CHECK: "dnd5e.preRollToolV2",
     PRE_ROLL_ATTACK: "dnd5e.preRollAttackV2",
     PRE_ROLL_DAMAGE: "dnd5e.preRollDamageV2",
     PRE_USE_ACTIVITY: "dnd5e.preUseActivity",
@@ -71,73 +71,64 @@ export class HooksUtility {
         LogUtility.log("Registering roll hooks");
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ABILITY_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_TEST, (actor, config, abilityId) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_CHECK, (config, dialog, message) => {
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ABILITY_SAVE, (actor, config, abilityId) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_SAVING_THROW, (config, dialog, message) => {
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_SKILL_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_SKILL, (actor, config, skillId) => {
-                RollUtility.processActorRoll(config);
-                return true;
-            });
-        }
-
-        if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_DEATH_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_DEATH_SAVE, (actor, config) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_SKILL, (config, dialog, message) => {
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
         }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_TOOL_ENABLED)) { 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (actor, config, toolId) => {
-                RollUtility.processActorRoll(config);
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_TOOL_CHECK, (config, dialog, message) => {
+                RollUtility.processRoll(config, dialog, message);
                 return true;
             });
-        }        
-
-        // This needs to be outside if checks because it is also needed for vanilla rolls
-        // Should be removed in 4.1.0+ as this will be fixed internally by the system.
-        Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (rollConfig, dialogConfig, messageConfig) => {
-            if (!messageConfig.data.flags.dnd5e.originatingMessage) {
-                const messageId = rollConfig.event?.target.closest("[data-message-id]")?.dataset.messageId;
-                messageConfig.data.flags.dnd5e.originatingMessage = messageId;
-            }
-
-            return true;
-        });
+        }
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_ACTIVITY_ENABLED)) {
-            Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {              
-                RollUtility.processActivityRoll(usageConfig, dialogConfig, messageConfig);
+            Hooks.on(HOOKS_DND5E.PRE_USE_ACTIVITY, (activity, usageConfig, dialogConfig, messageConfig) => {
+                activity._triggerSubsequentActions = function() {};
+                RollUtility.processActivity(usageConfig, dialogConfig, messageConfig);
+                ActivityUtility.setRenderFlags(activity, messageConfig);
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.PRE_CREATE_USAGE_MESSAGE, (activity, message) => {
-                ActivityUtility.setRenderFlags(activity, message);
-            });
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {                
+                if (!message.data?.flags || !message.data.flags[MODULE_SHORT]?.quickRoll) return true;
 
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (rollConfig, dialogConfig, messageConfig) => {
-                rollConfig.rolls[0].options.advantage = rollConfig.advantage;
-                rollConfig.rolls[0].options.disadvantage = rollConfig.disadvantage;
-                return true;
-            })
-
-            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (rollConfig, dialogConfig, messageConfig) => {
-                for ( const roll of rollConfig.rolls ) {
-                    roll.options ??= {};
-                    roll.options.isCritical ??= rollConfig.isCritical;
+                for (const roll of config.rolls) {
+                    roll.options.advantage ??= config.advantage;
+                    roll.options.disadvantage ??= config.disadvantage; 
                 }
 
+                dialog.configure = false;
+
                 return true;
             });
+
+            Hooks.on(HOOKS_DND5E.PRE_ROLL_DAMAGE, (config, dialog, message) => {
+                if (!message.data?.flags || !message.data.flags[MODULE_SHORT]?.quickRoll) return true;
+
+                for ( const roll of config.rolls ) {
+                    roll.options ??= {};
+                    roll.options.isCritical ??= config.isCritical;
+                }
+        
+                dialog.configure = false;
+
+                return true;
+            });           
 
             Hooks.on(HOOKS_DND5E.ACTIVITY_CONSUMPTION, (activity, usageConfig, messageConfig, updates) => {
                 if (activity.hasOwnProperty(ROLL_TYPE.ATTACK) && updates.item.length > 0 && messageConfig.data) {

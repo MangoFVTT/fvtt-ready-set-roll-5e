@@ -48,38 +48,45 @@ export const CRIT_TYPE = {
  * Utility class for functions related to making specific rolls.
  */
 export class RollUtility {
-    static processActorRoll(config) {
-        const { fastForward, advantage, disadvantage } = CoreUtility.processKeyModifiers(config);
+    static processRoll(config, dialog, message) {
+        if (message.data.flags[MODULE_SHORT]?.processed) return;
 
-        config.fastForward = fastForward && !config.vanilla;
-        config.advantage ||= advantage;
-        config.disadvantage ||= disadvantage;
+        const keys = {
+            normal: CoreUtility.areKeysPressed(config.event, "skipDialogNormal"),
+            advantage: CoreUtility.areKeysPressed(config.event, "skipDialogAdvantage"),
+            disadvantage: CoreUtility.areKeysPressed(config.event, "skipDialogDisadvantage")
+        };
+
+        dialog.configure ??= keys.normal || (config.vanilla ?? false);
 
         if (config.isConcentration) {
             config.flavor = `${CoreUtility.localize("DND5E.ToolPromptTitle", { tool: CoreUtility.localize("DND5E.Concentration") })}`;
         }
 
-        config.messageData[`flags.${MODULE_SHORT}`] = { 
-            quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || config.fastForward,
-            advantage: config.advantage,
-            disadvantage: config.disadvantage,
-            isConcentration: config.isConcentration,            
+        message.data.flags[MODULE_SHORT] = { 
+            quickRoll: SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) || !(dialog.configure ?? true),
+            advantage: keys.advantage,
+            disadvantage: keys.disadvantage,
+            isConcentration: config.isConcentration,
             processed: true
         };
     }
 
-    static processActivityRoll(usageConfig, dialogConfig, messageConfig) {
-        const { fastForward, advantage, disadvantage } = CoreUtility.processKeyModifiers(usageConfig);
+    static processActivity(usageConfig, dialogConfig, messageConfig) {
+        const keys = {
+            normal: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogNormal"),
+            advantage: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogAdvantage"),
+            disadvantage: CoreUtility.areKeysPressed(usageConfig.event, "skipDialogDisadvantage")
+        };
 
-        usageConfig.fastForward = fastForward && !usageConfig.vanilla;
-        usageConfig.advantage ||= advantage;
-        usageConfig.disadvantage ||= disadvantage;
+        const fastForward = !(keys.normal || (usageConfig.vanilla ?? false))
+        dialogConfig.configure = usageConfig.hasOwnProperty('spell') || !fastForward;
 
         messageConfig.data.flags[MODULE_SHORT] = { 
-            quickRoll: usageConfig.fastForward,
-            advantage: usageConfig.advantage,
-            disadvantage: usageConfig.disadvantage,
-            processed: !usageConfig.fastForward
+            quickRoll: fastForward,
+            advantage: keys.advantage,
+            disadvantage: keys.disadvantage,
+            processed: !fastForward
         };
     }
 

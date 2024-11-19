@@ -15,7 +15,7 @@ export class ActivityUtility {
         
         if (!message.data.flags[MODULE_SHORT].quickRoll) {
             return;
-        }
+        }        
 
         const hasAttack = activity.hasOwnProperty(ROLL_TYPE.ATTACK);
         const hasDamage = activity.hasOwnProperty(ROLL_TYPE.DAMAGE);
@@ -89,19 +89,29 @@ export class ActivityUtility {
 
     static getAttackFromMessage(message) {
         const activity = message.getAssociatedActivity();
-    
-        return activity.rollAttack(
-        { 
+
+        const usageConfig = { 
             advantage: message.flags[MODULE_SHORT].advantage ?? false,
             disadvantage: message.flags[MODULE_SHORT].disadvantage ?? false,            
             ammunition: message.flags[MODULE_SHORT].ammunition
-        }, 
-        { 
-            configure: false 
-        }, 
-        { 
-            create: false 
-        });
+        }
+
+        const dialogConfig = {
+            configure: false
+        }
+
+        const messageConfig = {
+            create: false,
+            data: {
+                flags: {}
+            }
+        }
+
+        messageConfig.data.flags[MODULE_SHORT] = {
+            quickRoll: true
+        }
+
+        return activity.rollAttack(usageConfig, dialogConfig, messageConfig);
     }
 
     static getDamageFromMessage(message) {
@@ -111,18 +121,28 @@ export class ActivityUtility {
         if (message.flags.dnd5e.scaling !== undefined) {
             activity.item.updateSource({ "flags.dnd5e.scaling": message.flags.dnd5e.scaling ?? 0 });
         }
-    
-        return activity.rollDamage(
-        {
+
+        const usageConfig = {
             isCritical: message.flags[MODULE_SHORT].isCritical ?? false,
             ammunition: actor.items.get(message.flags[MODULE_SHORT].ammunition)
-        }, 
-        { 
+        }
+
+        const dialogConfig = { 
             configure: false 
-        }, 
-        { 
-            create: false 
-        });
+        }
+
+        const messageConfig = {
+            create: false,
+            data: {
+                flags: {}
+            }
+        }
+
+        messageConfig.data.flags[MODULE_SHORT] = {
+            quickRoll: true
+        }
+    
+        return activity.rollDamage(usageConfig, dialogConfig, messageConfig);
     }
 
     static getFormulaFromMessage(message) {
