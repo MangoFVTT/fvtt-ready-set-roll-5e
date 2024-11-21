@@ -200,19 +200,19 @@ function _countCritsFumbles(die, options)
     let fumble = 0;
 
     if (die && die.faces > 1) {
-        let { critThreshold, fumbleThreshold, targetValue, ignoreDiscarded, displayChallenge } = options
+        let { critThreshold, fumbleThreshold, target, ignoreDiscarded, displayChallenge } = options
 
-        critThreshold = critThreshold ?? die.options.critical ?? die.faces;
-        fumbleThreshold = fumbleThreshold ?? die.options.fumble ?? 1;
+        critThreshold = critThreshold ?? die.options.criticalSuccess ?? die.faces;
+        fumbleThreshold = fumbleThreshold ?? die.options.criticalFailure ?? 1;
 
         for (const result of die.results) {
             if (result.rerolled || (result.discarded && ignoreDiscarded)) {
                 continue;
             }
 
-            if ((displayChallenge && result.result >= targetValue) || result.result >= critThreshold) {
+            if ((displayChallenge && result.result >= target) || result.result >= critThreshold) {
                 crit += 1;
-            } else if ((displayChallenge && result.result < targetValue) || result.result <= fumbleThreshold) {
+            } else if ((displayChallenge && result.result < target) || result.result <= fumbleThreshold) {
                 fumble += 1;
             }
         }

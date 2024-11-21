@@ -56,9 +56,9 @@ async function _renderMultiRoll(data = {}) {
         }
 
         const critOptions = { 
-            critThreshold: roll.options.critical,
-            fumbleThreshold: roll.options.fumble,
-            targetValue: roll.options.targetValue - (bonusRoll?.total ?? 0),
+            critThreshold: roll.options.criticalSuccess,
+            fumbleThreshold: roll.options.criticalFailure,
+            target: roll.options.target - (bonusRoll?.total ?? 0),
             displayChallenge: roll.options.displayChallenge
         };
 
@@ -84,7 +84,7 @@ async function _renderMultiRoll(data = {}) {
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
             critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null,
-            dcResult: !critOptions.displayChallenge || isNaN(critOptions.targetValue) ? undefined : (total >= critOptions.targetValue ? "fas fa-check" : "fas fa-xmark")
+            dcResult: !critOptions.displayChallenge || isNaN(roll.options.target) ? undefined : (total >= roll.options.target ? "fas fa-check" : "fas fa-xmark")
 		});
     }
 
