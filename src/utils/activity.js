@@ -1,4 +1,5 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { MODULE_MIDI } from "../module/integration.js";
 import { ChatUtility } from "./chat.js";
 import { CoreUtility } from "./core.js";
 import { ROLL_TYPE } from "./roll.js";
@@ -124,7 +125,8 @@ export class ActivityUtility {
         const usageConfig = {
             isCritical: message.flags[MODULE_SHORT].isCritical ?? false,
             ammunition: actor.items.get(message.flags[MODULE_SHORT].ammunition),
-            scaling: message.flags.dnd5e.scaling ?? 0
+            scaling: message.flags.dnd5e.scaling ?? 0,
+            midiOptions: CoreUtility.hasModule(MODULE_MIDI) ? { isCritical: message.flags[MODULE_SHORT].isCritical ?? false } : undefined
         }
 
         const dialogConfig = { 

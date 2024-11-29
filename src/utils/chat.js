@@ -1,4 +1,5 @@
 import { MODULE_SHORT } from "../module/const.js";
+import { MODULE_MIDI } from "../module/integration.js";
 import { TEMPLATE } from "../module/templates.js";
 import { ActivityUtility } from "./activity.js";
 import { CoreUtility } from "./core.js";
@@ -44,7 +45,11 @@ export class ChatUtility {
 
             if (type == ROLL_TYPE.ACTIVITY && message.isAuthor)
             {
-                ActivityUtility.runActivityActions(message);
+                if (CoreUtility.hasModule(MODULE_MIDI)) {
+                    message.flags[MODULE_SHORT].processed = true;
+                } else {
+                    ActivityUtility.runActivityActions(message);
+                }                
             }
 
             return;
@@ -772,8 +777,14 @@ async function _processRetroCritButtonEvent(message, event) {
         
         message.flags[MODULE_SHORT].isCritical = true;
 
+        const original = message.rolls;
+
         const rolls = message.rolls.filter(r => r instanceof CONFIG.Dice.DamageRoll);
         const crits = await ActivityUtility.getDamageFromMessage(message);
+
+        if (CoreUtility.hasModule(MODULE_MIDI)) {
+            message.rolls = original;
+        }
 
         for (let i = 0; i < rolls.length; i++) {
             const baseRoll = rolls[i];
