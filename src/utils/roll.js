@@ -80,7 +80,10 @@ export class RollUtility {
         };
 
         const fastForward = !(keys.normal || (usageConfig.vanilla ?? false))
-        dialogConfig.configure = usageConfig.hasOwnProperty('spell') || !fastForward;
+        dialogConfig.configure = usageConfig.hasOwnProperty('spell')
+            || (usageConfig.scaling !== undefined && usageConfig.scaling !== false)
+            || messageConfig.data?.flags?.dnd5e?.activity?.type === 'order' 
+            || !fastForward;
 
         messageConfig.data.flags[MODULE_SHORT] = { 
             quickRoll: fastForward,
