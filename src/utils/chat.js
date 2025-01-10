@@ -46,7 +46,12 @@ export class ChatUtility {
             if (type == ROLL_TYPE.ACTIVITY && message.isAuthor)
             {
                 if (CoreUtility.hasModule(MODULE_MIDI)) {
-                    message.flags[MODULE_SHORT].processed = true;
+                    const activityType = ChatUtility.getActivityType(message);
+                    if (activityType == ROLL_TYPE.ATTACK || activityType == ROLL_TYPE.ABILITY_SAVE) {
+                        message.flags[MODULE_SHORT].processed = true;
+                    } else {
+                        ActivityUtility.runActivityActions(message);
+                    }  
                 } else {
                     ActivityUtility.runActivityActions(message);
                 }                
@@ -116,6 +121,10 @@ export class ChatUtility {
 
     static getMessageType(message) {
         return message.flags.dnd5e?.roll?.type ?? (message.flags.dnd5e?.activity ? ROLL_TYPE.ACTIVITY : null);
+    }
+
+    static getActivityType(message) {
+        return message.flags.dnd5e?.activity.type;
     }
 
     static getActorFromMessage(message) {
