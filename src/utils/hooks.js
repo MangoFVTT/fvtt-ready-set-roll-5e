@@ -1,4 +1,5 @@
 import { MODULE_SHORT, MODULE_TITLE } from "../module/const.js";
+import { MODULE_AA } from "../module/integration.js";
 import { ActivityUtility } from "./activity.js";
 import { ChatUtility } from "./chat.js";
 import { CoreUtility } from "./core.js";
@@ -104,7 +105,7 @@ export class HooksUtility {
             });
 
             Hooks.on(HOOKS_DND5E.POST_USE_ACTIVITY, (activity, usageConfig, results) => {
-                return false;
+                return CoreUtility.hasModule(MODULE_AA);
             });
 
             Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {                
