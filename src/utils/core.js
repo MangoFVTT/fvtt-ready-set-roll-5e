@@ -81,7 +81,7 @@ export class CoreUtility {
      * @returns 
      */
     static hasModule(name) {
-        return game.modules.get(name)?.active;
+        return game.modules.get(name)?.active ?? false;
     }
 
     /**
