@@ -104,10 +104,6 @@ export class HooksUtility {
                 return true;
             });
 
-            Hooks.on(HOOKS_DND5E.POST_USE_ACTIVITY, (activity, usageConfig, results) => {
-                return CoreUtility.hasModule(MODULE_AA);
-            });
-
             Hooks.on(HOOKS_DND5E.PRE_ROLL_ATTACK, (config, dialog, message) => {                
                 if (!message.data?.flags || !message.data.flags[MODULE_SHORT]?.quickRoll) return true;
 
@@ -142,6 +138,12 @@ export class HooksUtility {
                     ammo["system.quantity"]++;
                 }
             });
+            
+            setTimeout(() => {
+                Hooks.on(HOOKS_DND5E.POST_USE_ACTIVITY, (activity, usageConfig, results) => {
+                    return false;
+                });
+            }, 1000);            
         }
     }
 
