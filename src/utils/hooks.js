@@ -139,11 +139,12 @@ export class HooksUtility {
                 }
             });
             
+            // Ensures that the post use hook from RSR registers last so that it doesn't block other modules
             setTimeout(() => {
                 Hooks.on(HOOKS_DND5E.POST_USE_ACTIVITY, (activity, usageConfig, results) => {
                     return false;
                 });
-            }, 1000);            
+            }, 15000);
         }
     }
 
