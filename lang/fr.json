@@ -1,0 +1,103 @@
+{
+    "rsr5e": {
+        "settings": {
+            "enableSkillQuickRoll.name": "Activer le Jet Rapide pour les Compétences",
+            "enableSkillQuickRoll.hint": "Lors du clic sur une compétence, effectue automatiquement un jet dans le chat au lieu d'utiliser la boîte de dialogue habituelle. Cette fonctionnalité peut être contournée en maintenant la touche modificateur 'Ignorer la Boîte de Dialogue' en cliquant.",
+            "enableAbilityQuickRoll.name": "Activer le Jet Rapide pour les Capacités",
+            "enableAbilityQuickRoll.hint": "Lors du clic sur une caractéristique ou un jet de sauvegarde, effectue un jet rapide dans le chat au lieu d'utiliser la boîte de dialogue habituelle. Cette fonctionnalité peut être contournée en maintenant la touche modificateur 'Ignorer la Boîte de Dialogue' en cliquant.",
+            "enableToolQuickRoll.name": "Activer le Jet Rapide pour les Outils",
+            "enableToolQuickRoll.hint": "Lors du clic sur un test d'outil, effectue un jet rapide dans le chat au lieu d'utiliser la boîte de dialogue habituelle. Cette fonctionnalité peut être contournée en maintenant la touche modificateur 'Ignorer la Boîte de Dialogue' en cliquant.",
+            "enableActivityQuickRoll.name": "Activer le Jet Rapide pour les Activités",
+            "enableActivityQuickRoll.hint": "Lors du clic sur une activité liée à un objet, effectue automatiquement un jet dans le chat au lieu d'utiliser la boîte de dialogue habituelle. Cette fonctionnalité peut être contournée en maintenant la touche modificateur 'Ignorer la Boîte de Dialogue' en cliquant.",
+            "enableVanillaQuickRoll.name": "Activer le Contenu sur les Jets Classiques",
+            "enableVanillaQuickRoll.hint": "Lors de l'exécution d'un jet classique, tente d'appliquer le contenu, les fonctionnalités et le style du module. Ce paramètre s'applique à tous les jets classiques, même ceux effectués en contournant un jet rapide.",
+            "alwaysRollMulti.name": "Toujours Lancer Plusieurs Dés",
+            "alwaysRollMulti.hint": "Lors d'un jet rapide, lance toujours deux dés (ou trois pour la Précision Elfique) même si l'avantage/désavantage n'est pas appliqué.",
+            "manualDamageMode.name": "Lancer les Dégâts Manuellement",
+            "manualDamageMode.hint": "Lors d'un jet rapide, ne lance pas automatiquement les dégâts. Affiche plutôt un bouton pour lancer les dégâts manuellement, si disponible.",
+            "aggregateDamage.name": "Fusionner les Champs de Dégâts",
+            "aggregateDamage.hint": "Lors d'un jet rapide, combine tous les champs de dégâts du même type en un seul champ.",
+            "enableD20Icons.name": "Afficher les Résultats du D20 pour les Jets Rapides",
+            "enableD20Icons.hint": "Lors d'un jet rapide, affiche une icône montrant le résultat naturel du dé à côté du total.",
+            "enableDiceReroll.name": "Activer le Relancer de Dés",
+            "enableDiceReroll.hint": "Lors d'un jet rapide, permet de cliquer sur un dé spécifique dans l'infobulle du message de chat pour relancer ce dé sur place.",
+            "enableOverlayButtons.name": "Activer les Boutons de Superposition",
+            "enableOverlayButtons.hint": "Lors d'un jet rapide, active des boutons de superposition sur le message de chat offrant des fonctionnalités supplémentaires pour le jet.",
+            "enableDamageButtons.name": "Activer les Boutons d'Application des Dégâts",
+            "enableDamageButtons.hint": "Lors d'un jet rapide avec dégâts, active des boutons sur le message de chat permettant d'appliquer ces dégâts aux jetons.",
+            "alwaysShowButtons.name": "Toujours Afficher les Boutons d'Application",
+            "alwaysShowButtons.hint": "Lors d'une carte de chat de jet rapide, affiche toujours les boutons d'application des dégâts, au lieu de les afficher uniquement au survol.",
+            "applyDamageTo.name": "Options d'Application des Dégâts",
+            "applyDamageTo.hint": "Détermine à quels jetons les dégâts sont appliqués lors de l'application des dégâts via les boutons de superposition du chat.",
+            "confirmRetroAdv.name": "Confirmer l'Avantage Rétroactif",
+            "confirmRetroAdv.hint": "Affiche une boîte de confirmation lors du changement rétroactif d'un jet en avantage ou désavantage.",
+            "confirmRetroCrit.name": "Confirmer les Critiques Rétroactives",
+            "confirmRetroCrit.hint": "Affiche une boîte de confirmation lors du changement rétroactif d'un jet en dégâts critiques."
+        },
+        "choices": {
+            "rollModifierMode": {
+                "shiftAdv": "Shift ➔ Avantage, Ctrl/Cmd ➔ Désavantage",
+                "ctrlAdv": "Ctrl/Cmd ➔ Avantage, Shift ➔ Désavantage"
+            },
+            "apply": {
+                "0": "Appliquer aux jetons sélectionnés",
+                "1": "Appliquer aux jetons ciblés",
+                "2": "Appliquer aux deux",
+                "3": "Prioriser les jetons sélectionnés",
+                "4": "Prioriser les jetons ciblés"
+            },
+            "manual": {
+                "0": "Jamais",
+                "1": "Seulement pour les jets d'attaque",
+                "2": "Toujours"
+            }
+        },
+        "sheet": {
+            "tab": {
+                "title": "Jet Rapide",
+                "section": {
+                    "defaultRoll": "Options de Jet par Défaut",
+                    "alternateRoll": "Options de Jet Alternatif"
+                },
+                "subsection": {
+                    "main": "Contenu Principal",
+                    "damage": "Jets de Dégâts"
+                }
+            },
+            "placeholder": {
+                "context": "Contexte",
+                "label": "Étiquette"
+            }
+        },
+        "chat": {
+            "buttons": {
+                "damageFull": "Cliquez pour appliquer les dégâts complets aux jetons sélectionnés.",
+                "damageHalf": "Cliquez pour appliquer la moitié des dégâts aux jetons sélectionnés.",
+                "damageQuarter": "Cliquez pour appliquer un quart des dégâts aux jetons sélectionnés.",
+                "damageDouble": "Cliquez pour appliquer le double des dégâts aux jetons sélectionnés.",
+                "healing": "Cliquez pour appliquer les soins aux jetons sélectionnés.",
+                "healingTemp": "Cliquez pour appliquer des points de vie temporaires aux jetons sélectionnés.",
+                "rollCrit": "Cliquez pour lancer des dégâts critiques.",
+                "rollAdvantage": "Cliquez pour lancer avec avantage.",
+                "rollDisadvantage": "Cliquez pour lancer avec désavantage.",
+                "repeat": "Cliquez pour répéter le jet rapide."
+            },
+            "prompts": {
+                "retroCrit": "Améliorer en Critique ?",
+                "retroAdv": "Lancer {target} ?"
+            }
+        },
+        "messages": {
+            "error": {
+                "incorrectTargetState": "Impossible d'améliorer un jet à l'état '{state}' car ce n'est pas un état valide (avantage ou désavantage).",
+                "rollIsNullOrUndefined": "Le jet fourni est nul ou indéfini.",
+                "termIsNullOrUndefined": "Le terme fourni est nul ou indéfini.",
+                "applyDamageNoPermission": "Vous n'avez pas la permission d'appliquer des dégâts depuis ce message.",
+                "applyDamageNoTokens": "Aucun jeton sélectionné ou ciblé pour appliquer les dégâts."
+            },
+            "warning": {
+                "emptyDamageField": "Un ou plusieurs champs de dégâts pour cet objet sont vides ! Pour lancer les dégâts, assurez-vous que tous les champs de dégâts sont remplis."
+            }
+        }
+    }
+}
