@@ -328,6 +328,7 @@ async function _injectContent(message, type, html) {
 
             const roll = message.rolls[0];
             roll.options.displayChallenge = message.flags[MODULE_SHORT].displayChallenge;
+            roll.options.forceSuccess = message.flags.dnd5e?.roll?.forceSuccess;
 
             const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: type })
             html.find('.dice-total').replaceWith(render);
