@@ -120,12 +120,12 @@ export class ActivityUtility {
         const actor = message.getAssociatedActor();
     
         activity.item.flags.dnd5e ??= {};
-        activity.item.flags.dnd5e.scaling = message.flags.dnd5e.scaling ?? 0;
+        activity.item.flags.dnd5e.scaling = message.flags.dnd5e.scaling;
 
         const usageConfig = {
             isCritical: message.flags[MODULE_SHORT].isCritical ?? false,
             ammunition: actor.items.get(message.flags[MODULE_SHORT].ammunition),
-            scaling: message.flags.dnd5e.scaling ?? 0,
+            scaling: message.flags.dnd5e.scaling,
             midiOptions: CoreUtility.hasModule(MODULE_MIDI) ? { isCritical: message.flags[MODULE_SHORT].isCritical ?? false } : undefined
         }
 
