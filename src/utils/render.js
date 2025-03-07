@@ -59,7 +59,8 @@ async function _renderMultiRoll(data = {}) {
             critThreshold: roll.options.criticalSuccess,
             fumbleThreshold: roll.options.criticalFailure,
             target: roll.options.target - (bonusRoll?.total ?? 0),
-            displayChallenge: roll.options.displayChallenge
+            displayChallenge: roll.options.displayChallenge,
+            forceSuccess: roll.options.forceSuccess
         };
 
         // Die terms must have active results or the base roll total of the generated roll is 0.
@@ -84,7 +85,9 @@ async function _renderMultiRoll(data = {}) {
 			ignored: tmpResults.some(r => r.discarded) ? true : undefined,
             critType: RollUtility.getCritTypeForDie(baseTerm, critOptions),
             d20Result: SettingsUtility.getSettingValue(SETTING_NAMES.D20_ICONS_ENABLED) ? d20Rolls.results[i].result : null,
-            dcResult: !critOptions.displayChallenge || isNaN(roll.options.target) ? undefined : (total >= roll.options.target ? "fas fa-check" : "fas fa-xmark")
+            dcResult: !critOptions.displayChallenge || isNaN(roll.options.target) 
+                ? undefined 
+                : (roll.options.forceSuccess || total >= roll.options.target ? "fas fa-check" : "fas fa-xmark")
 		});
     }
 
