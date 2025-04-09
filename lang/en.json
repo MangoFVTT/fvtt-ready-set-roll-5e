@@ -19,6 +19,8 @@
             "aggregateDamage.hint": "When outputting a quick roll, combine all damage fields of the same type into a single field.",
             "enableD20Icons.name": "Show D20 Rolls for Quick Rolls",
             "enableD20Icons.hint": "When outputting a quick roll, display an icon showing the natural die roll next to the total result.",
+            "enableHideFinalResult.name": "Hide Result of NPC Attacks",
+            "enableHideFinalResult.hint": "When outputting a quick roll with an attack made by an actor that a player does not own, hide the final modified result of the roll so that only the result of the d20 is visible.",
             "enableDiceReroll.name": "Enable Dice Rerolling",
             "enableDiceReroll.hint": "When outputting a quick roll, enable the ability to click a specific die in the chat message tooltip to reroll that die in place.",
             "enableOverlayButtons.name": "Enable Overlay Buttons",
@@ -85,7 +87,8 @@
             "prompts": {
                 "retroCrit": "Upgrade to Crit?",
                 "retroAdv": "Roll {target}?"
-            }
+            },
+            "hide": "???"
         },
         "messages": {
             "error": {

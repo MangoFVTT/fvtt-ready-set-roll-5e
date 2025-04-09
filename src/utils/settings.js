@@ -14,6 +14,7 @@ export const SETTING_NAMES = {
     QUICK_VANILLA_ENABLED: "enableVanillaQuickRoll",
     ALWAYS_ROLL_MULTIROLL: "alwaysRollMulti",
     D20_ICONS_ENABLED: "enableD20Icons",
+    HIDE_FINAL_RESULT_ENABLED: "enableHideFinalResult",
     MANUAL_DAMAGE_MODE: "manualDamageMode",
     OVERLAY_BUTTONS_ENABLED: "enableOverlayButtons",
     DAMAGE_BUTTONS_ENABLED: "enableDamageButtons",
@@ -89,8 +90,9 @@ export class SettingsUtility {
 
         // CHAT CARD OPTIONS
         const chatCardOptions = [
-            { name: SETTING_NAMES.AGGREGATE_DAMAGE, default: false },           
+            { name: SETTING_NAMES.AGGREGATE_DAMAGE, default: false },
             { name: SETTING_NAMES.D20_ICONS_ENABLED, default: true },
+            { name: SETTING_NAMES.HIDE_FINAL_RESULT_ENABLED, default: false },
             //{ name: SETTING_NAMES.DICE_REROLL_ENABLED, default: true },
             { name: SETTING_NAMES.OVERLAY_BUTTONS_ENABLED, default: true },
             { name: SETTING_NAMES.DAMAGE_BUTTONS_ENABLED, default: true },
