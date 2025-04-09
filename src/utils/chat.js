@@ -69,6 +69,8 @@ export class ChatUtility {
         const content = $(html).find('.message-content');
 
         if (content.length === 0) {
+            $(html).removeClass("rsr-hide");
+            ui.chat.scrollBottom();
             return;
         }
         
