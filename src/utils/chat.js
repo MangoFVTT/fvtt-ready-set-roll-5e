@@ -69,6 +69,8 @@ export class ChatUtility {
         const content = $(html).find('.message-content');
 
         if (content.length === 0) {
+            $(html).removeClass("rsr-hide");
+            ui.chat.scrollBottom();
             return;
         }
         
@@ -261,7 +263,7 @@ async function _enforceDualRolls(message) {
 
 async function _injectContent(message, type, html) {
     LogUtility.log("Injecting content into chat message");
-    const parent =message.getOriginatingMessage();
+    const parent = message.getOriginatingMessage();
     message.flags[MODULE_SHORT].displayChallenge = parent?.shouldDisplayChallenge ?? message.shouldDisplayChallenge;
     message.flags[MODULE_SHORT].displayAttackResult = game.user.isGM || (game.settings.get("dnd5e", "attackRollVisibility") !== "none");
 
@@ -393,12 +395,18 @@ async function _injectAttackRoll(message, html) {
     RollUtility.resetRollGetters(roll);
 
     roll.options.displayChallenge = message.flags[MODULE_SHORT].displayAttackResult;
+    roll.options.hideFinalAttack = SettingsUtility.getSettingValue(SETTING_NAMES.HIDE_FINAL_RESULT_ENABLED) && !game.actors.get(message.speaker.actor)?.isOwner;
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
     const chatData = await roll.toMessage({}, { create: false });
     const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');    
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
+
+    if (roll.options.hideFinalAttack) {
+        rollHTML.find('.dice-tooltip').find('.tooltip-part.constant').remove();
+        rollHTML.find('.dice-formula').text("1d20 + " + CoreUtility.localize(`${MODULE_SHORT}.chat.hide`));
+    }    
 
     const ammo = message.getAssociatedActor().items.get(message.flags[MODULE_SHORT].ammunition)?.name;
 
