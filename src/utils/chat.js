@@ -30,7 +30,7 @@ export class ChatUtility {
 
         if (SettingsUtility.getSettingValue(SETTING_NAMES.QUICK_VANILLA_ENABLED) && !message.flags[MODULE_SHORT]) {
             _processVanillaMessage(message);
-            $(html).addClass("rsr-hide");
+            await $(html).addClass("rsr-hide");
         }
 
         if (!message.flags[MODULE_SHORT] || !message.flags[MODULE_SHORT].quickRoll) {
@@ -41,7 +41,7 @@ export class ChatUtility {
 
         // Hide the message if we haven't yet finished processing RSR content
         if (!message.flags[MODULE_SHORT].processed) {
-            $(html).addClass("rsr-hide");
+            await $(html).addClass("rsr-hide");
 
             if (type == ROLL_TYPE.ACTIVITY && message.isAuthor)
             {
@@ -62,14 +62,14 @@ export class ChatUtility {
 
         if (game.dice3d && game.dice3d.isEnabled() && message._dice3danimating)
         {
-            $(html).addClass("rsr-hide");
+            await $(html).addClass("rsr-hide");
             await game.dice3d.waitFor3DAnimationByMessageID(message.id);
         }
 
         const content = $(html).find('.message-content');
 
         if (content.length === 0) {
-            $(html).removeClass("rsr-hide");
+            await $(html).removeClass("rsr-hide");
             ui.chat.scrollBottom();
             return;
         }
@@ -104,7 +104,7 @@ export class ChatUtility {
         }
 
         if (message.flags[MODULE_SHORT].processed) {
-            $(html).removeClass("rsr-hide");
+            await $(html).removeClass("rsr-hide");
         }
         
         ui.chat.scrollBottom();
