@@ -46,16 +46,16 @@
 
 .rsr-supplement {
 	font-size: var(--font-size-11);
-    color: var(--color-text-dark-5);
+	color: var(--color-text-dark-5);
 	margin: 0.25rem 0 0;
 	text-align: center;
 }
 
 .rsr-supplement > strong {
 	color: var(--color-text-dark-primary);
-    text-transform: uppercase;
-    font-size: var(--font-size-10);
-    margin-right: 0.25rem;
+	text-transform: uppercase;
+	font-size: var(--font-size-10);
+	margin-right: 0.25rem;
 }
 
 .rsr-title {
