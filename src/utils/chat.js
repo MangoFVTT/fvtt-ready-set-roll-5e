@@ -10,6 +10,15 @@ import { ROLL_STATE, ROLL_TYPE, RollUtility } from "./roll.js";
 import { SETTING_NAMES, SettingsUtility } from "./settings.js";
 
 /**
+ * Enumerable of identifiers for different message types that can be made.
+ * @enum {String}
+ */
+export const MESSAGE_TYPE = {
+    ROLL: "roll",
+    USAGE: "usage",
+}
+
+/**
  * Utility class to handle binding chat cards for use by the module.
  */
 export class ChatUtility {
@@ -122,7 +131,11 @@ export class ChatUtility {
     }
 
     static getMessageType(message) {
-        return message.flags.dnd5e?.roll?.type ?? (message.flags.dnd5e?.activity ? ROLL_TYPE.ACTIVITY : null);
+        return message.flags.dnd5e?.messageType === MESSAGE_TYPE.USAGE 
+            ? ROLL_TYPE.ACTIVITY 
+            : message.flags.dnd5e?.messageType === MESSAGE_TYPE.ROLL 
+                ? (message.flags.dnd5e?.roll?.type ??  null)
+                : null;
     }
 
     static getActivityType(message) {
@@ -279,7 +292,6 @@ async function _injectContent(message, type, html) {
 
                 message.flags[MODULE_SHORT].renderDamage = true;
                 message.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
-                //message.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
 
                 await _injectDamageRoll(message, enricher);
 
@@ -293,11 +305,13 @@ async function _injectContent(message, type, html) {
             if (parent && parent.flags[MODULE_SHORT] && message.isAuthor) {
                 if (type === ROLL_TYPE.ATTACK) {
                     parent.flags[MODULE_SHORT].renderAttack = true;
+                    parent.flags.dnd5e.roll = message.flags.dnd5e?.roll;
+                    parent.flags.dnd5e.originatingMessage = parent.id;
+                    game.dnd5e.registry.messages.track(parent);
                 }
 
                 if (type === ROLL_TYPE.DAMAGE) {
                     parent.flags[MODULE_SHORT].renderDamage = true;
-                    //parent.flags[MODULE_SHORT].versatile = message.flags.dnd5e.roll.versatile ?? false;
                     parent.flags[MODULE_SHORT].isCritical = message.rolls[0]?.isCritical;
                     parent.flags[MODULE_SHORT].isHealing = message.flags.dnd5e.activity.type === "heal";
                 }
@@ -312,6 +326,7 @@ async function _injectContent(message, type, html) {
                 ChatUtility.updateChatMessage(parent, {
                     flags: parent.flags,
                     rolls: parent.rolls,
+                    flavor: "vanilla",
                 });
 
                 message.flags[MODULE_SHORT].processed = false;
@@ -354,6 +369,9 @@ async function _injectContent(message, type, html) {
             if (message.flags[MODULE_SHORT].renderAttack || message.flags[MODULE_SHORT].renderAttack === false) {
                 actions.find(`[data-action=rollAttack]`).remove();
                 await _injectAttackRoll(message, actions);
+
+                html.find('.rsr-section-attack').append(html.find('.supplement'));
+                html.find('.supplement').removeClass('supplement').addClass('rsr-supplement');
             }
             
             if (message.flags[MODULE_SHORT].manualDamage || message.flags[MODULE_SHORT].renderDamage) {
@@ -377,6 +395,8 @@ async function _injectContent(message, type, html) {
             if (SettingsUtility.getSettingValue(SETTING_NAMES.DAMAGE_BUTTONS_ENABLED)) {
                 await _injectApplyDamageButtons(message, html);
             }
+
+            html.find('.dnd5e2.chat-card').not('.activation-card').remove();
             break;
         default:
             break;
