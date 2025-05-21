@@ -419,7 +419,7 @@ async function _injectAttackRoll(message, html) {
 
     const render = await RenderUtility.render(TEMPLATE.MULTIROLL, { roll, key: ROLL_TYPE.ATTACK });
     const chatData = await roll.toMessage({}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');    
+    const rollHTML = $(await new ChatMessage5e(chatData).renderHTML()).find('.dice-roll');
     rollHTML.find('.dice-total').replaceWith(render);
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
 
@@ -449,7 +449,7 @@ async function _injectFormulaRoll(message, html) {
     if (!roll) return;
 
     const chatData = await roll.toMessage({}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
+    const rollHTML = $(await new ChatMessage5e(chatData).renderHTML()).find('.dice-roll');
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
 
     const sectionHTML = $(await RenderUtility.render(TEMPLATE.SECTION,
@@ -471,7 +471,7 @@ async function _injectDamageRoll(message, html) {
     if (!rolls || rolls.length === 0) return;
 
     const chatData = await CONFIG.Dice.DamageRoll.toMessage(rolls, {}, { create: false });
-    const rollHTML = (await new ChatMessage5e(chatData).getHTML()).find('.dice-roll');
+    const rollHTML = $(await new ChatMessage5e(chatData).renderHTML()).find('.dice-roll');
     rollHTML.find('.dice-tooltip').prepend(rollHTML.find('.dice-formula'));
     rollHTML.find('.dice-result').addClass('rsr-damage');
 
