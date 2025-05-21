@@ -109,5 +109,5 @@ async function _renderDamageRoll(data = {}) {
  * @private
  */
 function _renderModuleTemplate(template, data) {
-    return renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
+    return foundry.applications.handlebars.renderTemplate(`modules/${MODULE_NAME}/templates/${template}`, data);
 }
