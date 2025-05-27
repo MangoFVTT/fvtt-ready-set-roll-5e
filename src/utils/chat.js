@@ -56,7 +56,7 @@ export class ChatUtility {
             {
                 if (CoreUtility.hasModule(MODULE_MIDI)) {
                     const activityType = ChatUtility.getActivityType(message);
-                    if (activityType == ROLL_TYPE.ATTACK || activityType == ROLL_TYPE.ABILITY_SAVE) {
+                    if (activityType == ROLL_TYPE.ATTACK || (activityType == ROLL_TYPE.ABILITY_SAVE && message.flags[MODULE_SHORT].renderDamage)) {
                         message.flags[MODULE_SHORT].processed = true;
                     } else {
                         ActivityUtility.runActivityActions(message);
