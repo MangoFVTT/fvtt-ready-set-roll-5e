@@ -55,7 +55,6 @@
 	color: var(--color-text-dark-primary);
 	text-transform: uppercase;
 	font-size: var(--font-size-10);
-	margin-right: 0.25rem;
 }
 
 .rsr-title {
